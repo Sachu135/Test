@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.props')" />
+  <Import Project="..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.props')" />
+  <Import Project="..\packages\cef.redist.x86.79.1.36\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.79.1.36\build\cef.redist.x86.props')" />
+  <Import Project="..\packages\cef.redist.x64.79.1.36\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.79.1.36\build\cef.redist.x64.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{40793A27-478B-4357-B4C3-FC8943131F3D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DockSample</RootNamespace>
+    <AssemblyName>DockSample</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EasyScintilla, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyScintilla.1.0.5\lib\net40\EasyScintilla.dll</HintPath>
+    </Reference>
+    <Reference Include="FontAwesome.Sharp, Version=5.12.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.Sharp.5.12.1\lib\net45\FontAwesome.Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
+    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutDialog.Designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AppStarterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AppStarterForm.Designer.cs">
+      <DependentUpon>AppStarterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\XButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DbConnectorDoc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DbConnectorDoc.Designer.cs">
+      <DependentUpon>DbConnectorDoc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ConfigurationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ConfigurationForm.Designer.cs">
+      <DependentUpon>ConfigurationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UCLoader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\UCLoader.Designer.cs">
+      <DependentUpon>UCLoader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UCLoaderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\UCLoaderForm.Designer.cs">
+      <DependentUpon>UCLoaderForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BrowserDoc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BrowserDoc.Designer.cs">
+      <DependentUpon>BrowserDoc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyDoc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyDoc.Designer.cs">
+      <DependentUpon>DummyDoc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyOutputWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyOutputWindow.Designer.cs">
+      <DependentUpon>DummyOutputWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyPropertyWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyPropertyWindow.Designer.cs">
+      <DependentUpon>DummyPropertyWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="lib\Browser.cs" />
+    <Compile Include="lib\CrossThreadSafe.cs" />
+    <Compile Include="lib\DbClient.cs" />
+    <Compile Include="lib\FileUtil.cs" />
+    <Compile Include="SolutionExplorer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SolutionExplorer.Designer.cs">
+      <DependentUpon>SolutionExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummySolutionExplorer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummySolutionExplorer.Designer.cs">
+      <DependentUpon>DummySolutionExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyTaskList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyTaskList.Designer.cs">
+      <DependentUpon>DummyTaskList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyToolbox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DummyToolbox.Designer.cs">
+      <DependentUpon>DummyToolbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Customization\DockHelper.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AboutDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AppStarterForm.resx">
+      <DependentUpon>AppStarterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ConfigurationForm.resx">
+      <DependentUpon>ConfigurationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\UCLoader.resx">
+      <DependentUpon>UCLoader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\UCLoaderForm.resx">
+      <DependentUpon>UCLoaderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BrowserDoc.resx">
+      <DependentUpon>BrowserDoc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DbConnectorDoc.resx">
+      <DependentUpon>DbConnectorDoc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummyDoc.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummyDoc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummyOutputWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummyOutputWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummyPropertyWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummyPropertyWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SolutionExplorer.resx">
+      <DependentUpon>SolutionExplorer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummySolutionExplorer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummySolutionExplorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummyTaskList.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummyTaskList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DummyToolbox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DummyToolbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="ToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ToolWindow.Designer.cs">
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SFTPLib\SFTPEntities.csproj">
+      <Project>{F5D64EBB-EA82-47B4-B5BB-AD807D0FD1AC}</Project>
+      <Name>SFTPEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UIFunctionality\UIFunctionality.csproj">
+      <Project>{059cc2a1-07d8-4ca6-9dba-a40b567fec6e}</Project>
+      <Name>UIFunctionality</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinFormsUI\ThemeVS2015.csproj">
+      <Project>{007d4ac8-948f-4816-86ad-b9d1343672c1}</Project>
+      <Name>ThemeVS2015</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj">
+      <Project>{c75532c4-765b-418e-b09b-46d36b2abdb1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\ArrowDown.bmp" />
+    <None Include="Images\ArrowUp.bmp" />
+    <None Include="Images\Bitmap.ico" />
+    <None Include="Images\BlankIcon.ico" />
+    <None Include="Images\ClosedFolder.ICO" />
+    <None Include="Images\CSFile.ico" />
+    <None Include="Images\CSProject.ico" />
+    <None Include="Images\File.ico" />
+    <None Include="Images\Form.ico" />
+    <None Include="Images\Mouse.bmp" />
+    <None Include="Images\msenv22.ico" />
+    <None Include="Images\New.ico" />
+    <None Include="Images\Open.ico" />
+    <None Include="Images\OpenFolder.ICO" />
+    <None Include="Images\OutputWindow.ico" />
+    <None Include="Images\PropertyWindow.ico" />
+    <None Include="Images\Reference.ico" />
+    <None Include="Images\References.ico" />
+    <None Include="Images\SolutionExplorer.ico" />
+    <None Include="Images\TaskListWindow.ico" />
+    <None Include="Images\ToolboxWindow.ico" />
+    <None Include="Images\XmlFile.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\DockPanel.xml" />
+    <EmbeddedResource Include="SplashScreen.resx">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\Logo.ico" />
+    <Content Include="Images\SplashScreen.png" />
+    <None Include="Resources\textresults.gif" />
+    <None Include="Resources\save.gif" />
+    <None Include="Resources\open.gif" />
+    <None Include="Resources\hideresults.gif" />
+    <None Include="Resources\hidebrowser.gif" />
+    <None Include="Resources\gridresults.gif" />
+    <None Include="Resources\execute.gif" />
+    <None Include="Resources\cancel.gif" />
+    <None Include="Resources\executeDisable1.png" />
+    <None Include="Resources\executeDisable.png" />
+    <None Include="Resources\stopDisable.png" />
+    <None Include="Resources\stop2.png" />
+    <None Include="Resources\execute2.png" />
+    <None Include="Resources\stop1.png" />
+    <None Include="Resources\execute1.png" />
+    <None Include="Resources\stop.png" />
+    <None Include="Resources\execute.png" />
+    <None Include="Resources\clear.png" />
+    <None Include="Resources\pre2.gif" />
+    <None Include="Resources\Ring-Preloader.gif" />
+    <None Include="Resources\loader.gif" />
+    <None Include="Images\SplashScreenKockpit.png" />
+    <Content Include="Logo.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\cef.redist.x64.79.1.36\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.79.1.36\build\cef.redist.x64.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.79.1.36\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.79.1.36\build\cef.redist.x86.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.targets'))" />
+  </Target>
+  <Import Project="..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.79.1.360\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.79.1.360\build\CefSharp.WinForms.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
