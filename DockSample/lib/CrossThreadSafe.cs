@@ -58,5 +58,18 @@ namespace DockSample.lib
                 action();
             }
         }
+
+        public static void PerformSafely(this DummyDoc target, Action action)
+        {
+            if (target.InvokeRequired)
+            {
+                target.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }
+
     }
 }

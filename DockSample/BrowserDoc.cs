@@ -9,6 +9,7 @@ using DockSample.lib;
 using SFTPEntities;
 using CefSharp.WinForms;
 using DockSample.Controls;
+using CefSharp;
 
 namespace DockSample
 {
@@ -17,6 +18,65 @@ namespace DockSample
         private string Url;
         private ChromiumWebBrowser browser;
         private UCLoaderForm loader;
+
+        public class DownloadHandler : CefSharp.IDownloadHandler
+        {
+            BrowserDoc parent;
+            UCLoaderForm loader;
+
+            public event EventHandler<CefSharp.DownloadItem> OnBeforeDownloadFired;
+
+            public event EventHandler<CefSharp.DownloadItem> OnDownloadUpdatedFired;
+
+            public DownloadHandler(BrowserDoc parentObj, UCLoaderForm loaderObj)
+            {
+                this.parent = parentObj;
+                this.loader = loaderObj;
+            }
+            public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, CefSharp.IBrowser browser, DownloadItem downloadItem, IBeforeDownloadCallback callback)
+            {
+                OnBeforeDownloadFired?.Invoke(this, downloadItem);
+
+                if (!callback.IsDisposed)
+                {
+                    using (callback)
+                    {
+                        callback.Continue(downloadItem.SuggestedFileName, showDialog: true);
+                    }
+                }
+            }
+
+            public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, CefSharp.IBrowser browser, DownloadItem downloadItem, IDownloadItemCallback callback)
+            {
+                new Task(() => {
+                    parent.PerformSafely(() =>
+                    {
+                        if (!loader.Visible)
+                        {
+                            loader.ShowDialog(parent, "Downloading...");
+                        }
+                    });
+                }).Start();
+                
+                OnDownloadUpdatedFired?.Invoke(this, downloadItem);
+
+                if (downloadItem.IsComplete || downloadItem.IsCancelled)
+                {
+                    new Task(() =>
+                    {
+                        loader.PerformSafely(() =>
+                        {
+                            loader.Hide();
+                            loader.Close();
+                        });
+                    }).Start();
+                }
+            }
+        }
+
+        public BrowserDoc()
+        { 
+        }
         public BrowserDoc(string url, string tabText)
         {
             InitializeComponent();
@@ -24,9 +84,10 @@ namespace DockSample
             DockAreas = DockAreas.Document | DockAreas.Float;
             Url = url;
             this.TabText = tabText;
-            browser = new ChromiumWebBrowser(Url);
             loader = new UCLoaderForm();
-
+            browser = new ChromiumWebBrowser(Url);
+            browser.DownloadHandler = new DownloadHandler(this, loader);
+            
         }
 
         private void menuItem2_Click(object sender, System.EventArgs e)
@@ -42,7 +103,7 @@ namespace DockSample
         private async void DummyDoc_Load(object sender, EventArgs e)
         {
             new Task(() => {
-                loader.PerformSafely(() =>
+                this.PerformSafely(() =>
                 {
                     loader.ShowDialog(this);
                     //loader.Close();
@@ -82,9 +143,13 @@ namespace DockSample
         {
             new Task(() =>
             {
-                loader.PerformSafely(() =>
+                this.PerformSafely(() =>
                 {
-                    loader.ShowDialog(this);
+                    if (!loader.Visible)
+                    {
+                        loader.ShowDialog(this);
+                    }
+                    
                     //loader.Close();
                 });
             }).Start();

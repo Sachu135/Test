@@ -43,13 +43,21 @@
             this.lblMsg = new System.Windows.Forms.Label();
             this.tbControl = new System.Windows.Forms.TabControl();
             this.tablinuxCtrl = new System.Windows.Forms.TabPage();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.tbProjects = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.txtProName = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
+            this.txtProLocation = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.tbDatabase = new System.Windows.Forms.TabPage();
             this.gpBoxNewConn = new System.Windows.Forms.GroupBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.txtDbName = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnKey = new System.Windows.Forms.TextBox();
@@ -65,16 +73,30 @@
             this.label12 = new System.Windows.Forms.Label();
             this.gpBoxSavedConnections = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tabServices = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.txtHealthCheck = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtAirflow = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tbControl.SuspendLayout();
             this.tablinuxCtrl.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tbProjects.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.groupBox4.SuspendLayout();
             this.tbDatabase.SuspendLayout();
             this.gpBoxNewConn.SuspendLayout();
             this.gpBoxSavedConnections.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabServices.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -113,7 +135,7 @@
             this.textBox1.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(228, 37);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(181, 23);
+            this.textBox1.Size = new System.Drawing.Size(240, 23);
             this.textBox1.TabIndex = 3;
             this.textBox1.Text = "23.101.24.36";
             // 
@@ -122,7 +144,7 @@
             this.textBox2.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.textBox2.Location = new System.Drawing.Point(228, 67);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(181, 23);
+            this.textBox2.Size = new System.Drawing.Size(240, 23);
             this.textBox2.TabIndex = 4;
             this.textBox2.Text = "abhishek";
             // 
@@ -131,7 +153,7 @@
             this.textBox3.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.textBox3.Location = new System.Drawing.Point(228, 97);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(181, 23);
+            this.textBox3.Size = new System.Drawing.Size(240, 23);
             this.textBox3.TabIndex = 5;
             this.textBox3.Text = "JunkyardUbuntu!";
             // 
@@ -146,9 +168,9 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Location = new System.Drawing.Point(9, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(612, 144);
+            this.groupBox1.Size = new System.Drawing.Size(606, 144);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "SSH Client Info";
@@ -157,26 +179,28 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(82, 40);
+            this.label6.Location = new System.Drawing.Point(84, 70);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 16);
             this.label6.TabIndex = 0;
             this.label6.Text = "Project Path :";
+            this.label6.Visible = false;
             // 
             // textBox6
             // 
             this.textBox6.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.textBox6.Location = new System.Drawing.Point(228, 37);
+            this.textBox6.Location = new System.Drawing.Point(230, 67);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(181, 23);
+            this.textBox6.Size = new System.Drawing.Size(238, 23);
             this.textBox6.TabIndex = 3;
             this.textBox6.Text = "/home/abhishek/Kockpit";
+            this.textBox6.Visible = false;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(91, 70);
+            this.label5.Location = new System.Drawing.Point(91, 44);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(69, 16);
             this.label5.TabIndex = 4;
@@ -185,9 +209,9 @@
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.textBox5.Location = new System.Drawing.Point(228, 67);
+            this.textBox5.Location = new System.Drawing.Point(228, 41);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(181, 23);
+            this.textBox5.Size = new System.Drawing.Size(240, 23);
             this.textBox5.TabIndex = 5;
             this.textBox5.Text = "http://23.101.24.36:5000";
             // 
@@ -202,10 +226,10 @@
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(9, 156);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(606, 109);
+            this.groupBox2.Size = new System.Drawing.Size(606, 91);
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Project Info";
+            this.groupBox2.Text = "Explorer Service Info";
             // 
             // lblMsg
             // 
@@ -224,39 +248,27 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbControl.Controls.Add(this.tablinuxCtrl);
+            this.tbControl.Controls.Add(this.tbProjects);
             this.tbControl.Controls.Add(this.tbDatabase);
+            this.tbControl.Controls.Add(this.tabServices);
             this.tbControl.Location = new System.Drawing.Point(0, 21);
             this.tbControl.Name = "tbControl";
             this.tbControl.SelectedIndex = 0;
-            this.tbControl.Size = new System.Drawing.Size(626, 426);
+            this.tbControl.Size = new System.Drawing.Size(626, 383);
             this.tbControl.TabIndex = 11;
             // 
             // tablinuxCtrl
             // 
             this.tablinuxCtrl.Controls.Add(this.groupBox1);
             this.tablinuxCtrl.Controls.Add(this.groupBox2);
-            this.tablinuxCtrl.Controls.Add(this.button2);
             this.tablinuxCtrl.Controls.Add(this.groupBox3);
-            this.tablinuxCtrl.Controls.Add(this.button1);
             this.tablinuxCtrl.Location = new System.Drawing.Point(4, 22);
             this.tablinuxCtrl.Name = "tablinuxCtrl";
             this.tablinuxCtrl.Padding = new System.Windows.Forms.Padding(3);
-            this.tablinuxCtrl.Size = new System.Drawing.Size(618, 400);
+            this.tablinuxCtrl.Size = new System.Drawing.Size(618, 357);
             this.tablinuxCtrl.TabIndex = 0;
             this.tablinuxCtrl.Text = "Linux Config";
             this.tablinuxCtrl.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.button2.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button2.Location = new System.Drawing.Point(495, 364);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(111, 33);
-            this.button2.TabIndex = 9;
-            this.button2.Text = "Close";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox3
             // 
@@ -265,7 +277,7 @@
             this.groupBox3.Controls.Add(this.textBox4);
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(9, 271);
+            this.groupBox3.Location = new System.Drawing.Point(9, 252);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(606, 90);
             this.groupBox3.TabIndex = 7;
@@ -277,7 +289,7 @@
             this.textBox4.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.textBox4.Location = new System.Drawing.Point(228, 37);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(181, 23);
+            this.textBox4.Size = new System.Drawing.Size(240, 23);
             this.textBox4.TabIndex = 3;
             this.textBox4.Text = "http://23.101.24.36:8080";
             // 
@@ -291,17 +303,107 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Url :";
             // 
-            // button1
+            // tbProjects
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.button1.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button1.Location = new System.Drawing.Point(367, 364);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(122, 33);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Save";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.tbProjects.Controls.Add(this.groupBox5);
+            this.tbProjects.Controls.Add(this.groupBox4);
+            this.tbProjects.Location = new System.Drawing.Point(4, 22);
+            this.tbProjects.Name = "tbProjects";
+            this.tbProjects.Size = new System.Drawing.Size(618, 357);
+            this.tbProjects.TabIndex = 2;
+            this.tbProjects.Text = "Workspaces";
+            this.tbProjects.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.dataGridView2);
+            this.groupBox5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox5.Location = new System.Drawing.Point(6, 143);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(609, 252);
+            this.groupBox5.TabIndex = 8;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Existing Workspaces";
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AllowUserToDeleteRows = false;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.Location = new System.Drawing.Point(3, 20);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.ReadOnly = true;
+            this.dataGridView2.Size = new System.Drawing.Size(603, 229);
+            this.dataGridView2.TabIndex = 0;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.txtProName);
+            this.groupBox4.Controls.Add(this.label9);
+            this.groupBox4.Controls.Add(this.button3);
+            this.groupBox4.Controls.Add(this.txtProLocation);
+            this.groupBox4.Controls.Add(this.label16);
+            this.groupBox4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox4.Location = new System.Drawing.Point(6, 3);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(609, 134);
+            this.groupBox4.TabIndex = 7;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "New Workspace";
+            // 
+            // txtProName
+            // 
+            this.txtProName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
+            this.txtProName.Location = new System.Drawing.Point(118, 36);
+            this.txtProName.Name = "txtProName";
+            this.txtProName.Size = new System.Drawing.Size(163, 23);
+            this.txtProName.TabIndex = 1;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(5, 39);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(107, 16);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Workspace Name :";
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.button3.Location = new System.Drawing.Point(471, 83);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(122, 33);
+            this.button3.TabIndex = 9;
+            this.button3.Text = "Add New";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // txtProLocation
+            // 
+            this.txtProLocation.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
+            this.txtProLocation.Location = new System.Drawing.Point(376, 36);
+            this.txtProLocation.Name = "txtProLocation";
+            this.txtProLocation.Size = new System.Drawing.Size(215, 23);
+            this.txtProLocation.TabIndex = 3;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(310, 39);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(60, 16);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "Location :";
             // 
             // tbDatabase
             // 
@@ -310,7 +412,7 @@
             this.tbDatabase.Location = new System.Drawing.Point(4, 22);
             this.tbDatabase.Name = "tbDatabase";
             this.tbDatabase.Padding = new System.Windows.Forms.Padding(3);
-            this.tbDatabase.Size = new System.Drawing.Size(618, 400);
+            this.tbDatabase.Size = new System.Drawing.Size(618, 357);
             this.tbDatabase.TabIndex = 1;
             this.tbDatabase.Text = "Database";
             this.tbDatabase.UseVisualStyleBackColor = true;
@@ -319,6 +421,7 @@
             // 
             this.gpBoxNewConn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gpBoxNewConn.Controls.Add(this.button4);
             this.gpBoxNewConn.Controls.Add(this.txtDbName);
             this.gpBoxNewConn.Controls.Add(this.label7);
             this.gpBoxNewConn.Controls.Add(this.txtConnKey);
@@ -339,6 +442,19 @@
             this.gpBoxNewConn.TabIndex = 6;
             this.gpBoxNewConn.TabStop = false;
             this.gpBoxNewConn.Text = "New/Edit Connection";
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.button4.Location = new System.Drawing.Point(328, 145);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(137, 33);
+            this.button4.TabIndex = 10;
+            this.button4.Text = "Test Connection";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // txtDbName
             // 
@@ -361,7 +477,7 @@
             // txtConnKey
             // 
             this.txtConnKey.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnKey.Location = new System.Drawing.Point(123, 36);
+            this.txtConnKey.Location = new System.Drawing.Point(133, 36);
             this.txtConnKey.Name = "txtConnKey";
             this.txtConnKey.Size = new System.Drawing.Size(138, 23);
             this.txtConnKey.TabIndex = 1;
@@ -370,7 +486,7 @@
             // 
             this.connKey.AutoSize = true;
             this.connKey.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.connKey.Location = new System.Drawing.Point(9, 39);
+            this.connKey.Location = new System.Drawing.Point(29, 39);
             this.connKey.Name = "connKey";
             this.connKey.Size = new System.Drawing.Size(78, 16);
             this.connKey.TabIndex = 0;
@@ -379,6 +495,7 @@
             // btnSaveConnection
             // 
             this.btnSaveConnection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.btnSaveConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSaveConnection.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.btnSaveConnection.Location = new System.Drawing.Point(471, 145);
             this.btnSaveConnection.Name = "btnSaveConnection";
@@ -395,11 +512,18 @@
             this.cbConnDbType.FormattingEnabled = true;
             this.cbConnDbType.Items.AddRange(new object[] {
             "Sql Server",
-            "Postgres"});
+            "Postgres",
+            "MySql",
+            "Mongo Db",
+            "Json",
+            "Xml",
+            "Streaming Data",
+            "Cloud Storage"});
             this.cbConnDbType.Location = new System.Drawing.Point(455, 36);
             this.cbConnDbType.Name = "cbConnDbType";
             this.cbConnDbType.Size = new System.Drawing.Size(138, 24);
             this.cbConnDbType.TabIndex = 2;
+            this.cbConnDbType.SelectedIndexChanged += new System.EventHandler(this.cbConnDbType_SelectedIndexChanged);
             // 
             // txtConnPassword
             // 
@@ -423,7 +547,7 @@
             // txtConnUserName
             // 
             this.txtConnUserName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnUserName.Location = new System.Drawing.Point(123, 103);
+            this.txtConnUserName.Location = new System.Drawing.Point(133, 103);
             this.txtConnUserName.Name = "txtConnUserName";
             this.txtConnUserName.Size = new System.Drawing.Size(138, 23);
             this.txtConnUserName.TabIndex = 5;
@@ -431,16 +555,17 @@
             // txtConnServerName
             // 
             this.txtConnServerName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnServerName.Location = new System.Drawing.Point(123, 69);
+            this.txtConnServerName.Location = new System.Drawing.Point(133, 69);
             this.txtConnServerName.Name = "txtConnServerName";
             this.txtConnServerName.Size = new System.Drawing.Size(138, 23);
             this.txtConnServerName.TabIndex = 3;
+            this.txtConnServerName.TextChanged += new System.EventHandler(this.txtConnServerName_TextChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(15, 106);
+            this.label10.Location = new System.Drawing.Point(35, 106);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(72, 16);
             this.label10.TabIndex = 0;
@@ -452,9 +577,9 @@
             this.label11.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.Location = new System.Drawing.Point(6, 72);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(81, 16);
+            this.label11.Size = new System.Drawing.Size(101, 16);
             this.label11.TabIndex = 0;
-            this.label11.Text = "Server Name :";
+            this.label11.Text = "Server Name/Url :";
             // 
             // label12
             // 
@@ -491,6 +616,92 @@
             this.dataGridView1.Size = new System.Drawing.Size(603, 173);
             this.dataGridView1.TabIndex = 0;
             // 
+            // tabServices
+            // 
+            this.tabServices.Controls.Add(this.groupBox6);
+            this.tabServices.Location = new System.Drawing.Point(4, 22);
+            this.tabServices.Name = "tabServices";
+            this.tabServices.Size = new System.Drawing.Size(618, 357);
+            this.tabServices.TabIndex = 3;
+            this.tabServices.Text = "Services";
+            this.tabServices.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.txtHealthCheck);
+            this.groupBox6.Controls.Add(this.label14);
+            this.groupBox6.Controls.Add(this.txtAirflow);
+            this.groupBox6.Controls.Add(this.label8);
+            this.groupBox6.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox6.Location = new System.Drawing.Point(4, 3);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(606, 130);
+            this.groupBox6.TabIndex = 8;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Other Services";
+            // 
+            // txtHealthCheck
+            // 
+            this.txtHealthCheck.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
+            this.txtHealthCheck.Location = new System.Drawing.Point(228, 82);
+            this.txtHealthCheck.Name = "txtHealthCheck";
+            this.txtHealthCheck.Size = new System.Drawing.Size(240, 23);
+            this.txtHealthCheck.TabIndex = 5;
+            this.txtHealthCheck.Text = "http://104.197.144.127:8085";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(124, 85);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(85, 16);
+            this.label14.TabIndex = 4;
+            this.label14.Text = "Health Check :";
+            // 
+            // txtAirflow
+            // 
+            this.txtAirflow.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
+            this.txtAirflow.Location = new System.Drawing.Point(228, 37);
+            this.txtAirflow.Name = "txtAirflow";
+            this.txtAirflow.Size = new System.Drawing.Size(240, 23);
+            this.txtAirflow.TabIndex = 3;
+            this.txtAirflow.Text = "http://104.197.144.127:8082";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(102, 40);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(107, 16);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Airflow Schedular :";
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.button2.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.button2.Location = new System.Drawing.Point(503, 411);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(111, 33);
+            this.button2.TabIndex = 9;
+            this.button2.Text = "Close";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.button1.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.button1.Location = new System.Drawing.Point(375, 411);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(122, 33);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(237)))), ((int)(((byte)(200)))));
@@ -506,12 +717,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.ClientSize = new System.Drawing.Size(626, 450);
+            this.ClientSize = new System.Drawing.Size(626, 455);
             this.Controls.Add(this.tbControl);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Name = "ConfigurationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ConfigurationForm";
+            this.Text = "Cluster Config";
             this.Load += new System.EventHandler(this.ConfigurationForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -521,11 +734,19 @@
             this.tablinuxCtrl.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.tbProjects.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.tbDatabase.ResumeLayout(false);
             this.gpBoxNewConn.ResumeLayout(false);
             this.gpBoxNewConn.PerformLayout();
             this.gpBoxSavedConnections.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabServices.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -571,5 +792,21 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.TextBox txtDbName;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TabPage tbProjects;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox txtProName;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TextBox txtProLocation;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TabPage tabServices;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.TextBox txtHealthCheck;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox txtAirflow;
+        private System.Windows.Forms.Label label8;
     }
 }

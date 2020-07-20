@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -61,6 +62,43 @@ namespace DockSample.lib
 		}
 	}
 
+	/// <summary> Postgres Client</summary>
+	public class PostgresFactory : IClientFactory
+	{
+		public IDbConnection GetConnection(string connectString, MessageProcessor mp)
+		{
+			//return new SqlConnection (connectString);
+			NpgsqlConnection cx = new NpgsqlConnection(connectString);
+			if (mp != null) new Messenger(mp, cx);
+			return cx;
+		}
+
+		public IDbDataAdapter GetDataAdapter(string query, IDbConnection connection)
+		{
+			return new NpgsqlDataAdapter(query, (NpgsqlConnection)connection);
+		}
+
+		class Messenger
+		{
+			MessageProcessor mp;
+			public Messenger(MessageProcessor mp, NpgsqlConnection cx)
+			{
+				this.mp = mp;
+				cx.Notification += Cx_Notification;
+				//cx.Notification += new SqlInfoMessageEventHandler(cx_InfoMessage);
+			}
+
+			private void Cx_Notification(object sender, NpgsqlNotificationEventArgs e)
+			{
+				mp(e.AdditionalInformation);
+			}
+
+			//private void cx_InfoMessage(object sender, SqlInfoMessageEventArgs e)
+			//{
+			//	mp(e.Message);
+			//}
+		}
+	}
 	/// <summary> OLE-DB Client </summary>
 	public class OleDbFactory : IClientFactory
 	{

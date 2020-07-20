@@ -139,6 +139,33 @@
   <data name="executeDisable1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\executeDisable1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="f_dir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_dir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_excel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_excel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_json.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_other" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_other.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_py" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_py.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_pyico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_pyico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_sol" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_sol.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_text.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="f_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\f_xml.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="gridresults" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gridresults.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -159,6 +186,9 @@
   </data>
   <data name="save" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saveHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saveHS.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SplashScreen" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\SplashScreen.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

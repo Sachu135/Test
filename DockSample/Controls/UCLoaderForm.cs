@@ -16,5 +16,15 @@ namespace DockSample.Controls
         {
             InitializeComponent();
         }
+
+        public new DialogResult ShowDialog(IWin32Window owner)
+        {
+            return base.ShowDialog(owner);
+        }
+        public DialogResult ShowDialog(IWin32Window owner, string msg = "")
+        {
+            label1.Text = string.IsNullOrEmpty(msg) ? "Wait..." : msg;
+            return this.ShowDialog(owner);
+        }
     }
 }

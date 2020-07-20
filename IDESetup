@@ -1,0 +1,183 @@
+
+13.67.128.66
+@"C:\GodrejPOS"; //
+
+abhishek@23.101.24.36
+
+23.101.24.36
+abhishek
+JunkyardUbuntu!
+
+/home/abhishek/Kockpit
+http://23.101.24.36:5000
+
+http://23.101.24.36:8080
+
+https://www.youtube.com/watch?v=YMeprVU0yIw
+Install lubuntu desktop
+https://drive.google.com/file/d/0B-fhB8yhjD8AV1laZWpGOVNZLU0/view
+
+echo "lxsession -s Lubuntu -e LXDE" > ~/.xsession
+
+-------------------------------------------
+
+Samba 
+
+https://www.howtoforge.com/tutorial/samba-server-ubuntu-16-04/
+https://adrianmejia.com/how-to-set-up-samba-in-ubuntu-linux-and-access-it-in-mac-os-and-windows/
+
+---------------------------------------------------
+
+sudo apt update
+
+sudo apt-get install libwebsockets-dev
+
+https://github.com/tsl0922/ttyd
+
+https://www.cyberciti.biz/open-source/2-apps-to-share-your-terminal-over-the-web/
+
+https://stackoverflow.com/questions/19034542/how-to-open-port-in-centos
+
+ttyd -p 8080 bash
+
+--------OR--------------
+
+sudo nano /etc/supervisor/conf.d/ttyd.conf
+
+[program:ttyd]
+command=ttyd -p 8080 bash
+autostart=true
+autorestart=true
+
+sudo service supervisor stop
+sudo service supervisor start
+
+http://23.101.24.36:8080/
+
+-----------------------------------
+Install .net sdk
+
+https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
+
+https://dev.to/solrevdev/unable-to-locate-package-dotnet-sdk-3-1-4b6
+
+------------------------------------------------
+
+Fron bin folder
+scp * abhishek@23.101.24.36:/home/abhishek/test
+
+scp * abhishek@23.101.24.36:/home/abhishek/KockpitService
+
+dotnet SFTPConsole.dll /home/abhishek/dotnet
+string st = @"C:\GodrejPOS"; // args[0];
+
+http://localhost:5000/api/Directory/GetDirectoryList?dirInfo=C%3A%5CGodrejPOS
+
+http://localhost:5000/api/Directory/GetDirectoryList?dirInfo=%2Fhome%2Fabhishek%2FKockpit
+
+http://23.101.24.36:5000/api/Directory/GetDirectoryList?dirInfo=%2Fhome%2Fabhishek%2FKockpit
+
+Directory
+
+https://localhost:44351/api/Directory/RenameFile?oldFile=C%3A%5CGodrejPOS%5C20.05.2019.log
+
+application/json raw input
+C%3A%5CGodrejPOS%5C20.05.2019.5667.log
+
+https://localhost:44351/api/Directory/RenameDirectory?oldDir=C%3A%5CGodrejPOS%5CData
+C%3A%5CGodrejPOS%5CDataNew
+
+https://localhost:44351/api/Directory/CreateFile
+C%3A%5CGodrejPOS%5Ctest.txt
+
+https://localhost:44351/api/Directory/CreateDirectory
+C%3A%5CGodrejPOS%5CKamal
+
+https://localhost:44351/api/Directory/RemoveFile
+C%3A%5CGodrejPOS%5Ctest.txt
+
+https://localhost:44351/api/Directory/RemoveDirectory
+C%3A%5CGodrejPOS%5CKamal
+
+
+
+----------------------------------------------
+
+Hosting
+https://www.hanselman.com/blog/PublishingAnASPNETCoreWebsiteToACheapLinuxVMHost.aspx
+
+either open port 5000
+or use reverse proxy on nginx
+
+server {
+    listen 80;
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+
+
+https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/
+
+https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps
+
+/etc/supervisor/conf.d/KockpitWebService.conf
+
+
+[program:KockpitWebService]
+command=dotnet /home/abhishek/KockpitService/KockpitWebService.dll
+directory=/home/abhishek/KockpitService/
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/KockpitWebService.err.log
+stdout_logfile=/var/log/KockpitWebService.out.log
+environment=ASPNETCORE_ENVIRONMENT=Production
+user=www-data
+stopsignal=INT
+
+
+cd /etc/supervisor/conf.d 
+sudo supervisorctl reread
+sudo supervisorctl update
+
+sudo systemctl status supervisor
+sudo systemctl stop supervisor
+
+sudo systemctl stop supervisor
+
+.:
+Stage1
+Stage2
+test.txt
+
+./Stage1:
+p1.py
+p2.py
+subdir
+
+./Stage1/subdir:
+file1.py
+
+./Stage2:
+p3.py
+
+
+---------------------
+https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-18-04
+-------------------------------
+
+root1@ubuntu:~/test$ ls -R
+.:
+
+
+root1@ubuntu:~/test$ ls -R
+.:
+dummy
+
+./dummy:

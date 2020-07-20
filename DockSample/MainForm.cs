@@ -2,6 +2,7 @@ using DockSample.Controls;
 using DockSample.lib;
 using SFTPEntities;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UIFunctionality.Common;
+using unvell.ReoGrid.Editor;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockSample
@@ -29,6 +31,8 @@ namespace DockSample
         StudioConfig studioConfig;
 
         Action loadComplete;
+
+        UCLoaderForm waitLoader = new UCLoaderForm();
 
         public MainForm(StudioConfig sc, Action action)
         {
@@ -51,7 +55,61 @@ namespace DockSample
             this.Activated += MainForm_Activated;
             loadComplete = action;
 
+            this.MdiChildActivate += MainForm_MdiChildActivate;
 
+        }
+
+        private void MainForm_MdiChildActivate(object sender, EventArgs e)
+        {
+            var child = this.ActiveMdiChild;
+
+            if (child != null)
+            {
+                ToolStripManager.RevertMerge(toolBar);
+                if (child is DummyDoc)
+                {
+                    DummyDoc dummyDoc = (DummyDoc)child;
+                    if (dummyDoc.ToolStrip != null)
+                    {
+                        ToolStripManager.Merge(dummyDoc.ToolStrip, toolBar);
+                        dummyDoc.ToolStrip.Hide();
+                    }
+                    
+                    dummyDoc.FormClosing += delegate (object sender2, FormClosingEventArgs fe)
+                    {
+                        var dummyDocWindow = (DummyDoc)sender2;
+                        if (dummyDocWindow.ToolStrip != null)
+                        {
+                            dummyDocWindow.ToolStrip.Show();
+                            ToolStripManager.RevertMerge(toolBar, dummyDocWindow.ToolStrip);
+                        }
+                    };
+                    //child.LostFocus += delegate (object sender2, EventArgs fe)
+                    //{
+                    //    var dummyDocWindow = (DummyDoc)sender2;
+                    //    ToolStripManager.RevertMerge(toolBar, dummyDocWindow.ToolStrip);
+                    //};
+                }
+                else if(child is ReoGridEditor)
+                {
+                    ReoGridEditor editor = (ReoGridEditor)child;
+                    ToolStripManager.Merge(editor.ToolStrip, toolBar);
+                    ToolStripManager.Merge(editor.FontToolStrip, toolBar);
+                    editor.ToolStrip.Hide();
+                    editor.FontToolStrip.Hide();
+
+                    editor.FormClosing += delegate (object sender2, FormClosingEventArgs fe)
+                    {
+                        var editorWindow = (ReoGridEditor)sender2;
+                        editorWindow.ToolStrip.Show();
+                        editorWindow.FontToolStrip.Show();
+                        ToolStripManager.RevertMerge(toolBar, editorWindow.ToolStrip);
+                        ToolStripManager.RevertMerge(toolBar, editorWindow.FontToolStrip);
+
+                    };
+                }
+            }
+            //throw new NotImplementedException();
         }
 
         private void MainForm_Activated(object sender, EventArgs e)
@@ -96,6 +154,17 @@ namespace DockSample
                     return content;
 
             return null;
+        }
+
+        public List<IDockContent> FindAllDocumentsInDirectory(string fullPath)
+        {
+            List<IDockContent> docs = new List<IDockContent>();
+            foreach (IDockContent content in dockPanel.Documents)
+            {
+                if (content.DockHandler.ToolTipText.Contains(fullPath))
+                    docs.Add(content);
+            }
+            return docs;
         }
 
         public bool CheckTerminalOrConfiguratorOpen(string tabText)
@@ -156,6 +225,7 @@ namespace DockSample
                 {
                     var outputWindow = new DummyOutputWindow();
                     outputWindow.ParentDoc = dummyDoc;
+                    outputWindow.mainFrm = this;
                     outputWindow.TabText = (flName + " " + "Output");
                     dummyDoc.outputWindow = outputWindow;
                     ShowOutputWindow(outputWindow);
@@ -168,11 +238,19 @@ namespace DockSample
                 }
                 else
                     dummyDoc.Show(dockPanel);
-
             });
             
         }
 
+        public void OpenExcelCsvDoc(string flName, string filePath, eFileType fileType)
+        {
+            OpenExcelCsvDoc(filePath, null);
+        }
+
+        public void OpenExcelCsvDoc(string content)
+        {
+            OpenExcelCsvDoc(null, content);
+        }
         private void CloseAllDocuments()
         {
             if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
@@ -187,6 +265,64 @@ namespace DockSample
                     // IMPORANT: dispose all panes.
                     document.DockHandler.DockPanel = null;
                     document.DockHandler.Close();
+                }
+            }
+        }
+
+        public bool HasDocuments()
+        {
+            return (dockPanel.DocumentsToArray().Length > 0);
+        }
+        public void CloseAllDocumentsExceptSolutionExplorer()
+        {
+            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+            {
+                foreach (Form form in MdiChildren)
+                    form.Close();
+            }
+            else
+            {
+                foreach (IDockContent document in dockPanel.DocumentsToArray())
+                {
+                    // IMPORANT: dispose all panes.
+                    document.DockHandler.DockPanel = null;
+                    document.DockHandler.Close();
+                }
+            }
+        }
+
+
+        public void CloseDocumentTab(string fullPath)
+        {
+            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+            {
+                foreach (Form form in MdiChildren)
+                {
+                    if (form is DummyDoc)
+                    {
+                        var tab = (DummyDoc)form;
+                        if(tab.FullPath.Equals(fullPath))
+                            form.Close();
+                    }
+                }
+            }
+            else
+            {
+                foreach (IDockContent document in dockPanel.DocumentsToArray())
+                {
+                    // IMPORANT: dispose all panes.
+                    if (document is DummyDoc)
+                    {
+                        var tab = (DummyDoc)document;
+                        if (tab.FullPath.Equals(fullPath))
+                        {
+                            this.PerformSafely(() =>
+                            {
+                                document.DockHandler.DockPanel = null;
+                                document.DockHandler.Close();
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -225,7 +361,7 @@ namespace DockSample
             }
         }
 
-        private void CloseAllContents()
+        public void CloseAllContents()
         {
             // we don't want to create another instance of tool window, set DockPanel to null
             m_solutionExplorer.DockPanel = null;
@@ -251,9 +387,9 @@ namespace DockSample
         private void SetSchema(object sender, System.EventArgs e)
         {
             // Persist settings when rebuilding UI
-            string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.temp.config");
+            //string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.temp.config");
 
-            dockPanel.SaveAsXml(configFile);
+            //dockPanel.SaveAsXml(configFile);
             CloseAllContents();
             /*
             if (sender == this.menuItemSchemaVS2005)
@@ -312,8 +448,23 @@ namespace DockSample
                 this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015DarkTheme1);
             }
             */
-            this.dockPanel.Theme = this.vS2015BlueTheme1;
-            this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme1);
+            if (sender == this.menuItemSchemaVS2015Blue)
+            {
+                this.dockPanel.Theme = this.vS2015BlueTheme1;
+                this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme1);
+            }
+            else if (sender == this.menuItemSchemaVS2015Light)
+            {
+                this.dockPanel.Theme = this.vS2015LightTheme1;
+                this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015LightTheme1);
+            }
+            else if (sender == this.menuItemSchemaVS2015Dark)
+            {
+                this.dockPanel.Theme = this.vS2015DarkTheme1;
+                this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015DarkTheme1);
+            }
+            //this.dockPanel.Theme = this.vS2015BlueTheme1;
+            //this.EnableVSRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme1);
             menuItemSchemaVS2005.Checked = (sender == menuItemSchemaVS2005);
             menuItemSchemaVS2003.Checked = (sender == menuItemSchemaVS2003);
             menuItemSchemaVS2012Light.Checked = (sender == menuItemSchemaVS2012Light);
@@ -330,8 +481,8 @@ namespace DockSample
                 statusBar.BackColor = dockPanel.Theme.ColorPalette.MainWindowStatusBarDefault.Background;
             }
 
-            if (File.Exists(configFile))
-                dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
+            //if (File.Exists(configFile))
+            //    dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
         }
 
         private void EnableVSRenderer(VisualStudioToolStripExtender.VsVersion version, ThemeBase theme)
@@ -367,10 +518,11 @@ namespace DockSample
             menuItemSystemMdi.Checked = (newStyle == DocumentStyle.SystemMdi);
             menuItemLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
             menuItemLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            toolBarButtonLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            toolBarButtonLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
+            //toolBarButtonLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
+            //toolBarButtonLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
             toolBarButtonLinuxTerminal.Enabled = (newStyle != DocumentStyle.SystemMdi);
             toolBarButtonConfigurator.Enabled = (newStyle != DocumentStyle.SystemMdi);
+            tsHealthCheck.Enabled = (newStyle != DocumentStyle.SystemMdi);
         }
 
         #endregion
@@ -384,7 +536,10 @@ namespace DockSample
 
         private void menuItemSolutionExplorer_Click(object sender, System.EventArgs e)
         {
-            m_solutionExplorer.Show(dockPanel, DockState.DockLeft);
+            if (m_solutionExplorer.DockState == DockState.DockLeftAutoHide)
+                m_solutionExplorer.Show(dockPanel, DockState.DockLeft);
+            else
+                m_solutionExplorer.Show(dockPanel, DockState.DockLeftAutoHide);
         }
 
         private void menuItemPropertyWindow_Click(object sender, System.EventArgs e)
@@ -397,14 +552,34 @@ namespace DockSample
             m_toolbox.Show(dockPanel);
         }
 
-        private void menuItemOutputWindow_Click(object sender, System.EventArgs e)
+        private async void menuItemOutputWindow_Click(object sender, System.EventArgs e)
         {
-            //m_outputWindow.Show(dockPanel);
+            var isShown = false;
+            foreach (IDockContent document in dockPanel.DocumentsToArray())
+            {
+                if (document is DummyDoc)
+                {
+                    isShown = (isShown || ((DummyDoc)document).outputWindow.DockState == DockState.DockBottom);
+                }
+            }
+            foreach (IDockContent document in dockPanel.DocumentsToArray())
+            {
+                if (document is DummyDoc)
+                {
+                    if (!isShown)
+                        ((DummyDoc)document).outputWindow.Show(dockPanel, DockState.DockBottom);
+                    else
+                        ((DummyDoc)document).outputWindow.Show(dockPanel, DockState.DockBottomAutoHide);
+                }
+            }
         }
 
-        private void menuItemTaskList_Click(object sender, System.EventArgs e)
+        private async void menuItemTaskList_Click(object sender, System.EventArgs e)
         {
-            m_taskList.Show(dockPanel);
+            if (m_taskList.DockState == DockState.DockTopAutoHide)
+                m_taskList.Show(dockPanel, DockState.DockTop);
+            else
+                m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
         }
 
         private void menuItemAbout_Click(object sender, System.EventArgs e)
@@ -508,13 +683,13 @@ namespace DockSample
 
         private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
-            if (m_bSaveLayout)
-                dockPanel.SaveAsXml(configFile);
-            else if (File.Exists(configFile))
-                File.Delete(configFile);
-
-            Application.Exit();
+            //string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
+            //if (m_bSaveLayout)
+            //    dockPanel.SaveAsXml(configFile);
+            //else if (File.Exists(configFile))
+            //    File.Delete(configFile);
+            Environment.Exit(0);
+            //Application.Exit();
         }
 
         private void menuItemToolBar_Click(object sender, System.EventArgs e)
@@ -535,22 +710,28 @@ namespace DockSample
                 menuItemOpen_Click(null, null);
             else if (e.ClickedItem == toolBarButtonSolutionExplorer)
                 menuItemSolutionExplorer_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonPropertyWindow)
-                menuItemPropertyWindow_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonToolbox)
-                menuItemToolbox_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonPropertyWindow)
+            //    menuItemPropertyWindow_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonToolbox)
+            //    menuItemToolbox_Click(null, null);
             else if (e.ClickedItem == toolBarButtonOutputWindow)
                 menuItemOutputWindow_Click(null, null);
             else if (e.ClickedItem == toolBarButtonTaskList)
                 menuItemTaskList_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonLayoutByCode)
-                menuItemLayoutByCode_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonLayoutByXml)
-                menuItemLayoutByXml_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonLayoutByCode)
+            //    menuItemLayoutByCode_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonLayoutByXml)
+            //    menuItemLayoutByXml_Click(null, null);
             else if (e.ClickedItem == toolBarButtonLinuxTerminal)
                 menuItemLayoutLinuxTerminal_Click(null, null);
             else if (e.ClickedItem == toolBarButtonConfigurator)
                 menuItemLayoutConfirator_Click(null, null);
+            else if (e.ClickedItem == iconToolStripButton2)
+                menuItemLayoutSpreadSheetViewer_Click(null, null);
+            else if (e.ClickedItem == tsSchedular)
+                tsSchedular_Click(null, null);
+            else if (e.ClickedItem == tsHealthCheck)
+                tshealthCheck_Click(null, null);
         }
 
         private void menuItemNewWindow_Click(object sender, System.EventArgs e)
@@ -640,29 +821,59 @@ namespace DockSample
             //m_outputWindow = new DummyOutputWindow();          
             m_taskList = new DummyTaskList();
 
-            var dbConns = studioConfig.databaseConnections.Select(c => c.ConnName).ToList();
-            dbConns.Insert(0, "-Select-");
-            toolBarcbDatabase.ComboBox.DataSource = dbConns;
+            if (studioConfig.databaseConnections != null)
+            {
+                var dbConns = studioConfig.databaseConnections.Where(c => c.DbType.Equals("Sql Server") || c.DbType.Equals("Postgres")).Select(c => c.ConnName).ToList();
+                dbConns.Insert(0, "-Select-");
+                toolBarcbDatabase.ComboBox.DataSource = dbConns;
+            }
+            
         }
 
-        private async void ToolBarcbDatabase_SelectedIndexChanged(object sender, System.EventArgs e)
+        private async void toolBarcbDatabase_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            var selectedVal = toolBarcbDatabase.ComboBox.SelectedValue.ToString();
-            if (toolBarcbDatabase.SelectedIndex > 0)
+            new Task(() =>
             {
-                var loader = new UCLoaderForm();
-                new Task(() => {
-                    dockPanel.PerformSafely(() =>
+                UCLoaderForm loader = new UCLoaderForm();
+                int index=-1;
+                this.PerformSafely(() =>
+                {
+                    index = toolBarcbDatabase.SelectedIndex;
+                });
+                if (index > 0)
+                {
+                    new Task(() =>
                     {
-                        DbConnectorDoc dbDoc = new DbConnectorDoc(studioConfig, selectedVal, 
-                            ()=> {
-                                loader.Hide();
-                            });
-                        dbDoc.Show(dockPanel);
+                        this.PerformSafely(() =>
+                        {
+                            loader.ShowDialog(this);
+                        });
+                    }).Start();
+                    string selectedVal = string.Empty;
+                    this.PerformSafely(() =>
+                    {
+                        selectedVal = toolBarcbDatabase.ComboBox.SelectedValue.ToString();
+                        index = toolBarcbDatabase.SelectedIndex;
                     });
-                }).Start();
-                //loader.ShowDialog(this);
-            }
+                    
+                    new Task(() =>
+                    {
+                        dockPanel.PerformSafely(() =>
+                        {
+                            DbConnectorDoc dbDoc = new DbConnectorDoc(studioConfig, selectedVal,
+                                () =>
+                                {
+                                    this.PerformSafely(() =>
+                                    {
+                                        loader.Hide();
+                                    });
+                                });
+                            dbDoc.Show(dockPanel);
+                        });
+                    }).Start();
+
+                }
+            }).Start();
         }
 
         private void menuItemLayoutLinuxTerminal_Click(object sender, System.EventArgs e)
@@ -717,7 +928,48 @@ namespace DockSample
             }).Start();
         }
 
-        private void menuItemLayoutByXml_Click(object sender, System.EventArgs e)
+        void OpenExcelCsvDoc(string filePath, string content = "")
+        {
+            new Task(() =>
+            {
+                this.PerformSafely(() =>
+                {
+                    waitLoader.ShowDialog(this);
+                });
+            }).Start();
+            new Task(() =>
+            {
+                dockPanel.PerformSafely(() =>
+                {
+                    if (string.IsNullOrEmpty(content))
+                    {
+                        ReoGridEditor editor = new ReoGridEditor(filePath, string.Empty,
+                        () =>
+                        {
+                            waitLoader.Hide();
+                        });
+                        editor.Show(dockPanel);
+                    }
+                    else
+                    {
+                        ReoGridEditor editor = new ReoGridEditor(null, content,
+                           () =>
+                           {
+                               waitLoader.Hide();
+                           });
+                        editor.Show(dockPanel);
+                    }
+                    
+                });
+            }).Start();
+        }
+
+        private void menuItemLayoutSpreadSheetViewer_Click(object sender, System.EventArgs e)
+        {
+            OpenExcelCsvDoc(null);
+        }
+
+        public void ReloadControls()
         {
             dockPanel.SuspendLayout(true);
 
@@ -732,6 +984,10 @@ namespace DockSample
             xmlStream.Close();
 
             dockPanel.ResumeLayout(true, true);
+        }
+        private void menuItemLayoutByXml_Click(object sender, System.EventArgs e)
+        {
+            ReloadControls();
         }
 
         private void menuItemCloseAllButThisOne_Click(object sender, System.EventArgs e)
@@ -790,5 +1046,64 @@ namespace DockSample
         {
             ResizeSplash();
         }
+
+        private async void tsSchedular_Click(object sender, EventArgs e)
+        {
+            new Task(() =>
+            {
+                var tabText = "Scheduler";
+                if (CheckTerminalOrConfiguratorOpen(tabText))
+                {
+                    MessageBox.Show("Scheduler already opened!");
+                    return;
+                }
+                dockPanel.PerformSafely(() =>
+                {
+                    if (studioConfig.otherServices.AirflowService.Length > 0)
+                    {
+                        BrowserDoc dummyDoc = new BrowserDoc(studioConfig.otherServices.AirflowService, tabText);
+                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        {
+                            dummyDoc.MdiParent = this;
+                            dummyDoc.Show();
+                        }
+                        else
+                            dummyDoc.Show(dockPanel);
+                    }
+                    
+
+                });
+            }).Start();
+        }
+
+        private async void tshealthCheck_Click(object sender, EventArgs e)
+        {
+            new Task(() =>
+            {
+                var tabText = "Health Check";
+                if (CheckTerminalOrConfiguratorOpen(tabText))
+                {
+                    MessageBox.Show("Health Check already opened!");
+                    return;
+                }
+                dockPanel.PerformSafely(() =>
+                {
+                    if (studioConfig.otherServices.HealthCheckService.Length > 0)
+                    {
+                        BrowserDoc dummyDoc = new BrowserDoc(studioConfig.otherServices.HealthCheckService, tabText);
+                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        {
+                            dummyDoc.MdiParent = this;
+                            dummyDoc.Show();
+                        }
+                        else
+                            dummyDoc.Show(dockPanel);
+                    }
+
+
+                });
+            }).Start();
+        }
+
     }
 }

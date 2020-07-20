@@ -51,6 +51,11 @@ namespace DockSample
             this.menuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemLayoutByCode = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemLayoutByXml = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.subMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disabledItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemTools = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemLockLayout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemShowDocumentIcon = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,14 +63,6 @@ namespace DockSample
             this.menuItemSchemaVS2015Light = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSchemaVS2015Blue = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSchemaVS2015Dark = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2013Light = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2013Blue = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2013Dark = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2012Light = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2012Blue = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2012Dark = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2005 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSchemaVS2003 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem6 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemDockingMdi = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemDockingSdi = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +74,14 @@ namespace DockSample
             this.menuItemNewWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2013Light = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2013Blue = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2013Dark = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2012Light = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2012Blue = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2012Dark = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2005 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSchemaVS2003 = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.toolBar = new System.Windows.Forms.ToolStrip();
@@ -84,33 +89,19 @@ namespace DockSample
             this.toolBarButtonOpen = new System.Windows.Forms.ToolStripButton();
             this.toolBarButtonSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolBarButtonSolutionExplorer = new System.Windows.Forms.ToolStripButton();
-            this.toolBarButtonPropertyWindow = new System.Windows.Forms.ToolStripButton();
-            this.toolBarButtonToolbox = new System.Windows.Forms.ToolStripButton();
             this.toolBarButtonOutputWindow = new System.Windows.Forms.ToolStripButton();
             this.toolBarButtonTaskList = new System.Windows.Forms.ToolStripButton();
             this.toolBarButtonSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolBarButtonLayoutByCode = new System.Windows.Forms.ToolStripButton();
-            this.toolBarButtonLayoutByXml = new System.Windows.Forms.ToolStripButton();
-            this.toolBarButtonLinuxTerminal = new System.Windows.Forms.ToolStripButton();
-            this.toolBarButtonConfigurator = new System.Windows.Forms.ToolStripButton();
+            this.toolBarButtonLinuxTerminal = new FontAwesome.Sharp.IconToolStripButton();
+            this.toolBarButtonConfigurator = new FontAwesome.Sharp.IconToolStripButton();
+            this.iconToolStripButton2 = new FontAwesome.Sharp.IconToolStripButton();
+            this.tsSchedular = new FontAwesome.Sharp.IconToolStripButton();
+            this.tsHealthCheck = new FontAwesome.Sharp.IconToolStripButton();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolBarcbDatabase = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.subMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.itemAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.itemBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.disabledItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
             this.vS2015BlueTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
-            //this.vS2005Theme1 = new WeifenLuo.WinFormsUI.Docking.VS2005Theme();
-            //this.vS2003Theme1 = new WeifenLuo.WinFormsUI.Docking.VS2003Theme();
-            //this.vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
-            //this.vS2013LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2013LightTheme();
-            //this.vS2013BlueTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2013BlueTheme();
-            //this.vS2013DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2013DarkTheme();
-            //this.vS2012LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2012LightTheme();
-            //this.vS2012BlueTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2012BlueTheme();
-            //this.vS2012DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2012DarkTheme();
             this.vsToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.mainMenu.SuspendLayout();
             this.toolBar.SuspendLayout();
@@ -127,7 +118,7 @@ namespace DockSample
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.MdiWindowListItem = this.menuItemWindow;
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(579, 24);
+            this.mainMenu.Size = new System.Drawing.Size(879, 24);
             this.mainMenu.TabIndex = 7;
             // 
             // menuItemFile
@@ -300,6 +291,39 @@ namespace DockSample
             this.menuItemLayoutByXml.Text = "Layout By &XML";
             this.menuItemLayoutByXml.Click += new System.EventHandler(this.menuItemLayoutByXml_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(182, 6);
+            // 
+            // subMenuToolStripMenuItem
+            // 
+            this.subMenuToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemAToolStripMenuItem,
+            this.itemBToolStripMenuItem});
+            this.subMenuToolStripMenuItem.Name = "subMenuToolStripMenuItem";
+            this.subMenuToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.subMenuToolStripMenuItem.Text = "Sub menu";
+            // 
+            // itemAToolStripMenuItem
+            // 
+            this.itemAToolStripMenuItem.Name = "itemAToolStripMenuItem";
+            this.itemAToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.itemAToolStripMenuItem.Text = "Item A";
+            // 
+            // itemBToolStripMenuItem
+            // 
+            this.itemBToolStripMenuItem.Name = "itemBToolStripMenuItem";
+            this.itemBToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.itemBToolStripMenuItem.Text = "Item B";
+            // 
+            // disabledItemToolStripMenuItem
+            // 
+            this.disabledItemToolStripMenuItem.Enabled = false;
+            this.disabledItemToolStripMenuItem.Name = "disabledItemToolStripMenuItem";
+            this.disabledItemToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.disabledItemToolStripMenuItem.Text = "Disabled Item";
+            // 
             // menuItemTools
             // 
             this.menuItemTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -309,14 +333,6 @@ namespace DockSample
             this.menuItemSchemaVS2015Light,
             this.menuItemSchemaVS2015Blue,
             this.menuItemSchemaVS2015Dark,
-            this.menuItemSchemaVS2013Light,
-            this.menuItemSchemaVS2013Blue,
-            this.menuItemSchemaVS2013Dark,
-            this.menuItemSchemaVS2012Light,
-            this.menuItemSchemaVS2012Blue,
-            this.menuItemSchemaVS2012Dark,
-            this.menuItemSchemaVS2005,
-            this.menuItemSchemaVS2003,
             this.menuItem6,
             this.menuItemDockingMdi,
             this.menuItemDockingSdi,
@@ -353,80 +369,22 @@ namespace DockSample
             // 
             this.menuItemSchemaVS2015Light.Name = "menuItemSchemaVS2015Light";
             this.menuItemSchemaVS2015Light.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2015Light.Text = "Schema: VS2015 Light";
+            this.menuItemSchemaVS2015Light.Text = "Light Theme";
             this.menuItemSchemaVS2015Light.Click += new System.EventHandler(this.SetSchema);
             // 
             // menuItemSchemaVS2015Blue
             // 
             this.menuItemSchemaVS2015Blue.Name = "menuItemSchemaVS2015Blue";
             this.menuItemSchemaVS2015Blue.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2015Blue.Text = "Schema: VS2015 Blue";
+            this.menuItemSchemaVS2015Blue.Text = "Blue Theme";
             this.menuItemSchemaVS2015Blue.Click += new System.EventHandler(this.SetSchema);
             // 
             // menuItemSchemaVS2015Dark
             // 
             this.menuItemSchemaVS2015Dark.Name = "menuItemSchemaVS2015Dark";
             this.menuItemSchemaVS2015Dark.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2015Dark.Text = "Schema: VS2015 Dark";
+            this.menuItemSchemaVS2015Dark.Text = "Dark Theme";
             this.menuItemSchemaVS2015Dark.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2013Light
-            // 
-            this.menuItemSchemaVS2013Light.Name = "menuItemSchemaVS2013Light";
-            this.menuItemSchemaVS2013Light.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2013Light.Text = "Schema: VS2013 Light";
-            this.menuItemSchemaVS2013Light.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2013Blue
-            // 
-            this.menuItemSchemaVS2013Blue.Name = "menuItemSchemaVS2013Blue";
-            this.menuItemSchemaVS2013Blue.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2013Blue.Text = "Schema: VS2013 Blue";
-            this.menuItemSchemaVS2013Blue.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2013Dark
-            // 
-            this.menuItemSchemaVS2013Dark.Name = "menuItemSchemaVS2013Dark";
-            this.menuItemSchemaVS2013Dark.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2013Dark.Text = "Schema: VS2013 Dark";
-            this.menuItemSchemaVS2013Dark.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2012Light
-            // 
-            this.menuItemSchemaVS2012Light.Name = "menuItemSchemaVS2012Light";
-            this.menuItemSchemaVS2012Light.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2012Light.Text = "Schema: VS2012 Light";
-            this.menuItemSchemaVS2012Light.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2012Blue
-            // 
-            this.menuItemSchemaVS2012Blue.Name = "menuItemSchemaVS2012Blue";
-            this.menuItemSchemaVS2012Blue.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2012Blue.Text = "Schema: VS2012 Blue";
-            this.menuItemSchemaVS2012Blue.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2012Dark
-            // 
-            this.menuItemSchemaVS2012Dark.Name = "menuItemSchemaVS2012Dark";
-            this.menuItemSchemaVS2012Dark.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2012Dark.Text = "Schema: VS2012 Dark";
-            this.menuItemSchemaVS2012Dark.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2005
-            // 
-            this.menuItemSchemaVS2005.Checked = true;
-            this.menuItemSchemaVS2005.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.menuItemSchemaVS2005.Name = "menuItemSchemaVS2005";
-            this.menuItemSchemaVS2005.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2005.Text = "Schema: VS200&5";
-            this.menuItemSchemaVS2005.Click += new System.EventHandler(this.SetSchema);
-            // 
-            // menuItemSchemaVS2003
-            // 
-            this.menuItemSchemaVS2003.Name = "menuItemSchemaVS2003";
-            this.menuItemSchemaVS2003.Size = new System.Drawing.Size(255, 22);
-            this.menuItemSchemaVS2003.Text = "Schema: VS200&3";
-            this.menuItemSchemaVS2003.Click += new System.EventHandler(this.SetSchema);
             // 
             // menuItem6
             // 
@@ -507,12 +465,70 @@ namespace DockSample
             this.menuItemAbout.Text = "&About DockSample...";
             this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
+            // menuItemSchemaVS2013Light
+            // 
+            this.menuItemSchemaVS2013Light.Name = "menuItemSchemaVS2013Light";
+            this.menuItemSchemaVS2013Light.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2013Light.Text = "Schema: VS2013 Light";
+            this.menuItemSchemaVS2013Light.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2013Blue
+            // 
+            this.menuItemSchemaVS2013Blue.Name = "menuItemSchemaVS2013Blue";
+            this.menuItemSchemaVS2013Blue.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2013Blue.Text = "Schema: VS2013 Blue";
+            this.menuItemSchemaVS2013Blue.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2013Dark
+            // 
+            this.menuItemSchemaVS2013Dark.Name = "menuItemSchemaVS2013Dark";
+            this.menuItemSchemaVS2013Dark.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2013Dark.Text = "Schema: VS2013 Dark";
+            this.menuItemSchemaVS2013Dark.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2012Light
+            // 
+            this.menuItemSchemaVS2012Light.Name = "menuItemSchemaVS2012Light";
+            this.menuItemSchemaVS2012Light.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2012Light.Text = "Schema: VS2012 Light";
+            this.menuItemSchemaVS2012Light.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2012Blue
+            // 
+            this.menuItemSchemaVS2012Blue.Name = "menuItemSchemaVS2012Blue";
+            this.menuItemSchemaVS2012Blue.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2012Blue.Text = "Schema: VS2012 Blue";
+            this.menuItemSchemaVS2012Blue.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2012Dark
+            // 
+            this.menuItemSchemaVS2012Dark.Name = "menuItemSchemaVS2012Dark";
+            this.menuItemSchemaVS2012Dark.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2012Dark.Text = "Schema: VS2012 Dark";
+            this.menuItemSchemaVS2012Dark.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2005
+            // 
+            this.menuItemSchemaVS2005.Checked = true;
+            this.menuItemSchemaVS2005.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemSchemaVS2005.Name = "menuItemSchemaVS2005";
+            this.menuItemSchemaVS2005.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2005.Text = "Schema: VS200&5";
+            this.menuItemSchemaVS2005.Click += new System.EventHandler(this.SetSchema);
+            // 
+            // menuItemSchemaVS2003
+            // 
+            this.menuItemSchemaVS2003.Name = "menuItemSchemaVS2003";
+            this.menuItemSchemaVS2003.Size = new System.Drawing.Size(255, 22);
+            this.menuItemSchemaVS2003.Text = "Schema: VS200&3";
+            this.menuItemSchemaVS2003.Click += new System.EventHandler(this.SetSchema);
+            // 
             // statusBar
             // 
             this.statusBar.BackColor = System.Drawing.Color.Black;
             this.statusBar.Location = new System.Drawing.Point(0, 387);
             this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(579, 22);
+            this.statusBar.Size = new System.Drawing.Size(879, 22);
             this.statusBar.TabIndex = 4;
             // 
             // imageList
@@ -537,19 +553,19 @@ namespace DockSample
             this.toolBarButtonOpen,
             this.toolBarButtonSeparator1,
             this.toolBarButtonSolutionExplorer,
-            this.toolBarButtonPropertyWindow,
-            this.toolBarButtonToolbox,
             this.toolBarButtonOutputWindow,
             this.toolBarButtonTaskList,
             this.toolBarButtonSeparator2,
-            this.toolBarButtonLayoutByCode,
-            this.toolBarButtonLayoutByXml,
             this.toolBarButtonLinuxTerminal,
             this.toolBarButtonConfigurator,
+            this.iconToolStripButton2,
+            this.tsSchedular,
+            this.tsHealthCheck,
+            this.toolStripLabel1,
             this.toolBarcbDatabase});
             this.toolBar.Location = new System.Drawing.Point(0, 24);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(579, 25);
+            this.toolBar.Size = new System.Drawing.Size(879, 25);
             this.toolBar.TabIndex = 6;
             this.toolBar.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolBar_ButtonClick);
             // 
@@ -579,20 +595,6 @@ namespace DockSample
             this.toolBarButtonSolutionExplorer.Size = new System.Drawing.Size(23, 22);
             this.toolBarButtonSolutionExplorer.ToolTipText = "Solution Explorer";
             // 
-            // toolBarButtonPropertyWindow
-            // 
-            this.toolBarButtonPropertyWindow.ImageIndex = 3;
-            this.toolBarButtonPropertyWindow.Name = "toolBarButtonPropertyWindow";
-            this.toolBarButtonPropertyWindow.Size = new System.Drawing.Size(23, 22);
-            this.toolBarButtonPropertyWindow.ToolTipText = "Property Window";
-            // 
-            // toolBarButtonToolbox
-            // 
-            this.toolBarButtonToolbox.ImageIndex = 4;
-            this.toolBarButtonToolbox.Name = "toolBarButtonToolbox";
-            this.toolBarButtonToolbox.Size = new System.Drawing.Size(23, 22);
-            this.toolBarButtonToolbox.ToolTipText = "Tool Box";
-            // 
             // toolBarButtonOutputWindow
             // 
             this.toolBarButtonOutputWindow.ImageIndex = 5;
@@ -612,78 +614,79 @@ namespace DockSample
             this.toolBarButtonSeparator2.Name = "toolBarButtonSeparator2";
             this.toolBarButtonSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolBarButtonLayoutByCode
-            // 
-            this.toolBarButtonLayoutByCode.ImageIndex = 7;
-            this.toolBarButtonLayoutByCode.Name = "toolBarButtonLayoutByCode";
-            this.toolBarButtonLayoutByCode.Size = new System.Drawing.Size(23, 22);
-            this.toolBarButtonLayoutByCode.ToolTipText = "Show Layout By Code";
-            // 
-            // toolBarButtonLayoutByXml
-            // 
-            this.toolBarButtonLayoutByXml.ImageIndex = 8;
-            this.toolBarButtonLayoutByXml.Name = "toolBarButtonLayoutByXml";
-            this.toolBarButtonLayoutByXml.Size = new System.Drawing.Size(23, 22);
-            this.toolBarButtonLayoutByXml.ToolTipText = "Show layout by predefined XML file";
-
-            // 
             // toolBarButtonLinuxTerminal
             // 
+            this.toolBarButtonLinuxTerminal.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.toolBarButtonLinuxTerminal.IconChar = FontAwesome.Sharp.IconChar.Terminal;
+            this.toolBarButtonLinuxTerminal.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(97)))), ((int)(((byte)(179)))));
+            this.toolBarButtonLinuxTerminal.IconSize = 16;
+            this.toolBarButtonLinuxTerminal.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.toolBarButtonLinuxTerminal.Name = "toolBarButtonLinuxTerminal";
+            this.toolBarButtonLinuxTerminal.Rotation = 0D;
+            this.toolBarButtonLinuxTerminal.Size = new System.Drawing.Size(73, 22);
             this.toolBarButtonLinuxTerminal.Text = "Terminal";
-            this.toolBarButtonLinuxTerminal.Size = new System.Drawing.Size(100, 22);
-            this.toolBarButtonLinuxTerminal.ToolTipText = "Show Terminal";
-
+            this.toolBarButtonLinuxTerminal.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             // 
             // toolBarButtonConfigurator
             // 
+            this.toolBarButtonConfigurator.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.toolBarButtonConfigurator.IconChar = FontAwesome.Sharp.IconChar.Cog;
+            this.toolBarButtonConfigurator.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(97)))), ((int)(((byte)(179)))));
+            this.toolBarButtonConfigurator.IconSize = 16;
+            this.toolBarButtonConfigurator.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.toolBarButtonConfigurator.Name = "toolBarButtonConfigurator";
+            this.toolBarButtonConfigurator.Rotation = 0D;
+            this.toolBarButtonConfigurator.Size = new System.Drawing.Size(95, 22);
             this.toolBarButtonConfigurator.Text = "Configurator";
-            this.toolBarButtonConfigurator.Size = new System.Drawing.Size(100, 22);
-            this.toolBarButtonConfigurator.ToolTipText = "Show Terminal";
-
+            // 
+            // iconToolStripButton2
+            // 
+            this.iconToolStripButton2.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.iconToolStripButton2.IconChar = FontAwesome.Sharp.IconChar.Table;
+            this.iconToolStripButton2.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(97)))), ((int)(((byte)(179)))));
+            this.iconToolStripButton2.IconSize = 16;
+            this.iconToolStripButton2.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.iconToolStripButton2.Name = "iconToolStripButton2";
+            this.iconToolStripButton2.Rotation = 0D;
+            this.iconToolStripButton2.Size = new System.Drawing.Size(91, 22);
+            this.iconToolStripButton2.Text = "Spreadsheet";
+            // 
+            // tsSchedular
+            // 
+            this.tsSchedular.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.tsSchedular.IconChar = FontAwesome.Sharp.IconChar.Clock;
+            this.tsSchedular.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(97)))), ((int)(((byte)(179)))));
+            this.tsSchedular.IconSize = 16;
+            this.tsSchedular.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.tsSchedular.Name = "tsSchedular";
+            this.tsSchedular.Rotation = 0D;
+            this.tsSchedular.Size = new System.Drawing.Size(79, 22);
+            this.tsSchedular.Text = "Scheduler";
+            // 
+            // tsHealthCheck
+            // 
+            this.tsHealthCheck.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.tsHealthCheck.IconChar = FontAwesome.Sharp.IconChar.Medkit;
+            this.tsHealthCheck.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(97)))), ((int)(((byte)(179)))));
+            this.tsHealthCheck.IconSize = 16;
+            this.tsHealthCheck.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.tsHealthCheck.Name = "tsHealthCheck";
+            this.tsHealthCheck.Rotation = 0D;
+            this.tsHealthCheck.Size = new System.Drawing.Size(95, 22);
+            this.tsHealthCheck.Text = "HealthCheck";
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(60, 22);
+            this.toolStripLabel1.Text = "Databases";
             // 
             // toolBarcbDatabase
             // 
-            this.toolBarcbDatabase.Name = "toolBarcbDatabase";
-            this.toolBarcbDatabase.Text = "Databases";
-            this.toolBarcbDatabase.Size = new System.Drawing.Size(100, 22);
-            this.toolBarcbDatabase.ToolTipText = "Show Terminal";
             this.toolBarcbDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolBarcbDatabase.SelectedIndexChanged += ToolBarcbDatabase_SelectedIndexChanged;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(182, 6);
-            // 
-            // subMenuToolStripMenuItem
-            // 
-            this.subMenuToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemAToolStripMenuItem,
-            this.itemBToolStripMenuItem});
-            this.subMenuToolStripMenuItem.Name = "subMenuToolStripMenuItem";
-            this.subMenuToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.subMenuToolStripMenuItem.Text = "Sub menu";
-            // 
-            // itemAToolStripMenuItem
-            // 
-            this.itemAToolStripMenuItem.Name = "itemAToolStripMenuItem";
-            this.itemAToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.itemAToolStripMenuItem.Text = "Item A";
-            // 
-            // itemBToolStripMenuItem
-            // 
-            this.itemBToolStripMenuItem.Name = "itemBToolStripMenuItem";
-            this.itemBToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.itemBToolStripMenuItem.Text = "Item B";
-            // 
-            // disabledItemToolStripMenuItem
-            // 
-            this.disabledItemToolStripMenuItem.Enabled = false;
-            this.disabledItemToolStripMenuItem.Name = "disabledItemToolStripMenuItem";
-            this.disabledItemToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.disabledItemToolStripMenuItem.Text = "Disabled Item";
+            this.toolBarcbDatabase.Name = "toolBarcbDatabase";
+            this.toolBarcbDatabase.Size = new System.Drawing.Size(100, 25);
+            this.toolBarcbDatabase.SelectedIndexChanged += new System.EventHandler(this.toolBarcbDatabase_SelectedIndexChanged);
             // 
             // dockPanel
             // 
@@ -696,12 +699,10 @@ namespace DockSample
             this.dockPanel.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, ((byte)(0)));
             this.dockPanel.Location = new System.Drawing.Point(0, 49);
             this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Padding = new System.Windows.Forms.Padding(6);
             this.dockPanel.RightToLeftLayout = true;
             this.dockPanel.ShowAutoHideContentOnHover = false;
-            this.dockPanel.Size = new System.Drawing.Size(579, 338);
+            this.dockPanel.Size = new System.Drawing.Size(879, 338);
             this.dockPanel.TabIndex = 0;
-            //this.dockPanel.Theme = this.vS2013BlueTheme1;
             // 
             // vsToolStripExtender1
             // 
@@ -709,7 +710,7 @@ namespace DockSample
             // 
             // MainForm
             // 
-            this.ClientSize = new System.Drawing.Size(579, 409);
+            this.ClientSize = new System.Drawing.Size(879, 409);
             this.Controls.Add(this.dockPanel);
             this.Controls.Add(this.toolBar);
             this.Controls.Add(this.mainMenu);
@@ -741,15 +742,9 @@ namespace DockSample
         private System.Windows.Forms.ToolStripButton toolBarButtonOpen;
         private System.Windows.Forms.ToolStripSeparator toolBarButtonSeparator1;
         private System.Windows.Forms.ToolStripButton toolBarButtonSolutionExplorer;
-        private System.Windows.Forms.ToolStripButton toolBarButtonPropertyWindow;
-        private System.Windows.Forms.ToolStripButton toolBarButtonToolbox;
         private System.Windows.Forms.ToolStripButton toolBarButtonOutputWindow;
         private System.Windows.Forms.ToolStripButton toolBarButtonTaskList;
         private System.Windows.Forms.ToolStripSeparator toolBarButtonSeparator2;
-        private System.Windows.Forms.ToolStripButton toolBarButtonLayoutByCode;
-        private System.Windows.Forms.ToolStripButton toolBarButtonLayoutByXml;
-        private System.Windows.Forms.ToolStripButton toolBarButtonLinuxTerminal;
-        private System.Windows.Forms.ToolStripButton toolBarButtonConfigurator;
         private System.Windows.Forms.ToolStripComboBox toolBarcbDatabase;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem menuItemFile;
@@ -817,5 +812,11 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem itemAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem itemBToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disabledItemToolStripMenuItem;
+        private FontAwesome.Sharp.IconToolStripButton toolBarButtonLinuxTerminal;
+        private FontAwesome.Sharp.IconToolStripButton toolBarButtonConfigurator;
+        private FontAwesome.Sharp.IconToolStripButton tsHealthCheck;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private FontAwesome.Sharp.IconToolStripButton iconToolStripButton2;
+        private FontAwesome.Sharp.IconToolStripButton tsSchedular;
     }
 }

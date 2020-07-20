@@ -24,6 +24,7 @@ namespace UIFunctionality.Common
     }
     public class ProjectInfo
     {
+        public string ProjectName { get; set; }
         public string ProjectPath { get; set; }
         public string KockpitServiceUrl { get; set; }
         public SFTPEntities.DirectoryOrFile DirectoryInfo { get; set; }
@@ -34,6 +35,14 @@ namespace UIFunctionality.Common
     {
         public string Url { get; set; }
         public TerminalInfo()
+        { }
+    }
+
+    public class OtherServices
+    {
+        public string AirflowService { get; set; }
+        public string HealthCheckService { get; set; }
+        public OtherServices()
         { }
     }
 
@@ -55,6 +64,10 @@ namespace UIFunctionality.Common
         private string servicePath = "api/Directory";
         public SSHClientInfo sSHClientInfo { get; set; }
         public ProjectInfo projectInfo { get; set; }
+
+        public OtherServices otherServices = new OtherServices();
+
+        public List<ProjectInfo> projectInfoList { get; set; }
         public TerminalInfo terminalInfo { get; set; }
 
         public List<DatabaseConnectionInfo> databaseConnections { get; set; }
@@ -68,26 +81,26 @@ namespace UIFunctionality.Common
             //Validate SSh client
             SSHManager.TestConnection(sSHClientInfo.IPAddress, sSHClientInfo.UserName, sSHClientInfo.Password);
 
+            foreach(var proInfo in this.projectInfoList)
+            {
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri(proInfo.KockpitServiceUrl);
+                // Add an Accept header for JSON format.  
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var path = string.Join("/", servicePath, "GetDirectoryList") + "?dirInfo=" + HttpUtility.UrlEncode(proInfo.ProjectPath);
+                HttpResponseMessage response = client.GetAsync(path).Result;  // Blocking call!  
+                if (response.IsSuccessStatusCode)
+                {
+                    var output = response.Content.ReadAsStringAsync().Result;
+                    proInfo.DirectoryInfo = JsonConvert.DeserializeObject<SFTPEntities.DirectoryOrFile>(output);
+                }
+                else
+                {
+                    throw new Exception("Service url not working.");
+                }
+            }
             //Check Service
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(this.projectInfo.KockpitServiceUrl);
-            // Add an Accept header for JSON format.  
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var path = string.Join("/", servicePath, "GetDirectoryList") + "?dirInfo=" + HttpUtility.UrlEncode(this.projectInfo.ProjectPath);
-            HttpResponseMessage response = client.GetAsync(path).Result;  // Blocking call!  
-            if (response.IsSuccessStatusCode)
-            {
-                var output =  response.Content.ReadAsStringAsync().Result;
-                //output = HttpUtility.JavaScript(output);
-                //JObject o = JObject.Parse(output);
-                //var ot = o.ToString();
-                //this.projectInfo.DirectoryInfo = JsonConvert.DeserializeObject<SFTPEntities.DirectoryOrFile>(ot);
-                this.projectInfo.DirectoryInfo = JsonConvert.DeserializeObject<SFTPEntities.DirectoryOrFile>(output);
-            }
-            else
-            {
-                throw new Exception("Service url not working.");
-            }
+            
 
             //Check Terminal working
 
@@ -102,6 +115,36 @@ namespace UIFunctionality.Common
                 throw new Exception("Terminal Url not working.");
             }
 
+
+            var filePath = Path.Combine(AppPath, configFileName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(this));
+
+            return GetStudioConfigFromFile();
+        }
+
+        public StudioConfig OverrdieProjectInfo(string proName)
+        {
+            var proInfo = this.projectInfoList.FirstOrDefault(c => c.ProjectName.Equals(proName));
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(proInfo.KockpitServiceUrl);
+            // Add an Accept header for JSON format.  
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var path = string.Join("/", servicePath, "GetDirectoryList") + "?dirInfo=" + HttpUtility.UrlEncode(proInfo.ProjectPath);
+            HttpResponseMessage response = client.GetAsync(path).Result;  // Blocking call!  
+            if (response.IsSuccessStatusCode)
+            {
+                var output = response.Content.ReadAsStringAsync().Result;
+                proInfo.DirectoryInfo = JsonConvert.DeserializeObject<SFTPEntities.DirectoryOrFile>(output);
+            }
+            else
+            {
+                throw new Exception("Service url not working.");
+            }
 
             var filePath = Path.Combine(AppPath, configFileName);
             if (File.Exists(filePath))

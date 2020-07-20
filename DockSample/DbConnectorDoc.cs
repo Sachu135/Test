@@ -1,4 +1,5 @@
-﻿using DockSample.lib;
+﻿using DockSample.Controls;
+using DockSample.lib;
 using ScintillaNET;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockSample
 {
-    public partial class DbConnectorDoc : DockContent//Form
+    public partial class DbConnectorDoc : DockContent// DockContent// //Form //
 	{
 		#region Private Fields
 		DbClient dbClient;                                  // DbClient object used to talk to database server
@@ -32,8 +33,9 @@ namespace DockSample
 		string lastDatabase;                                // ...so we can tell when the database has changed
 		StudioConfig studioConfig;
 		string connName;
-
+		bool isDocDirty = false;
 		Action activated = null;
+		UCLoaderForm loader = new UCLoaderForm();
 		#endregion
 
 		#region Events
@@ -111,7 +113,7 @@ namespace DockSample
 			txtQuery.SelectionStart = start;
 			//txtQuery.SelectedText.Length
 			//txtQuery.SelectionLength = s.Length;
-			txtQuery.SetSavePoint();
+			//isDocDirty = true;
 			//txtQuery.Modified = true;
 			txtQuery.Focus();
 		}
@@ -316,13 +318,13 @@ namespace DockSample
 				FirePropertyChanged();
 
 				//HACK: Work around bug in splitter control, where it loses its SplitPosition the first time it's made invisible
-				if (splQuery.SplitPosition < 0 || splQuery.SplitPosition > ClientSize.Height - statusBar.Height - 10)
-					splQuery.SplitPosition = ClientSize.Height / 2;
-				else
-					// If you take the following line out, the results window will be invisible when running
-					// the compiled executable on another differently setup PC.
-					//  This is a beta 2 bug - not sure if still present in RTM
-					splQuery.SplitPosition += 0;
+				//if (splQuery.SplitPosition < 0 || splQuery.SplitPosition > ClientSize.Height - statusBar.Height - 10)
+				//	splQuery.SplitPosition = ClientSize.Height / 2;
+				//else
+				//	// If you take the following line out, the results window will be invisible when running
+				//	// the compiled executable on another differently setup PC.
+				//	//  This is a beta 2 bug - not sure if still present in RTM
+				//	splQuery.SplitPosition += 0;
 			}
 		}
 
@@ -351,7 +353,14 @@ namespace DockSample
 		{
 			InitializeComponent();
 			AutoScaleMode = AutoScaleMode.Dpi;
+			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
+						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
+						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
+						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+			//this.HideOnClose = true;
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottomAutoHide;
 			DockAreas = DockAreas.Document | DockAreas.Float;
+
 			studioConfig = st;
 			this.connName = connName;
 			this.activated = activated;
@@ -360,12 +369,24 @@ namespace DockSample
 			string connectString, connectDescription;
 
 			var dbConn = studioConfig.databaseConnections.First(c => c.ConnName == this.connName);
-			clientFactory = new SqlFactory();
 
-			//connectString = "Data Source=" + dbConn.ServerName + ";app=Query Express" + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
-			connectString = "Data Source=" + dbConn.ServerName + ";app=Query Express" + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
-			
-			connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
+			if (dbConn.DbType.Equals("Sql Server")) //Postgres
+			{
+				clientFactory = new SqlFactory();
+				//connectString = "Data Source=" + dbConn.ServerName + ";app=Query Express" + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
+				connectString = "Data Source=" + dbConn.ServerName + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
+				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
+				this.Text = connectDescription;
+			}
+			else
+			{
+				clientFactory = new PostgresFactory();
+				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False";
+				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
+				this.Text = connectDescription;
+			}
+
+
 			dbClient = new DbClient(clientFactory, connectString, connectDescription);
 			//dbClient.Database = dbConn.DbName;
 			Cursor oldCursor = Cursor;
@@ -374,7 +395,16 @@ namespace DockSample
 			bool success = dbClient.Connect();
 			Cursor = oldCursor;
 
-			browser = new SqlBrowser(dbClient);
+			if (dbConn.DbType.Equals("Sql Server"))
+				browser = new SqlBrowser(dbClient);
+			else
+				browser = new PostgresBrowser(dbClient);
+
+			lastDatabase = dbClient.Database;               // this is so we know when the current database changes
+			HideResults = true;
+			HideBrowser = hideBrowser || (browser == null);
+			//FileName = "untitled" + untitledCount++.ToString() + ".sql";
+			initializing = false;
 
 			this.txtQuery.Styler = new EasyScintilla.Stylers.SqlStyler();
 			txtQuery.Lexer = Lexer.Sql;
@@ -384,7 +414,16 @@ namespace DockSample
 			// This is so that we can update the toolbar and menu as the state of the QueryForm changes.
 			PropertyChanged += new EventHandler(ChildPropertyChanged);
 			SetRunning(false);
-			//qf.Show();
+
+			//new Task(() =>
+			//{
+			//	loader.PerformSafely(() =>
+			//	{
+			//		loader.Hide();
+			//		//loader.Close();
+			//	});
+			//}).Start();
+			//activated();
 		}
 
 		/// <summary>
@@ -401,7 +440,26 @@ namespace DockSample
 		/// </summary>
 		void EnableControls()
 		{
-			/*QueryForm q;
+			toolStripButton3.Enabled = (RunState == RunState.Idle);
+
+			toolStripButton4.Enabled = (RunState == RunState.Running);
+
+			//miResultsText.Enabled = tbResultsText.Enabled = miResultsGrid.Enabled = tbResultsGrid.Enabled = active;
+
+			//miResultsText.Checked = tbResultsText.Pushed = (active && q.ResultsInText);
+			//miResultsGrid.Checked = tbResultsGrid.Pushed = (active && !q.ResultsInText);
+
+			//miNextPane.Enabled = miPrevPane.Enabled = active;
+
+			//miHideResults.Enabled = tbHideResults.Enabled = active;
+			//miHideBrowser.Enabled = tbHideBrowser.Enabled =
+			//	(active && q.Browser != null && q.RunState == RunState.Idle);
+
+			//miHideResults.Checked = tbHideResults.Pushed = (active && q.HideResults);
+			//miHideBrowser.Checked = tbHideBrowser.Pushed = (active && q.HideBrowser);
+
+			/*
+			QueryForm q;
 			bool active = IsChildActive();
 			if (active) q = GetQueryChild(); else q = null;
 
@@ -480,10 +538,17 @@ namespace DockSample
 				string s = (string)e.Data.GetData(typeof(string));
 				// Have the newly inserted text highlighted
 				int start = txtQuery.SelectionStart;
+				Clipboard.SetText(s);
 				//txtQuery.SelectedText = s;
-				txtQuery.SelectionStart = start;
+				//int currentPos = txtQuery.get
+				int a = txtQuery.CurrentLine;
+				int b = txtQuery.AnchorPosition;
+
+				txtQuery.InsertText(-1, s);
+				//txtQuery.SetSelection(a, (b + s.Length));
+				//txtQuery.SelectionStart = start;
 				//txtQuery.SelectionLength = s.Length;
-				//txtQuery.Modified = true;
+				//isDocDirty = true;
 				txtQuery.Focus();
 			}
 		}
@@ -633,8 +698,9 @@ namespace DockSample
 		{
 			if (FileUtil.WriteToFile(fileName, txtQuery.Text))
 			{
-				txtQuery.SetSavePoint();
+				//txtQuery.SetSavePoint();
 				//txtQuery.Modified = false;
+				isDocDirty = false;
 				return true;
 			}
 			else
@@ -661,10 +727,9 @@ namespace DockSample
 					"Query Express", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 					// The Dispose method in DbClient will actually do the Cancel
 					return false;
-
 			// If the query text has been modified, give option of saving changes.
 			// Don't nag the user in the case of simple queries of less than 30 characters.
-			if (txtQuery.Modified && txtQuery.Text.Length > 30)
+			if (isDocDirty)
 			{
 				DialogResult dr = MessageBox.Show("Save changes to " + FileName + "?", Text,
 					MessageBoxButtons.YesNoCancel);
@@ -676,10 +741,6 @@ namespace DockSample
 					return false;
 			}
 			return true;
-		}
-		private void QueryForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			if (!CloseQuery()) e.Cancel = true;
 		}
 
 		public void SwitchPane(bool forward)
@@ -778,10 +839,12 @@ namespace DockSample
 			string s;
 			if (FileUtil.ReadFromFile(fileName, out s) && CloseQuery())
 			{
+				txtQuery.TextChanged -= txtQuery_TextChanged;
 				txtQuery.Text = s;
 				//txtQuery.M = false;
 				this.FileName = fileName;
 				realFileName = true;
+				txtQuery.TextChanged += txtQuery_TextChanged;
 				return true;
 			}
 			else
@@ -839,8 +902,22 @@ namespace DockSample
 		}
 
 		private void DbConnectorDoc_Activated(object sender, EventArgs e)
+		{			
+			activated();
+		}
+
+		private void DbConnectorDoc_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			activated?.Invoke();
+			if (!CloseQuery()) e.Cancel = true;
+			//if (realFileName)
+			//{
+				
+			//}
+		}
+
+		private async void txtQuery_TextChanged(object sender, EventArgs e)
+		{
+			isDocDirty = true;
 		}
 	}
 }
