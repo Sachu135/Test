@@ -766,4 +766,298 @@ namespace DockSample.lib
 		}
 	}
 	#endregion
+
+	#region MySql Server Browser
+	/// <summary>
+	/// An implementation of IBrowser for MS SQL Server.
+	/// </summary>
+	public class MySqlBrowser : IBrowser
+	{
+		class MySqlNode : TreeNode
+		{
+			internal string type = "";
+			//internal int noOfArgs = 0;
+			internal string name, owner, safeName, dragText; //
+			public MySqlNode(string text) : base(text) { }
+		}
+
+		const int timeout = 8;
+		DbClient dbClient;
+
+		public MySqlBrowser(DbClient dbClient)
+		{
+			this.dbClient = dbClient;
+		}
+
+		public DbClient DbClient
+		{
+			get { return dbClient; }
+		}
+
+		public TreeNode[] GetObjectHierarchy()
+		{
+			TreeNode[] top = new TreeNode[]
+			{
+				new TreeNode ("User Tables"),
+				new TreeNode ("Procedures"),
+				new TreeNode ("Functions"),
+				//new TreeNode ("User Stored Procs"),
+				
+			};
+			DataSet dsTables = dbClient.Execute(@"show table status;", timeout);
+			DataSet dsPro = dbClient.Execute(@"show PROCEDURE status;", timeout);
+			DataSet dsFunc = dbClient.Execute(@"SHOW FUNCTION STATUS;;", timeout);
+
+			if (dsTables != null && dsTables.Tables.Count > 0)
+			{
+				foreach (DataRow row in dsTables.Tables[0].Rows)
+				{
+					MySqlNode node = new MySqlNode(row["Name"].ToString());
+					node.type = "TABLE";
+					node.name = row["Name"].ToString();
+					node.owner = dbClient.Database;
+					// If the object name contains a space, wrap the "safe name" in square brackets.
+
+					node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
+					node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
+
+					top[0].Nodes.Add(node);
+
+					// Add a dummy sub-node to user tables and views so they'll have a clickable expand sign
+					// allowing us to have GetSubObjectHierarchy called so the user can view the columns
+					node.Nodes.Add(new TreeNode());
+				}
+			}
+
+			if (dsPro != null && dsPro.Tables.Count > 0)
+			{
+				foreach (DataRow row in dsPro.Tables[0].Rows)
+				{
+					if (row["Db"].ToString() != "sys")
+					{
+						MySqlNode node = new MySqlNode(row["Name"].ToString());
+						node.type = "PROC";
+						node.name = row["Name"].ToString();
+						node.owner = dbClient.Database;
+
+						node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
+						node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
+
+						top[1].Nodes.Add(node);
+					}
+					
+				}
+			}
+
+			if (dsFunc != null && dsFunc.Tables.Count > 0)
+			{
+				foreach (DataRow row in dsFunc.Tables[0].Rows)
+				{
+					if (row["Db"].ToString() != "sys")
+					{
+						MySqlNode node = new MySqlNode(row["Name"].ToString());
+						node.type = "FUNC";
+						node.name = row["Name"].ToString();
+						node.owner = dbClient.Database;
+
+						node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
+						node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
+
+						top[2].Nodes.Add(node);
+					}
+
+				}
+			}
+
+			if (top[0].Nodes.Count == 0 || top[1].Nodes.Count == 0 || top[2].Nodes.Count == 0) return null;
+
+			return top;
+		}
+
+		public TreeNode[] GetSubObjectHierarchy(TreeNode node)
+		{
+			// Show the column breakdown for the selected table
+			if (node is MySqlNode)
+			{
+				MySqlNode sn = (MySqlNode)node;
+				if (sn.type == "TABLE")                   // break down columns for user tables and views
+				{
+					var query = @"SELECT column_name AS NAME, data_type AS TYPE, is_nullable AS nullable FROM information_schema.columns WHERE table_schema = '" + sn.owner + "' AND table_name = '" + sn.name + "';";
+					DataSet ds = dbClient.Execute(query, timeout);
+					if (ds == null || ds.Tables.Count == 0) return null;
+
+					TreeNode[] tn = new MySqlNode[ds.Tables[0].Rows.Count];
+					int count = 0;
+
+					foreach (DataRow row in ds.Tables[0].Rows)
+					{
+
+						string nullable = row["nullable"].ToString().StartsWith("Y") ? "null" : "not null";
+
+						MySqlNode column = new MySqlNode(row["name"].ToString() + " ("
+							+ row["type"].ToString() + ", " + nullable + ")");
+						column.type = "CO";         // column
+						column.dragText = row["name"].ToString();
+
+						column.dragText = "`" + column.dragText + "`";
+						//if (column.dragText.IndexOf(' ') >= 0)
+						//	column.dragText = "[" + column.dragText + "]";
+						column.safeName = column.dragText;
+						tn[count++] = column;
+					}
+					return tn;
+				}
+			}
+			return null;
+		}
+
+		public string GetDragText(TreeNode node)
+		{
+			if (node is MySqlNode)
+				return ((MySqlNode)node).dragText;
+			else
+				return "";
+		}
+
+		private string GetArgsText(int noOfArgs)
+		{
+			string st = "(";
+			for (int i = 1; i <= noOfArgs; i++)
+			{
+				st += (i == noOfArgs ? "?" : "?, ");
+			}
+			st += ")";
+			return st;
+		}
+		public StringCollection GetActionList(TreeNode node)
+		{
+			if (!(node is MySqlNode)) return null;
+
+			MySqlNode sn = (MySqlNode)node;
+			StringCollection output = new StringCollection();
+
+			if (sn.type == "TABLE" || sn.type == "VIEW" || sn.type == "FUNCTION")
+			{
+				/*output.Add("select * from " + sn.safeName + (sn.type == "FUNCTION" ? GetArgsText(sn.noOfArgs) : "") + ";");*/
+				//output.Add("sp_help " + sn.safeName);
+				//if (sn.type != "V")
+				//{
+				//	output.Add("sp_helpindex " + sn.safeName);
+				//	output.Add("sp_helpconstraint " + sn.safeName);
+				//	output.Add("sp_helptrigger " + sn.safeName);
+				//}
+				output.Add("(insert all fields)");
+				output.Add("(insert all fields, table prefixed)");
+			}
+
+			if (sn.type == "VIEW" || sn.type == "FUNCTION") //|| sn.type == "P" || sn.type == "FN"
+				output.Add("View/Modify " + sn.name);
+
+			//if (sn.type == "CO" && ((SqlNode)sn.Parent).type == "U")
+			//	output.Add("Alter column...");
+
+			return output.Count == 0 ? null : output;
+		}
+
+		public string GetActionText(TreeNode node, string action)
+		{
+			if (!(node is MySqlNode)) return null;
+
+			MySqlNode sn = (MySqlNode)node;
+
+			if (action.StartsWith("select * from ") || action.StartsWith("sp_"))
+				return action;
+
+			if (action.StartsWith("(insert all fields"))
+			{
+				StringBuilder sb = new StringBuilder();
+				// If the table-prefixed option has been selected, add the table name to all the fields
+				string prefix = action == "(insert all fields)" ? "" : sn.safeName + ".";
+				int chars = 0;
+				foreach (TreeNode subNode in GetSubObjectHierarchy(node))
+				{
+					if (chars > 50)
+					{
+						chars = 0;
+						sb.Append("\r\n");
+					}
+					string s = (sb.Length == 0 ? "" : ", ") + prefix + ((MySqlNode)subNode).dragText;
+					chars += s.Length;
+					sb.Append(s);
+				}
+				return sb.Length == 0 ? null : sb.ToString();
+			}
+
+			if (action.StartsWith("View/Modify "))
+			{
+				if (sn.type == "FUNCTION")
+				{
+					var query = @"select case when l.lanname = 'internal' then p.prosrc
+								else pg_get_functiondef(p.oid)
+								end as definition
+					from pg_proc p
+					left join pg_namespace n on p.pronamespace = n.oid
+					left join pg_language l on p.prolang = l.oid
+					where n.nspname not in ('pg_catalog', 'information_schema')
+					AND p.proname = '" + sn.name + "';";
+					DataSet ds = dbClient.Execute(query, timeout);
+					if (ds == null || ds.Tables.Count == 0) return null;
+
+					StringBuilder sb = new StringBuilder();
+					foreach (DataRow row in ds.Tables[0].Rows)
+					{
+						string line = row[0].ToString();
+						sb.Append(line);
+					}
+					return sb.ToString().Trim();
+				}
+				else
+				{
+					DataSet ds = dbClient.Execute(("select definition from pg_views where viewname = '" + sn.name + "';"), timeout);
+					if (ds == null || ds.Tables.Count == 0) return null;
+
+					StringBuilder sb = new StringBuilder();
+					foreach (DataRow row in ds.Tables[0].Rows)
+					{
+						string line = row[0].ToString();
+						sb.Append("CREATE OR REPLACE VIEW " + "\"" + sn.name + "\"" + "\r\n");
+						sb.Append("AS" + "\r\n");
+						sb.Append(line);
+						//if (!altered && line.Trim().ToUpper().StartsWith("CREATE"))
+						//{
+						//	sb.Append("ALTER" + line.Trim().Substring(6, line.Trim().Length - 6) + "\r\n");
+						//	altered = true;
+						//}
+						//else
+						//	sb.Append(line);
+					}
+					return sb.ToString().Trim();
+				}
+			}
+
+			if (action == "Alter column...")
+				return "alter table " + ((MySqlNode)sn.Parent).dragText + " alter column " + sn.safeName + " ";
+
+			return null;
+		}
+
+		public string[] GetDatabases()
+		{
+
+			DataSet ds = dbClient.Execute("SELECT datname AS name FROM pg_database WHERE datistemplate = false order by name", timeout);
+			if (ds == null || ds.Tables.Count == 0) return null;
+			string[] sa = new string[ds.Tables[0].Rows.Count];
+			int count = 0;
+			foreach (DataRow row in ds.Tables[0].Rows)
+				sa[count++] = row[0].ToString().Trim();
+			return sa;
+		}
+
+		public IBrowser Clone(DbClient newDbClient)
+		{
+			SqlBrowser sb = new SqlBrowser(newDbClient);
+			return sb;
+		}
+	}
+	#endregion
 }

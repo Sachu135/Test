@@ -1,3 +1,4 @@
+using CustomControls;
 using DockSample.Controls;
 using DockSample.lib;
 using SFTPEntities;
@@ -23,6 +24,8 @@ namespace DockSample
         UCLoaderForm loader = new UCLoaderForm();
         SFTPEntities.eFileType newFileExtension = new SFTPEntities.eFileType();
         AddFile addFileForm = new AddFile();
+        MoveFile moveFileForm = new MoveFile();
+        ProjectInfo CurrentProj;
         public SolutionExplorer()
         {
             InitializeComponent();
@@ -39,7 +42,8 @@ namespace DockSample
             NewFile,
             RenameFile,
             NewDirectory,
-            RenameDirectory
+            RenameDirectory,
+            CreateCopyFile,
         }
 
         eOperation op;
@@ -125,13 +129,21 @@ namespace DockSample
                                 {
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
 
-                                    var fullPath = (selectedNodePath + "/" + fileNameWithExt);
-                                    sshManager.WriteFileBytesContentMethod(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, fullPath, new byte[] { });
-                                    var selectedProj = string.Empty;
-                                    this.PerformSafely(() =>
+                                    var fullPath = string.Empty;
+                                    treeView2.PerformSafely(() => 
                                     {
-                                        selectedProj = comboBox1.SelectedItem.ToString();
+                                        if (CurrentProj.IsWindows)
+                                        {
+                                            fullPath = (treeView2.SelectedNode.ToolTipText + "\\" + fileNameWithExt);
+                                        }
+                                        else
+                                        {
+                                            fullPath = (treeView2.SelectedNode.ToolTipText + "/" + fileNameWithExt);
+                                        }
                                     });
+                                    
+                                    sshManager.WriteFileBytesContentMethod(mainFrm.CurrentProj.sSHClientInfo.IPAddress, mainFrm.CurrentProj.sSHClientInfo.UserName, mainFrm.CurrentProj.sSHClientInfo.Password, fullPath, new byte[] { }, CurrentProj.IsWindows);
+                                    var selectedProj = CurrentProj.ProjectName;
                                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                                     FillTreeView(selectedProj);
                                     
@@ -140,7 +152,7 @@ namespace DockSample
                                                     || newFileExtension == SFTPEntities.eFileType.Text
                                                     || newFileExtension == SFTPEntities.eFileType.Xml)
                                     {
-                                        mainFrm.CreateDocumentAndShow(string.Empty, fileNameWithExt, fullPath, newFileExtension);
+                                        mainFrm.CreateDocumentAndShow(string.Empty, fileNameWithExt, fullPath, newFileExtension, CurrentProj.IsWindows);
                                         //MessageBox.Show(fileContent);
                                     }
                                     this.PerformSafely(() =>
@@ -151,7 +163,7 @@ namespace DockSample
                             }
                             else if (op == eOperation.NewDirectory)
                             {
-                                var dirPath = (selectedNodePath + "/" + fileName);
+                                var dirPath = (selectedNodePath + (CurrentProj.IsWindows ? "\\" : "/") + fileName);
                                 if (IsDirectoryExists(dirPath))
                                 {
                                     addFileForm.InfoMessage = "Directory already exists";
@@ -166,13 +178,8 @@ namespace DockSample
                                 {
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
 
-                                    var fullPath = (selectedNodePath + "/" + fileName);
-                                    sshManager.CreateDirectory(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, fullPath);
-                                    var selectedProj = string.Empty;
-                                    this.PerformSafely(() =>
-                                    {
-                                        selectedProj = comboBox1.SelectedItem.ToString();
-                                    });
+                                    sshManager.CreateDirectory(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, dirPath, CurrentProj.IsWindows);
+                                    var selectedProj = CurrentProj.ProjectName;
                                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                                     FillTreeView(selectedProj);
                                     this.PerformSafely(() =>
@@ -184,7 +191,7 @@ namespace DockSample
                             else if (op == eOperation.RenameFile)
                             {
                                 var fileNameWithExt = fileName.Trim() + fileOrDirRenameInfo.Extension;
-                                var oldNameFullPath = fileOrDirRenameInfo.RootPath + "/" + fileOrDirRenameInfo.OldName + fileOrDirRenameInfo.Extension; 
+                                var oldNameFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName + fileOrDirRenameInfo.Extension; 
                                 if (fileOrDirRenameInfo.OldName.ToLower().Equals(fileName.Trim().ToLower()))
                                 {
                                     this.PerformSafely(() =>
@@ -193,7 +200,7 @@ namespace DockSample
                                     });
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
                                 }
-                                else if (IsFileExists(fileOrDirRenameInfo.RootPath, fileNameWithExt))
+                                else if (IsFileExists((CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath), fileNameWithExt))
                                 {
                                     addFileForm.InfoMessage = "File already exists with this name";
 
@@ -208,52 +215,14 @@ namespace DockSample
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
 
                                     var newFileNameFullPath = (fileOrDirRenameInfo.RootPath + "/" + fileNameWithExt);
-                                    sshManager.RenameFile(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, oldNameFullPath, newFileNameFullPath);
-                                    var selectedProj = string.Empty;
-                                    this.PerformSafely(() =>
-                                    {
-                                        selectedProj = comboBox1.SelectedItem.ToString();
-                                    });
+                                    //Rename file
+                                    sshManager.RenameFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldNameFullPath, newFileNameFullPath, CurrentProj.IsWindows);
+                                    var selectedProj = CurrentProj.ProjectName;
                                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                                     FillTreeView(selectedProj);
 
                                     var tabDoc = mainFrm.FindDocumentWithPath(oldNameFullPath);
-                                    if (tabDoc != null)
-                                    {
-                                        if (tabDoc is DummyDoc)
-                                        {
-                                            var tabDocCodeFile = (DummyDoc)tabDoc;
-                                            tabDocCodeFile.PerformSafely(() =>
-                                            {
-                                                tabDocCodeFile.FileName = fileNameWithExt;
-                                                tabDocCodeFile.TabText = fileNameWithExt;
-
-                                                tabDocCodeFile.FullPath = newFileNameFullPath;
-                                                tabDocCodeFile.ToolTipText = newFileNameFullPath;
-                                            });
-
-
-                                            if (tabDocCodeFile.outputWindow != null)
-                                            {
-                                                tabDocCodeFile.outputWindow.PerformSafely(() =>
-                                                {
-                                                    tabDocCodeFile.outputWindow.TabText = (fileNameWithExt + " " + "Output");
-                                                });
-
-                                            }
-                                        }
-                                        else if (tabDoc is ReoGridEditor)
-                                        {
-                                            var tabDocExcelFile = (ReoGridEditor)tabDoc;
-                                            tabDocExcelFile.PerformSafely(() =>
-                                            {
-                                                tabDocExcelFile.CurrentFilePath = newFileNameFullPath;
-                                                tabDocExcelFile.Text = fileNameWithExt;
-
-                                                tabDocExcelFile.ToolTipText = newFileNameFullPath;
-                                            });
-                                        }
-                                    }
+                                    ChangeDocumentheader(tabDoc, newFileNameFullPath, fileNameWithExt);
                                     this.PerformSafely(() =>
                                     {
                                         loader.Hide();
@@ -264,11 +233,47 @@ namespace DockSample
                                     //});
                                 }
                             }
+                            else if (op == eOperation.CreateCopyFile)
+                            {
+                                var fileNameWithExt = fileName.Trim() + fileOrDirRenameInfo.Extension;
+                                var oldNameFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName + fileOrDirRenameInfo.Extension;
+                                if (IsFileExists((CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath), fileNameWithExt))
+                                {
+                                    addFileForm.InfoMessage = "File already exists with this name";
+
+                                    this.PerformSafely(() =>
+                                    {
+                                        loader.Hide();
+                                    });
+                                    addFileForm.SetPanelVisible(true);
+                                }
+                                else
+                                {
+                                    addFileForm.PerformSafely(() => { addFileForm.Hide(); });
+
+                                    var newFileNameFullPath = (fileOrDirRenameInfo.RootPath + "/" + fileNameWithExt);
+                                    //Create Copy file
+                                    sshManager.CreateCopyFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldNameFullPath, newFileNameFullPath, CurrentProj.IsWindows);
+                                    var selectedProj = CurrentProj.ProjectName;
+                                    studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
+                                    FillTreeView(selectedProj);
+
+                                    this.PerformSafely(() =>
+                                    {
+                                        loader.Hide();
+                                    });
+
+                                    //addFileForm.PerformSafely(() => {
+                                    //    addFileForm.Hide();
+                                    //});
+                                }
+                            }
                             else if (op == eOperation.RenameDirectory)
                             {
                                 var newDirName = fileName.Trim();
-                                var oldDirFullPath = fileOrDirRenameInfo.RootPath + "/" + fileOrDirRenameInfo.OldName;
-                                var newDirFullPath = fileOrDirRenameInfo.RootPath + "/" + newDirName;
+
+                                var oldDirFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName;
+                                var newDirFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + newDirName;
                                 if (fileOrDirRenameInfo.OldName.ToLower().Equals(newDirName.ToLower()))
                                 {
                                     this.PerformSafely(() =>
@@ -290,13 +295,9 @@ namespace DockSample
                                 else
                                 {
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
-
-                                    sshManager.RenameFile(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, oldDirFullPath, newDirFullPath);
-                                    var selectedProj = string.Empty;
-                                    this.PerformSafely(() =>
-                                    {
-                                        selectedProj = comboBox1.SelectedItem.ToString();
-                                    });
+                                    //Rename dir
+                                    sshManager.RenameDir(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldDirFullPath, newDirFullPath, CurrentProj.IsWindows);
+                                    var selectedProj = CurrentProj.ProjectName;
                                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                                     FillTreeView(selectedProj);
 
@@ -341,8 +342,116 @@ namespace DockSample
                         }
                     }).Start();
             };
+
+            moveFileForm.SaveCliked = (string newFilePath) =>
+            {
+                new Task(() =>
+                {
+                    this.PerformSafely(() =>
+                    {
+                        loader.ShowDialog(this);
+                    });
+                }).Start();
+
+                new Task(() =>
+                {
+                    try
+                    {
+                        var selectedNodePath = string.Empty;
+                        string selectedProj = CurrentProj.ProjectName;
+                        treeView2.PerformSafely(() =>
+                        {
+                            selectedNodePath = treeView2.SelectedNode.ToolTipText;
+                        });
+                        var parentDirectory = Path.GetPathRoot(selectedNodePath);
+
+                        var oldFilePath = CurrentProj.IsWindows ? System.IO.Path.GetDirectoryName(selectedNodePath) : System.IO.Path.GetDirectoryName(selectedNodePath).Replace("\\", "/");
+                        var fileNameWithExt = System.IO.Path.GetFileName(selectedNodePath);
+
+                        var oldFileNameFullPath = (oldFilePath + (CurrentProj.IsWindows ? "\\" : "/") + fileNameWithExt);
+                        var newFileNameFullPath = (newFilePath + (CurrentProj.IsWindows ? "\\" : "/") + fileNameWithExt);
+
+                        if (IsFileExists(newFilePath, fileNameWithExt))
+                        {
+                            moveFileForm.SetError("File already exist in same folder");
+                        }
+                        else
+                        {
+                            SSHManager sshManager = new SSHManager();
+                            //Move file
+                            sshManager.RenameFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldFileNameFullPath, newFileNameFullPath, CurrentProj.IsWindows);
+
+                            studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
+                            FillTreeView(selectedProj);
+
+                            var tabDoc = mainFrm.FindDocumentWithPath(oldFileNameFullPath);
+                            ChangeDocumentheader(tabDoc, newFileNameFullPath, fileNameWithExt);
+
+                            ////
+                            moveFileForm.ResetControl();
+
+                            moveFileForm.PerformSafely(() =>
+                            {
+                                moveFileForm.Hide();
+                            });
+                        }
+                        this.PerformSafely(() =>
+                        {
+                            loader.Hide();
+                        });
+
+                    }
+                    catch (Exception ex)
+                    {
+                        moveFileForm.ResetControl();
+                        MessageBox.Show(ex.Message, "Error!");
+                    }
+                    finally
+                    {
+                    }
+                }).Start();
+            };
         }
 
+        private void ChangeDocumentheader(IDockContent tabDoc, string newFileNameFullPath, string fileNameWithExt)
+        {
+            if (tabDoc != null)
+            {
+                if (tabDoc is DummyDoc)
+                {
+                    var tabDocCodeFile = (DummyDoc)tabDoc;
+                    tabDocCodeFile.PerformSafely(() =>
+                    {
+                        tabDocCodeFile.FileName = fileNameWithExt;
+                        tabDocCodeFile.TabText = fileNameWithExt;
+
+                        tabDocCodeFile.FullPath = newFileNameFullPath;
+                        tabDocCodeFile.ToolTipText = newFileNameFullPath;
+                    });
+
+
+                    if (tabDocCodeFile.outputWindow != null)
+                    {
+                        tabDocCodeFile.outputWindow.PerformSafely(() =>
+                        {
+                            tabDocCodeFile.outputWindow.TabText = (fileNameWithExt + " " + "Output");
+                        });
+
+                    }
+                }
+                else if (tabDoc is ReoGridEditor)
+                {
+                    var tabDocExcelFile = (ReoGridEditor)tabDoc;
+                    tabDocExcelFile.PerformSafely(() =>
+                    {
+                        tabDocExcelFile.CurrentFilePath = newFileNameFullPath;
+                        tabDocExcelFile.Text = fileNameWithExt;
+
+                        tabDocExcelFile.ToolTipText = newFileNameFullPath;
+                    });
+                }
+            }
+        }
         protected override void OnRightToLeftLayoutChanged(EventArgs e)
         {
             treeView1.RightToLeftLayout = RightToLeftLayout;
@@ -366,7 +475,7 @@ namespace DockSample
             //await t;
         }
 
-        void AddNodes(TreeNode treeNode, List<SFTPEntities.DirectoryOrFile> files)
+        void AddNodes(TreeNode treeNode, List<SFTPEntities.DirectoryOrFile> files, bool showFiles = true)
         {
             if (files.Count > 0)
             {
@@ -400,19 +509,25 @@ namespace DockSample
                     }
                     if (!fl.IsDirectory)
                     {
-                        TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag=false };
-                        tr.ContextMenuStrip = cmsFile;
-                        
-                        //treeNode.ImageIndex = imageIndex;
-                        treeNode.Nodes.Add(tr);
+                        if (showFiles)
+                        {
+                            TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false };
+                            tr.ContextMenuStrip = cmsFile;
+
+                            //treeNode.ImageIndex = imageIndex;
+                            treeNode.Nodes.Add(tr);
+                        }
                     }
                     else
                     {
                         TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = true };
-                        tr.ContextMenuStrip = cmsDirectory;
+                        if(showFiles)
+                        {
+                            tr.ContextMenuStrip = cmsDirectory;
+                        }
                         //treeNode.ImageIndex = 7;
                         treeNode.Nodes.Add(tr);
-                        AddNodes(tr, fl.files);
+                        AddNodes(tr, fl.files, showFiles);
                     }
                 }
             }
@@ -420,20 +535,31 @@ namespace DockSample
 
         void TraverseDirsToFindFile(DirectoryOrFile dirRoot, string pathToMatch, string fileNameToFound, ref bool isFileFound)
         {
-            foreach (var dir in dirRoot.files.Where(c => c.IsDirectory))
+            if (dirRoot.FullPath.Equals(pathToMatch))
             {
-                if (pathToMatch.Equals(dir.FullPath))
+                if (dirRoot.files.Where(c => !c.IsDirectory).Count(c => c.Name.ToLower().Equals(fileNameToFound.ToLower())) > 0)
                 {
-                    if (dir.files.Where(c => !c.IsDirectory).Count(c => c.Name.ToLower().Equals(fileNameToFound.ToLower())) > 0)
-                    {
-                        isFileFound = true;
-                    }
-                }
-                else
-                {
-                    TraverseDirsToFindFile(dir, pathToMatch, fileNameToFound, ref isFileFound);
+                    isFileFound = true;
                 }
             }
+            else
+            {
+                foreach (var dir in dirRoot.files.Where(c => c.IsDirectory))
+                {
+                    if (pathToMatch.Equals(dir.FullPath))
+                    {
+                        if (dir.files.Where(c => !c.IsDirectory).Count(c => c.Name.ToLower().Equals(fileNameToFound.ToLower())) > 0)
+                        {
+                            isFileFound = true;
+                        }
+                    }
+                    else
+                    {
+                        TraverseDirsToFindFile(dir, pathToMatch, fileNameToFound, ref isFileFound);
+                    }
+                }
+            }
+            
         }
 
         void TraverseDirsToFindDirectory(DirectoryOrFile dirRoot, string pathToMatch, ref bool isDirFound)
@@ -453,14 +579,8 @@ namespace DockSample
 
         bool IsFileExists(string path, string fileName)
         {
-            var selectedProj = string.Empty;
+            var selectedProj = CurrentProj.ProjectName;
             var isFileFound = false;
-
-            this.PerformSafely(() =>
-            {
-                selectedProj = comboBox1.SelectedItem.ToString();
-            });
-
             var proj = studioConfig.projectInfoList.First(c => c.ProjectName == selectedProj).DirectoryInfo;
 
             TraverseDirsToFindFile(proj, path, fileName, ref isFileFound);
@@ -470,25 +590,18 @@ namespace DockSample
 
         bool IsDirectoryExists(string dirPath)
         {
-            var selectedProj = string.Empty;
+            var selectedProj = CurrentProj.ProjectName;
             var isDirFound = false;
 
-            this.PerformSafely(() =>
-            {
-                selectedProj = comboBox1.SelectedItem.ToString();
-            });
-
             var proj = studioConfig.projectInfoList.First(c => c.ProjectName == selectedProj).DirectoryInfo;
-
             TraverseDirsToFindDirectory(proj, dirPath, ref isDirFound);
-
             return isDirFound;
         }
 
         void FillTreeView(string proName)
         {
-            var proj = studioConfig.projectInfoList.First(c => c.ProjectName == proName).DirectoryInfo;
-            var filesList = proj.files;
+            CurrentProj = studioConfig.projectInfoList.First(c => c.ProjectName == proName);
+            var filesList = CurrentProj.DirectoryInfo.files;
 
             var treeNodes = new List<TreeNode>();
             foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
@@ -512,7 +625,7 @@ namespace DockSample
             treeView2.PerformSafely(() =>
             {
                 //this.Controls.Remove(loader);
-                System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.FullPath, ToolTipText = proj.FullPath };
+                System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = CurrentProj.DirectoryInfo.FullPath, ToolTipText = CurrentProj.DirectoryInfo.FullPath };
                 treeView2.Nodes.Clear();
                 rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
                 rootTreeNode.ExpandAll();
@@ -521,8 +634,32 @@ namespace DockSample
                 //treeView2.Dock = DockStyle.Fill;
                 treeView2.Visible = true;
             });
+
+            mainFrm.CurrentProj = CurrentProj;
+            mainFrm.EnableDisableControls();
         }
 
+        void FillTreeViewForMoveFile(string proName)
+        {        
+            var proj = studioConfig.projectInfoList.First(c => c.ProjectName == proName).DirectoryInfo;
+            var filesList = proj.files;
+
+            var treeNodes = new List<TreeNode>();
+            foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
+            {
+                if (fileOrDir.IsDirectory)
+                {
+                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
+                    treeNodes.Add(treeNode);
+                    AddNodes(treeNode, fileOrDir.files, false);
+                }
+            }
+
+            System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.FullPath, ToolTipText = proj.FullPath };
+            rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
+            rootTreeNode.ExpandAll();
+            moveFileForm.ResetNode(rootTreeNode);
+        }
 
         private SFTPEntities.eFileType GetFileType(string nodeText)
         {
@@ -555,7 +692,7 @@ namespace DockSample
             }
             return eFType;
         }
-        private void treeView2_Click(object sender, EventArgs e)
+        private async void treeView2_Click(object sender, EventArgs e)
         {
             var loader = new UCLoaderForm();
             
@@ -591,8 +728,8 @@ namespace DockSample
                                     || eFType == SFTPEntities.eFileType.Text
                                     || eFType == SFTPEntities.eFileType.Xml)
                                 {
-                                    var fileContent = SSHManager.ReadFileContent(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, info.Node.ToolTipText);
-                                    mainFrm.CreateDocumentAndShow(fileContent, info.Node.Text, info.Node.ToolTipText, eFType);
+                                    var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, info.Node.ToolTipText, CurrentProj.IsWindows);
+                                    mainFrm.CreateDocumentAndShow(fileContent, info.Node.Text, info.Node.ToolTipText, eFType, CurrentProj.IsWindows);
                                     //MessageBox.Show(fileContent);
                                 }
                                 else if (eFType == SFTPEntities.eFileType.Csv || eFType == SFTPEntities.eFileType.Excel)
@@ -664,14 +801,10 @@ namespace DockSample
                 case "Refresh":
                     Task t = new Task(() =>
                     {
-                        var selectedProj = string.Empty;
+                        var selectedProj = CurrentProj.ProjectName;
                         try
                         {
                             //Thread.Sleep(2000);
-                            this.PerformSafely(() =>
-                            {
-                                selectedProj = comboBox1.SelectedItem.ToString();
-                            });
                             studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                             FillTreeView(selectedProj);
                             this.PerformSafely(() =>
@@ -748,16 +881,21 @@ namespace DockSample
                                 //OpenFileDialog.SafeFileName
                                 var content = File.ReadAllBytes(ofd.FileName);
                                 var sshManager = new SSHManager();
-                                var path = (treeView2.SelectedNode.ToolTipText + "/" + ofd.SafeFileName);
-                                sshManager.WriteFileBytesContentMethod(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, path, content);
+                                var path = string.Empty;
+                                if (CurrentProj.IsWindows)
+                                {
+                                    path = (treeView2.SelectedNode.ToolTipText + "\\" + ofd.SafeFileName);
+                                }
+                                else
+                                {
+                                    path = (treeView2.SelectedNode.ToolTipText + "/" + ofd.SafeFileName);
+                                }
+                                
+                                sshManager.WriteFileBytesContentMethod(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, path, content, CurrentProj.IsWindows);
                             }
                         });
                     }
-                    var selectedProj = string.Empty;
-                    this.PerformSafely(() =>
-                    {
-                        selectedProj = comboBox1.SelectedItem.ToString();
-                    });
+                    var selectedProj = CurrentProj.ProjectName;
                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                     FillTreeView(selectedProj);
                     this.PerformSafely(() =>
@@ -903,12 +1041,8 @@ namespace DockSample
                             treeView2.PerformSafely(() => {
                                 selectedNodePath = treeView2.SelectedNode.ToolTipText;
                             });
-                            sshManager.RemoveDirectory(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, selectedNodePath);
-                            var selectedProj = string.Empty;
-                            this.PerformSafely(() =>
-                            {
-                                selectedProj = comboBox1.SelectedItem.ToString();
-                            });
+                            sshManager.RemoveDirectory(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, selectedNodePath, CurrentProj.IsWindows);
+                            var selectedProj = CurrentProj.ProjectName;
                             studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                             FillTreeView(selectedProj);
                             var tabDocs = mainFrm.FindAllDocumentsInDirectory(selectedNodePath);
@@ -999,6 +1133,7 @@ namespace DockSample
                 {
                     var sshManager = new SSHManager();
                     var selectedNodePath = string.Empty;
+                    var selectedProj = string.Empty;
                     treeView2.PerformSafely(() => {
                         selectedNodePath = treeView2.SelectedNode.ToolTipText;
                     });
@@ -1023,12 +1158,9 @@ namespace DockSample
 
                                 Task t1 = new Task(() =>
                                 {
-                                    sshManager.RemoveFile(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, selectedNodePath);
-                                    var selectedProj = string.Empty;
-                                    this.PerformSafely(() =>
-                                    {
-                                        selectedProj = comboBox1.SelectedItem.ToString();
-                                    });
+                                    sshManager.RemoveFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, selectedNodePath, CurrentProj.IsWindows);
+                                    selectedProj = CurrentProj.ProjectName;
+                                    
                                     studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
                                     FillTreeView(selectedProj);
                                     mainFrm.CloseDocumentTab(selectedNodePath);
@@ -1064,6 +1196,49 @@ namespace DockSample
                             this.PerformSafely(() =>
                             {
                                 addFileForm.ShowDialog(this);
+                            });
+                            break;
+                        case "Create Copy":
+                            op = eOperation.CreateCopyFile;
+
+                            fileOrDirRenameInfo = new FileOrDirRenameInfo()
+                            {
+                                OldName = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath),
+                                Extension = System.IO.Path.GetExtension(selectedNodePath),
+                                RootPath = System.IO.Path.GetDirectoryName(selectedNodePath).Replace("\\", "/")
+                            };
+
+                            addFileForm.PerformSafely(() =>
+                            {
+                                addFileForm.Header = "Create Copy File (" + System.IO.Path.GetExtension(selectedNodePath) + ")";
+                                addFileForm.ResetControl();
+                                addFileForm.TextControl = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath) + "_Copy";
+                                addFileForm.TextControlSelectAll();
+                            });
+                            this.PerformSafely(() =>
+                            {
+                                loader.Hide();
+                            });
+                            this.PerformSafely(() =>
+                            {
+                                addFileForm.ShowDialog(this);
+                            });
+                            break;
+                        case "Move":
+                            selectedProj = CurrentProj.ProjectName;
+                            moveFileForm.ResetControl();
+
+                            moveFileForm.PerformSafely(() =>
+                            {
+                                FillTreeViewForMoveFile(selectedProj);
+                            });
+                            this.PerformSafely(() =>
+                            {
+                                loader.Hide();
+                            });
+                            this.PerformSafely(() =>
+                            {
+                                moveFileForm.ShowDialog(this);
                             });
                             break;
                     }

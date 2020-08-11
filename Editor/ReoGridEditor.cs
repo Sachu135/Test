@@ -47,6 +47,9 @@ using WeifenLuo.WinFormsUI.Docking;
 using UIFunctionality;
 using UIFunctionality.Common;
 using System.Collections.Generic;
+using CustomControls;
+using System.Threading.Tasks;
+using System.Threading;
 
 #if EX_SCRIPT
 using unvell.ReoScript.Editor;
@@ -68,6 +71,8 @@ namespace unvell.ReoGrid.Editor
 		StudioConfig studioConfig;
 		public ToolStrip ToolStrip { get; set; }
 		public ToolStrip FontToolStrip { get; set; }
+		ProjectInfo currentProj { get; set; }
+		private UCLoaderForm loader;
 		/// <summary>
 		/// Create instance of ReoGrid Editor.
 		/// </summary>
@@ -782,8 +787,9 @@ namespace unvell.ReoGrid.Editor
 			ResumeLayout();
 		}
 
-		public ReoGridEditor(string filePath, string content, Action callback) : this()
+		public ReoGridEditor(string filePath, string content, ProjectInfo currProj, Action callback) : this()
 		{
+			//UCLoaderForm
 			AutoScaleMode = AutoScaleMode.Dpi;
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
@@ -794,7 +800,7 @@ namespace unvell.ReoGrid.Editor
 			DockAreas = DockAreas.Document | DockAreas.Float;
 
 			studioConfig = new StudioConfig(AppDomain.CurrentDomain.BaseDirectory).GetStudioConfigFromFile();
-
+			currentProj = currProj;
 			ToolStrip = toolStrip1;
 			FontToolStrip = fontToolStrip;
 			this.ToolTipText = filePath;
@@ -836,13 +842,32 @@ namespace unvell.ReoGrid.Editor
 				//LoadFileWithText(content, Encoding.Default);
 			}
 
-			this.Activated += ReoGridEditor_Activated1;
+			loader = new UCLoaderForm();
 			FormActivated = callback;
+			if (filePath == null && content.Length == 0)
+			{
+				FormActivated();
+			}
+			
+
+			this.grid.WorkbookLoaded += Grid_WorkbookLoaded;
 		}
 
-		private void ReoGridEditor_Activated1(object sender, EventArgs e)
+		private void Grid_WorkbookLoaded(object sender, EventArgs e)
 		{
 			FormActivated();
+		}
+
+		void PerformSafely(Action action)
+		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke(action);
+			}
+			else
+			{
+				action();
+			}
 		}
 
 		private void ExportAsCsv(RangePosition range)
@@ -1627,7 +1652,7 @@ namespace unvell.ReoGrid.Editor
 				{
 					this.IsLinuxSystemFile = true;
 					var shManager = new SSHManager();
-					Stream str = shManager.ReadFileStream(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, path);
+					Stream str = shManager.ReadFileStream(currentProj.sSHClientInfo.IPAddress, currentProj.sSHClientInfo.UserName, currentProj.sSHClientInfo.Password, path);
 					if (fileExt.Equals(".csv"))
 					{
 						grid.Load(str, FileFormat.CSV);
@@ -1810,48 +1835,122 @@ namespace unvell.ReoGrid.Editor
 #endif // EX_SCRIPT
 
 			//, "ReoGridEditor " + this.ProductVersion.ToString())
-			FileFormat fm = FileFormat._Auto;
-			try
+			new Task(() =>
 			{
-				if (path.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase))
+				this.PerformSafely(() =>
 				{
-					fm = FileFormat.Excel2007;
-				}
-				else if (path.EndsWith(".rgf", StringComparison.CurrentCultureIgnoreCase))
-				{
-					fm = FileFormat.ReoGridFormat;
-				}
-				else if (path.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
-				{
-					fm = FileFormat.CSV;
-				}
+					loader.ShowDialog(this);
+				});
+			}).Start();
 
-				if (fm == FileFormat.CSV)
+			new Task(() =>
+			{
+				FileFormat fm = FileFormat._Auto;
+				try
 				{
-					using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+					if (path.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase))
 					{
-						CurrentWorksheet.ExportAsCSV(fs, RangePosition.EntireRange);
-						if (this.CurrentFilePath == null)
+						fm = FileFormat.Excel2007;
+					}
+					else if (path.EndsWith(".rgf", StringComparison.CurrentCultureIgnoreCase))
+					{
+						fm = FileFormat.ReoGridFormat;
+					}
+					else if (path.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+					{
+						fm = FileFormat.CSV;
+					}
+
+					
+
+					if (fm == FileFormat.CSV)
+					{
+						if (this.IsLinuxSystemFile)
 						{
-							LoadFile(path);
+							SaveLinuxFile(fm);
+						}
+						else
+						{
+							using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+							{
+								this.PerformSafely(() =>
+								{
+									CurrentWorksheet.ExportAsCSV(fs, RangePosition.EntireRange);
+									if (this.CurrentFilePath == null)
+									{
+										LoadFile(path);
+									}
+								});
+							}
 						}
 					}
-				}
-				else
-				{
-					this.grid.Save(path, fm);
-				}
-				
-				this.SetCurrentDocumentFile(path);
+					else
+					{
+						if (this.IsLinuxSystemFile)
+						{
+							SaveLinuxFile(fm);
+						}
+						else
+						{
+							this.PerformSafely(() =>
+							{
+								this.grid.Save(path, fm);
+							});
+						}
+					}
+
+					this.PerformSafely(() =>
+					{
+						this.SetCurrentDocumentFile(path);
+					});
 
 #if DEBUG
 				Process.Start(path);
 #endif
-			}
-			catch (Exception ex)
+					this.PerformSafely(() =>
+					{
+						loader.Hide();
+					});
+				}
+				catch (Exception ex)
+				{
+					this.PerformSafely(() =>
+					{
+						loader.Hide();
+					});
+					MessageBox.Show(this, "Save error: " + ex.Message, "Save Workbook", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				}
+			}).Start();
+			
+			
+		}
+
+		void SaveLinuxFile(FileFormat fm)
+		{
+			var tempName = Path.Combine(studioConfig.AppPath, Guid.NewGuid().ToString());
+			this.PerformSafely(() =>
 			{
-				MessageBox.Show(this, "Save error: " + ex.Message, "Save Workbook", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-			}
+				if (fm != FileFormat.CSV)
+				{
+					this.grid.Save(tempName, fm);
+				}
+				else
+				{
+					using (FileStream fs = new FileStream(tempName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+					{
+						this.PerformSafely(() =>
+						{
+							CurrentWorksheet.ExportAsCSV(fs, RangePosition.EntireRange);
+						});
+					}
+				}
+			});
+
+			var content = File.ReadAllBytes(tempName);
+			var sshManager = new SSHManager();
+			sshManager.WriteFileBytesContentMethod(currentProj.sSHClientInfo.IPAddress, currentProj.sSHClientInfo.UserName, currentProj.sSHClientInfo.Password, this.CurrentFilePath, content, false);
+
+			File.Delete(tempName);
 		}
 
 		private void SetCurrentDocumentFile(string filepath)

@@ -64,6 +64,8 @@ namespace DockSample
             this.cmsFile = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem19 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsRootPath.SuspendLayout();
             this.cmsDirectory.SuspendLayout();
             this.cmsFile.SuspendLayout();
@@ -300,8 +302,10 @@ namespace DockSample
             // cmsFile
             // 
             this.cmsFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem22,
             this.toolStripMenuItem19,
-            this.toolStripMenuItem20});
+            this.toolStripMenuItem20,
+            this.toolStripMenuItem21});
             this.cmsFile.Name = "cmsRootPath";
             this.cmsFile.Size = new System.Drawing.Size(118, 48);
             this.cmsFile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsFile_ItemClicked);
@@ -317,6 +321,19 @@ namespace DockSample
             this.toolStripMenuItem20.Name = "toolStripMenuItem20";
             this.toolStripMenuItem20.Size = new System.Drawing.Size(117, 22);
             this.toolStripMenuItem20.Text = "Rename";
+
+            // toolStripMenuItem21
+            // 
+            this.toolStripMenuItem21.Name = "toolStripMenuItem21";
+            this.toolStripMenuItem21.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem21.Text = "Move";
+
+            // toolStripMenuItem22
+            // 
+            this.toolStripMenuItem22.Name = "toolStripMenuItem22";
+            this.toolStripMenuItem22.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem22.Text = "Create Copy";
+
             // 
             // SolutionExplorer
             // 
@@ -371,6 +388,8 @@ namespace DockSample
         private System.Windows.Forms.ContextMenuStrip cmsFile;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem19;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem20;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem21;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem22;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

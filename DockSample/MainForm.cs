@@ -1,3 +1,4 @@
+using CustomControls;
 using DockSample.Controls;
 using DockSample.lib;
 using SFTPEntities;
@@ -29,10 +30,12 @@ namespace DockSample
         private bool _showSplash;
         private SplashScreen _splashScreen;
         StudioConfig studioConfig;
+        public ProjectInfo CurrentProj { get; set; }
 
         Action loadComplete;
 
-        UCLoaderForm waitLoader = new UCLoaderForm();
+        UCLoaderForm _waitLoader = new UCLoaderForm();
+        public UCLoaderForm WaitLoader { get { return _waitLoader; } }
 
         public MainForm(StudioConfig sc, Action action)
         {
@@ -51,7 +54,6 @@ namespace DockSample
             m_deserializeDockContent = new DeserializeDockContent(GetContentFromPersistString);
 
             vsToolStripExtender1.DefaultRenderer = _toolStripProfessionalRenderer;
-
             this.Activated += MainForm_Activated;
             loadComplete = action;
 
@@ -210,7 +212,7 @@ namespace DockSample
             });
             
         }
-        public void CreateDocumentAndShow(string text, string flName, string filePath, eFileType fileType)
+        public void CreateDocumentAndShow(string text, string flName, string filePath, eFileType fileType, bool isWindows)
         {
             dockPanel.PerformSafely(() =>
             {               
@@ -220,6 +222,7 @@ namespace DockSample
                 dummyDoc.TabText = flName;
                 dummyDoc.FullPath = filePath;
                 dummyDoc.ToolTipText = filePath;
+                dummyDoc.IsWindows = isWindows;
                 dummyDoc.mainFrm = this;
                 if (fileType == eFileType.Python)
                 {
@@ -516,12 +519,9 @@ namespace DockSample
             menuItemDockingWindow.Checked = (newStyle == DocumentStyle.DockingWindow);
             menuItemDockingSdi.Checked = (newStyle == DocumentStyle.DockingSdi);
             menuItemSystemMdi.Checked = (newStyle == DocumentStyle.SystemMdi);
-            menuItemLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            menuItemLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
             //toolBarButtonLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
             //toolBarButtonLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
             toolBarButtonLinuxTerminal.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            toolBarButtonConfigurator.Enabled = (newStyle != DocumentStyle.SystemMdi);
             tsHealthCheck.Enabled = (newStyle != DocumentStyle.SystemMdi);
         }
 
@@ -536,8 +536,11 @@ namespace DockSample
 
         private void menuItemSolutionExplorer_Click(object sender, System.EventArgs e)
         {
-            if (m_solutionExplorer.DockState == DockState.DockLeftAutoHide)
+            if (m_solutionExplorer.DockState == DockState.DockLeftAutoHide || m_solutionExplorer.DockState == DockState.Unknown)
+            {
+                m_solutionExplorer.Show(dockPanel, DockState.DockLeftAutoHide);
                 m_solutionExplorer.Show(dockPanel, DockState.DockLeft);
+            }
             else
                 m_solutionExplorer.Show(dockPanel, DockState.DockLeftAutoHide);
         }
@@ -547,9 +550,32 @@ namespace DockSample
             m_propertyWindow.Show(dockPanel);
         }
 
-        private void menuItemToolbox_Click(object sender, System.EventArgs e)
+        private async void menuItemToolbox_Click(object sender, System.EventArgs e)
         {
-            m_toolbox.Show(dockPanel);
+            if (HasDocuments())
+            {
+                if (MessageBox.Show(this, "Operation will close all opened documents, Are you sure?",
+                                string.Empty, MessageBoxButtons.OKCancel)
+                                == System.Windows.Forms.DialogResult.OK)
+                {
+                    CloseAllDocumentsExceptSolutionExplorer();
+                    ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
+                    {
+                        this.Hide();
+                    });
+                    frm.ShowDialog(this);
+                }
+            }
+            else
+            {
+                ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
+                {
+                    this.Hide();
+                });
+                frm.ShowDialog(this);
+
+            }
+
         }
 
         private async void menuItemOutputWindow_Click(object sender, System.EventArgs e)
@@ -681,6 +707,35 @@ namespace DockSample
                 dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
         }
 
+        public void EnableDisableControls()
+        {
+            this.PerformSafely(() =>
+            {
+                tsSchedular.Enabled = false;
+                tsHealthCheck.Enabled = false;
+                toolBarButtonLinuxTerminal.Enabled = false;
+
+                if (CurrentProj.otherServices != null)
+                {
+                    if (!string.IsNullOrEmpty(CurrentProj.otherServices.AirflowService))
+                    {
+                        tsSchedular.Enabled = true;
+                    }
+                    if (!string.IsNullOrEmpty(CurrentProj.otherServices.HealthCheckService))
+                    {
+                        tsHealthCheck.Enabled = true;
+                    }
+                }
+                if (CurrentProj.terminalInfo != null)
+                {
+                    if (!string.IsNullOrEmpty(CurrentProj.terminalInfo.Url))
+                    {
+                        toolBarButtonLinuxTerminal.Enabled = true;
+                    }
+                }
+            });
+            
+        }
         private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
@@ -704,11 +759,12 @@ namespace DockSample
 
         private void toolBar_ButtonClick(object sender, System.Windows.Forms.ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem == toolBarButtonNew)
-                menuItemNew_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonOpen)
-                menuItemOpen_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonSolutionExplorer)
+            //if (e.ClickedItem == toolBarButtonNew)
+            //    menuItemNew_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonOpen)
+            //    menuItemOpen_Click(null, null);
+            //else 
+            if (e.ClickedItem == toolBarButtonSolutionExplorer)
                 menuItemSolutionExplorer_Click(null, null);
             //else if (e.ClickedItem == toolBarButtonPropertyWindow)
             //    menuItemPropertyWindow_Click(null, null);
@@ -724,8 +780,8 @@ namespace DockSample
             //    menuItemLayoutByXml_Click(null, null);
             else if (e.ClickedItem == toolBarButtonLinuxTerminal)
                 menuItemLayoutLinuxTerminal_Click(null, null);
-            else if (e.ClickedItem == toolBarButtonConfigurator)
-                menuItemLayoutConfirator_Click(null, null);
+            //else if (e.ClickedItem == toolBarButtonConfigurator)
+            //    menuItemLayoutConfirator_Click(null, null);
             else if (e.ClickedItem == iconToolStripButton2)
                 menuItemLayoutSpreadSheetViewer_Click(null, null);
             else if (e.ClickedItem == tsSchedular)
@@ -889,7 +945,7 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    BrowserDoc dummyDoc = new BrowserDoc(studioConfig.terminalInfo.Url, tabText);
+                    BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
                     if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                     {
                         dummyDoc.MdiParent = this;
@@ -934,7 +990,7 @@ namespace DockSample
             {
                 this.PerformSafely(() =>
                 {
-                    waitLoader.ShowDialog(this);
+                    WaitLoader.ShowDialog(this);
                 });
             }).Start();
             new Task(() =>
@@ -943,25 +999,26 @@ namespace DockSample
                 {
                     if (string.IsNullOrEmpty(content))
                     {
-                        ReoGridEditor editor = new ReoGridEditor(filePath, string.Empty,
+                        ReoGridEditor editor = new ReoGridEditor(filePath, string.Empty, this.CurrentProj,
                         () =>
                         {
-                            waitLoader.Hide();
+                            WaitLoader.Hide();
                         });
                         editor.Show(dockPanel);
                     }
                     else
                     {
-                        ReoGridEditor editor = new ReoGridEditor(null, content,
+                        ReoGridEditor editor = new ReoGridEditor(null, content, this.CurrentProj,
                            () =>
                            {
-                               waitLoader.Hide();
+                               WaitLoader.Hide();
                            });
                         editor.Show(dockPanel);
                     }
-                    
+
                 });
             }).Start();
+            
         }
 
         private void menuItemLayoutSpreadSheetViewer_Click(object sender, System.EventArgs e)
@@ -1059,9 +1116,9 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    if (studioConfig.otherServices.AirflowService.Length > 0)
+                    if (CurrentProj .otherServices.AirflowService.Length > 0)
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(studioConfig.otherServices.AirflowService, tabText);
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.AirflowService, tabText);
                         if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                         {
                             dummyDoc.MdiParent = this;
@@ -1088,9 +1145,9 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    if (studioConfig.otherServices.HealthCheckService.Length > 0)
+                    if (CurrentProj.otherServices.HealthCheckService.Length > 0)
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(studioConfig.otherServices.HealthCheckService, tabText);
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.HealthCheckService, tabText);
                         if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                         {
                             dummyDoc.MdiParent = this;

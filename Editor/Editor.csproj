@@ -507,6 +507,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomControls\CustomControls.csproj">
+      <Project>{D960EFB2-6F87-4CCC-A8AD-899FF58E2C08}</Project>
+      <Name>CustomControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UIFunctionality\UIFunctionality.csproj">
       <Project>{059cc2a1-07d8-4ca6-9dba-a40b567fec6e}</Project>
       <Name>UIFunctionality</Name>

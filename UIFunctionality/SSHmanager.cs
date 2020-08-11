@@ -2,6 +2,7 @@
 using Renci.SshNet.Sftp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -88,26 +89,33 @@ namespace UIFunctionality
             }
         }
 
-        public static string ReadFileContent(string url, string userName, string password, string filePath)
+        public static string ReadFileContent(string url, string userName, string password, string filePath, bool isWindows)
         {
-            using (SftpClient sftp = new SftpClient(url, userName, password))
+            if (isWindows)
             {
-                sftp.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftp.Connect();
-
-                if (!sftp.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-
-                using (StreamReader sr = sftp.OpenText(filePath))
+                return File.ReadAllText(filePath);
+            }
+            else
+            {
+                using (SftpClient sftp = new SftpClient(url, userName, password))
                 {
-                    var ct = sr.ReadToEnd();
-                    sr.Close();
-                    sr.Dispose();
-                    sftp.Disconnect();
-                    sftp.Dispose();
-                    return ct;
+                    sftp.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftp.Connect();
+
+                    if (!sftp.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+
+                    using (StreamReader sr = sftp.OpenText(filePath))
+                    {
+                        var ct = sr.ReadToEnd();
+                        sr.Close();
+                        sr.Dispose();
+                        sftp.Disconnect();
+                        sftp.Dispose();
+                        return ct;
+                    }
+
                 }
-                
             }
         }
 
@@ -152,43 +160,129 @@ namespace UIFunctionality
             return stream;
         }
 
-        public void WriteFileContentMethod(string url, string userName, string password, string filePath, string content)
+        public void WriteFileContentMethod(string url, string userName, string password, string filePath, string content, bool isWindows)
         {
-            using (sftpClient = new SftpClient(url, userName, password))
+            if (isWindows)
             {
-                sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftpClient.Connect();
-                if (!sftpClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
+                File.WriteAllText(filePath, content);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
 
-                byte[] bytes = Encoding.ASCII.GetBytes(content);
-                sftpClient.DeleteFile(filePath);
-                sftpClient.WriteAllBytes(filePath, bytes);
-
-                //using (var ms = GenerateStreamFromString(content))
-                //{
-                //    sftpClient.BufferSize = (uint)ms.Length; // bypass Payload error large files
-                //    sftpClient.UploadFile(ms, filePath, true);
-                //}
-
-                //sftpClient.UploadFile()
-                //sftpClient.WriteAllText(filePath, content);
+                    byte[] bytes = Encoding.ASCII.GetBytes(content);
+                    sftpClient.DeleteFile(filePath);
+                    sftpClient.WriteAllBytes(filePath, bytes);
+                }
             }
         }
 
-        public void CreateDirectory(string url, string userName, string password, string dirPath)
+        public void CreateDirectory(string url, string userName, string password, string dirPath, bool isWindows)
         {
-            using (sftpClient = new SftpClient(url, userName, password))
+            if (isWindows)
             {
-                sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftpClient.Connect();
-                if (!sftpClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-                sftpClient.CreateDirectory(dirPath);
+                Directory.CreateDirectory(dirPath);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    sftpClient.CreateDirectory(dirPath);
+                }
+            }
+            
+        }
+
+        public void WriteFileBytesContentMethod(string url, string userName, string password, string filePath, byte[] content, bool isWindows)
+        {
+            if (isWindows)
+            {
+                File.WriteAllBytes(filePath, content);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    sftpClient.WriteAllBytes(filePath, content);
+                }
+            }
+            
+        }
+
+        public void RenameFile(string url, string userName, string password, string oldName, string newName, bool isWindows)
+        {
+            if (isWindows)
+            {
+                File.Move(oldName, newName);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    sftpClient.RenameFile(oldName, newName);
+                }
+            }
+            
+        }
+        public void CreateCopyFile(string url, string userName, string password, string oldName, string newName, bool isWindows)
+        {
+            if (isWindows)
+            {
+                File.Copy(oldName, newName);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+
+                    var fileContent = sftpClient.ReadAllBytes(oldName);
+                    sftpClient.WriteAllBytes(newName, fileContent);
+                }
+            }
+
+        }
+
+        public void RenameDir(string url, string userName, string password, string oldName, string newName, bool isWindows)
+        {
+            if (isWindows)
+            {
+                Directory.Move(oldName, newName);
+            }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    sftpClient.RenameFile(oldName, newName);
+                }
             }
         }
 
-        public void WriteFileBytesContentMethod(string url, string userName, string password, string filePath, byte[] content)
+        public void MoveFile(string url, string userName, string password, string oldPath, string newPath)
         {
             using (sftpClient = new SftpClient(url, userName, password))
             {
@@ -196,31 +290,26 @@ namespace UIFunctionality
                 sftpClient.Connect();
                 if (!sftpClient.IsConnected)
                     throw new Exception("Failed to connect ssh");
-                sftpClient.WriteAllBytes(filePath, content);
+                sftpClient.RenameFile(oldPath, newPath);
             }
         }
 
-        public void RenameFile(string url, string userName, string password, string oldName, string newName)
+        public void RemoveFile(string url, string userName, string password, string filePath, bool isWindows)
         {
-            using (sftpClient = new SftpClient(url, userName, password))
+            if (isWindows)
             {
-                sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftpClient.Connect();
-                if (!sftpClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-                sftpClient.RenameFile(oldName, newName);
+                File.Delete(filePath);
             }
-        }
-
-        public void RemoveFile(string url, string userName, string password, string filePath)
-        {
-            using (sftpClient = new SftpClient(url, userName, password))
+            else
             {
-                sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftpClient.Connect();
-                if (!sftpClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-                sftpClient.Delete(filePath);
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    sftpClient.Delete(filePath);
+                }
             }
         }
 
@@ -244,17 +333,25 @@ namespace UIFunctionality
             client.DeleteDirectory(path);
         }
 
-        public void RemoveDirectory(string url, string userName, string password, string filePath)
+        public void RemoveDirectory(string url, string userName, string password, string filePath, bool isWindows)
         {
-            using (sftpClient = new SftpClient(url, userName, password))
+            if (isWindows)
             {
-
-                sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sftpClient.Connect();
-                if (!sftpClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-                DeleteDirectory(sftpClient, filePath);
+                Directory.Delete(filePath);
             }
+            else
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    DeleteDirectory(sftpClient, filePath);
+                }
+            }
+            
         }
         public static void ExecuteCommandOnConsole(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, Action opCompleted)
         {
@@ -327,76 +424,128 @@ namespace UIFunctionality
         }
 
 
-        public void ExecuteCommandOnConsoleMethod(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, Action opCompleted)
+        public void ExecuteCommandOnConsoleMethod(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, bool isWindows, Action opCompleted)
         {
-            List<DirectoryOrFile> filesList = new List<DirectoryOrFile>();
-            using (sshClient = new SshClient(url, 22, userName, password))
+            if (isWindows)
             {
-                sshClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                sshClient.Connect();
-
-                if (!sshClient.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-
-                var st = sshClient.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
-
-                // wait for bash prompt
-                while (!st.DataAvailable)
-                    System.Threading.Thread.Sleep(200);
-
-                //st.WriteLine("echo '####KockpitStudioStart####'; python Kockpit/Stage1/p1.py; echo '####KockpitStudioEnd####'; exit;");
-                st.WriteLine("echo '####KockpitStudioStart####';");
-                st.WriteLine(string.Format("{0} {1};", platform, filePath));
-                st.WriteLine("echo '####KockpitStudioEnd####';");
-                //st.WriteLine("exit;");
-                //st.WriteLine("python Kockpit/Stage1/p1.py; exit;");
-                st.Flush();
-
-                StringBuilder output = new StringBuilder();
-
-                bool loggingStart = false;
-                while (sshClient.IsConnected)
+                var process = new Process
                 {
-                    var line = st.ReadLine();
-                    //Debug.WriteLine(line);
-                    //Debug.WriteLine("--------------------------------------");
-                    output.Append(line);
-
-                    //var ot = output.ToString();
-                    if (line.Equals("####KockpitStudioStart####"))
+                    StartInfo = new ProcessStartInfo
                     {
-                        loggingStart = true;
-                        continue;
-                    }
-                    if (line.Contains("####KockpitStudioEnd####"))
-                    {
-                        opCompleted();
-                        break;
-                    }
-                    if (loggingStart) //loggingStart && loggingEnd
+                        FileName = platform,
+                        Arguments = filePath,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    },
+                    EnableRaisingEvents = true
+                };
+                process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => 
+                {
+                    if (e.Data != null)
                     {
                         txtConsoleLog.PerformSafely(() =>
                         {
-                            txtConsoleLog.AppendText(line);
+                            txtConsoleLog.AppendText(e.Data);
                             txtConsoleLog.AppendText(Environment.NewLine);
                             //txtConsoleLog.AppendText(line, Color.Lime);
                             txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
                             txtConsoleLog.ScrollToCaret();
                         });
                     }
-
-                    System.Threading.Thread.Sleep(100);
-
-                    if (line.Contains("logout"))
+                };
+                process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                {
+                    if (e.Data != null)
                     {
-                        opCompleted();
-                        //client.Disconnect();
-                        break;
+                        txtConsoleLog.PerformSafely(() =>
+                        {
+                            txtConsoleLog.AppendText(e.Data);
+                            txtConsoleLog.AppendText(Environment.NewLine);
+                            //txtConsoleLog.AppendText(line, Color.Lime);
+                            txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
+                            txtConsoleLog.ScrollToCaret();
+                        });
+                    }
+                };
+
+                process.Start();
+                process.BeginErrorReadLine();
+                process.BeginOutputReadLine();
+                process.WaitForExit();
+                opCompleted();
+            }
+            else
+            {
+                using (sshClient = new SshClient(url, 22, userName, password))
+                {
+                    sshClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sshClient.Connect();
+
+                    if (!sshClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+
+                    var st = sshClient.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
+
+                    // wait for bash prompt
+                    while (!st.DataAvailable)
+                        System.Threading.Thread.Sleep(200);
+
+                    //st.WriteLine("echo '####KockpitStudioStart####'; python Kockpit/Stage1/p1.py; echo '####KockpitStudioEnd####'; exit;");
+                    st.WriteLine("echo '####KockpitStudioStart####';");
+                    st.WriteLine(string.Format("{0} {1};", platform, filePath));
+                    st.WriteLine("echo '####KockpitStudioEnd####';");
+                    //st.WriteLine("exit;");
+                    //st.WriteLine("python Kockpit/Stage1/p1.py; exit;");
+                    st.Flush();
+
+                    StringBuilder output = new StringBuilder();
+
+                    bool loggingStart = false;
+                    while (sshClient.IsConnected)
+                    {
+                        var line = st.ReadLine();
+                        //Debug.WriteLine(line);
+                        //Debug.WriteLine("--------------------------------------");
+                        output.Append(line);
+
+                        //var ot = output.ToString();
+                        if (line.Equals("####KockpitStudioStart####"))
+                        {
+                            loggingStart = true;
+                            continue;
+                        }
+                        if (line.Contains("####KockpitStudioEnd####"))
+                        {
+                            opCompleted();
+                            break;
+                        }
+                        if (loggingStart) //loggingStart && loggingEnd
+                        {
+                            txtConsoleLog.PerformSafely(() =>
+                            {
+                                txtConsoleLog.AppendText(line);
+                                txtConsoleLog.AppendText(Environment.NewLine);
+                                //txtConsoleLog.AppendText(line, Color.Lime);
+                                txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
+                                txtConsoleLog.ScrollToCaret();
+                            });
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+
+                        if (line.Contains("logout"))
+                        {
+                            opCompleted();
+                            //client.Disconnect();
+                            break;
+                        }
                     }
                 }
             }
+            
         }
-
 
         public static string ListDirectory(string dirPath)
         {

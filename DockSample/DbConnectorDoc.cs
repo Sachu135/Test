@@ -1,4 +1,5 @@
-﻿using DockSample.Controls;
+﻿using CustomControls;
+using DockSample.Controls;
 using DockSample.lib;
 using ScintillaNET;
 using System;

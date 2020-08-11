@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DockSample.Controls
+namespace CustomControls
 {
     public partial class UCLoaderForm : Form
     {

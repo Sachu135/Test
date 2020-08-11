@@ -10,6 +10,7 @@ using SFTPEntities;
 using CefSharp.WinForms;
 using DockSample.Controls;
 using CefSharp;
+using CustomControls;
 
 namespace DockSample
 {

@@ -73,7 +73,7 @@ namespace SFTPBusinessLayer
                             break;
                         case "xls":
                         case "xlsx":
-                            eFType = eFileType.Python;
+                            eFType = eFileType.Excel;
                             break;
                         default:
                             eFType = eFileType.UnKnown;

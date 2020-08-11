@@ -21,7 +21,7 @@ namespace DockSample
         StudioConfig studioConfig;
         //bool isDocDirty;
         public ToolStrip ToolStrip { get; set; }
-
+        public bool IsWindows;
         FindReplace ctrlFindReplace;
         SSHManager sshManager;
         public EasyScintilla.SimpleEditor TxtEditor { get; set; }
@@ -253,7 +253,7 @@ namespace DockSample
                         fileText = txtCodeEditor.Text;
                     });
                     sshManager = new SSHManager();
-                    sshManager.WriteFileContentMethod(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, ToolTipText, fileText);
+                    sshManager.WriteFileContentMethod(mainFrm.CurrentProj.sSHClientInfo.IPAddress, mainFrm.CurrentProj.sSHClientInfo.UserName, mainFrm.CurrentProj.sSHClientInfo.Password, ToolTipText, fileText, IsWindows);
 
                     //if (isDocDirty)
                     //{
@@ -334,7 +334,7 @@ namespace DockSample
                         fileText = txtCodeEditor.Text;
                     });
                     sshManager = new SSHManager();
-                    sshManager.WriteFileContentMethod(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, ToolTipText, fileText);
+                    sshManager.WriteFileContentMethod(mainFrm.CurrentProj.sSHClientInfo.IPAddress, mainFrm.CurrentProj.sSHClientInfo.UserName, mainFrm.CurrentProj.sSHClientInfo.Password, ToolTipText, fileText, IsWindows);
 
                     outputWindow.OutputTextControl.PerformSafely(() =>
                     {
@@ -371,7 +371,7 @@ namespace DockSample
                         lblMsg.Text = "Executing file...";
                     });
 
-                    sshManager.ExecuteCommandOnConsoleMethod(studioConfig.sSHClientInfo.IPAddress, studioConfig.sSHClientInfo.UserName, studioConfig.sSHClientInfo.Password, compilerText, ToolTipText, outputWindow.OutputTextControl,
+                    sshManager.ExecuteCommandOnConsoleMethod(mainFrm.CurrentProj.sSHClientInfo.IPAddress, mainFrm.CurrentProj.sSHClientInfo.UserName, mainFrm.CurrentProj.sSHClientInfo.Password, compilerText, ToolTipText, outputWindow.OutputTextControl, IsWindows,
                         () => {
                             outputWindow.OutputTextControl.PerformSafely(() =>
                             {
@@ -411,6 +411,9 @@ namespace DockSample
                     });
                     txtCodeEditor.PerformSafely(() => {
                         txtCodeEditor.Enabled = true;
+                    });
+                    pnlMsg.PerformSafely(() => {
+                        pnlMsg.Visible = false;
                     });
                 }
                 finally

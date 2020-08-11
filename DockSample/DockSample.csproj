@@ -129,6 +129,12 @@
     <Compile Include="Controls\FindReplace.designer.cs">
       <DependentUpon>FindReplace.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MoveFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\MoveFile.Designer.cs">
+      <DependentUpon>MoveFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NativeTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -152,12 +158,6 @@
     </Compile>
     <Compile Include="Controls\UCLoader.Designer.cs">
       <DependentUpon>UCLoader.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\UCLoaderForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\UCLoaderForm.Designer.cs">
-      <DependentUpon>UCLoaderForm.cs</DependentUpon>
     </Compile>
     <Compile Include="BrowserDoc.cs">
       <SubType>Form</SubType>
@@ -242,11 +242,11 @@
     <EmbeddedResource Include="Controls\FindReplace.resx">
       <DependentUpon>FindReplace.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MoveFile.resx">
+      <DependentUpon>MoveFile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\UCLoader.resx">
       <DependentUpon>UCLoader.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\UCLoaderForm.resx">
-      <DependentUpon>UCLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BrowserDoc.resx">
       <DependentUpon>BrowserDoc.cs</DependentUpon>
@@ -316,6 +316,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomControls\CustomControls.csproj">
+      <Project>{D960EFB2-6F87-4CCC-A8AD-899FF58E2C08}</Project>
+      <Name>CustomControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Editor\Editor.csproj">
       <Project>{ee03a6af-2937-4893-80f4-dd71f099a76c}</Project>
       <Name>Editor</Name>
