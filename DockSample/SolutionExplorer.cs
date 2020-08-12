@@ -1146,24 +1146,18 @@ namespace DockSample
                             sf.AddExtension = true;
                             if (sf.ShowDialog() == DialogResult.OK)
                             {
-                                try
-                                {
-                                    var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress,
-                                                        CurrentProj.sSHClientInfo.UserName,
-                                                        CurrentProj.sSHClientInfo.Password,
-                                                        selectedNodePath, CurrentProj.IsWindows);
+                                var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress,
+                                                    CurrentProj.sSHClientInfo.UserName,
+                                                    CurrentProj.sSHClientInfo.Password,
+                                                    selectedNodePath, CurrentProj.IsWindows);
 
-                                    using (var stream = new FileStream(sf.FileName, 
-                                        FileMode.Create, 
-                                        FileAccess.Write, 
-                                        FileShare.Write, 4096))
-                                    {
-                                        var bytes = Encoding.UTF8.GetBytes(fileContent);
-                                        stream.Write(bytes, 0, bytes.Length);
-                                    }
-                                }
-                                catch (NotSupportedException ex)
+                                using (var stream = new FileStream(sf.FileName,
+                                    FileMode.Create,
+                                    FileAccess.Write,
+                                    FileShare.Write, 4096))
                                 {
+                                    var bytes = Encoding.UTF8.GetBytes(fileContent);
+                                    stream.Write(bytes, 0, bytes.Length);
                                 }
                             }
                         });
