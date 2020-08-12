@@ -1137,7 +1137,7 @@ namespace DockSample
                     using (SaveFileDialog sf = new SaveFileDialog()) 
                     {
                         this.PerformSafely(() => {
-                            sf.Title = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath);
+                            sf.Title = "Save As";
                             sf.RestoreDirectory = true;
                             sf.CheckFileExists = false;
                             sf.CheckPathExists = true;
@@ -1154,7 +1154,7 @@ namespace DockSample
                                 using (var stream = new FileStream(sf.FileName,
                                     FileMode.Create,
                                     FileAccess.Write,
-                                    FileShare.Write, 4096))
+                                    FileShare.Write))
                                 {
                                     var bytes = Encoding.UTF8.GetBytes(fileContent);
                                     stream.Write(bytes, 0, bytes.Length);
