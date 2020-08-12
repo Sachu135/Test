@@ -66,6 +66,7 @@ namespace DockSample
             this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem23 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsRootPath.SuspendLayout();
             this.cmsDirectory.SuspendLayout();
             this.cmsFile.SuspendLayout();
@@ -305,7 +306,8 @@ namespace DockSample
             this.toolStripMenuItem22,
             this.toolStripMenuItem19,
             this.toolStripMenuItem20,
-            this.toolStripMenuItem21});
+            this.toolStripMenuItem21,
+            this.toolStripMenuItem23});
             this.cmsFile.Name = "cmsRootPath";
             this.cmsFile.Size = new System.Drawing.Size(118, 48);
             this.cmsFile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsFile_ItemClicked);
@@ -333,6 +335,12 @@ namespace DockSample
             this.toolStripMenuItem22.Name = "toolStripMenuItem22";
             this.toolStripMenuItem22.Size = new System.Drawing.Size(117, 22);
             this.toolStripMenuItem22.Text = "Create Copy";
+
+            // toolStripMenuItem23
+            // 
+            this.toolStripMenuItem23.Name = "toolStripMenuItem23";
+            this.toolStripMenuItem23.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem23.Text = "Download";
 
             // 
             // SolutionExplorer
@@ -390,6 +398,7 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem20;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem21;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem22;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem23;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
