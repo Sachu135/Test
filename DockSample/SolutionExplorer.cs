@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1125,6 +1126,73 @@ namespace DockSample
             addFileForm.ShowDialog(this);
         }
 
+
+                   
+        private void DownloadFile(string selectedNodePath)
+        {
+            new Task(() =>
+            {
+                try
+                {
+                    using (SaveFileDialog sf = new SaveFileDialog()) 
+                    {
+                        this.PerformSafely(() => {
+                            sf.Title = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath);
+                            sf.RestoreDirectory = true;
+                            sf.CheckFileExists = false;
+                            sf.CheckPathExists = true;
+                            sf.FileName = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath);
+                            sf.DefaultExt = System.IO.Path.GetExtension(selectedNodePath);
+                            sf.AddExtension = true;
+                            if (sf.ShowDialog() == DialogResult.OK)
+                            {
+                                try
+                                {
+                                    var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress,
+                                                        CurrentProj.sSHClientInfo.UserName,
+                                                        CurrentProj.sSHClientInfo.Password,
+                                                        selectedNodePath, CurrentProj.IsWindows);
+
+                                    using (var stream = new FileStream(sf.FileName, 
+                                        FileMode.Create, 
+                                        FileAccess.Write, 
+                                        FileShare.Write, 4096))
+                                    {
+                                        var bytes = Encoding.UTF8.GetBytes(fileContent);
+                                        stream.Write(bytes, 0, bytes.Length);
+                                    }
+                                }
+                                catch (NotSupportedException ex)
+                                {
+                                }
+                            }
+                        });
+                    }
+
+                    var selectedProj = CurrentProj.ProjectName;
+                    studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
+                    FillTreeView(selectedProj);
+                    this.PerformSafely(() =>
+                    {
+                        loader.Hide();
+                        //loader.Close();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    this.PerformSafely(() =>
+                    {
+                        loader.Hide();
+                        //loader.Close();
+                    });
+                    MessageBox.Show(ex.Message);
+                }
+            }).Start();
+            this.PerformSafely(() =>
+            {
+                loader.ShowDialog(this);
+            });
+        }
         private async void cmsFile_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             Task mnTsk = new Task(() => 
@@ -1240,6 +1308,10 @@ namespace DockSample
                             {
                                 moveFileForm.ShowDialog(this);
                             });
+                            break;
+                        case "Download": //Mahesh
+                            //code to download the selected file into local
+                            DownloadFile(selectedNodePath);
                             break;
                     }
                 }
