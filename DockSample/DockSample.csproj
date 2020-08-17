@@ -73,19 +73,26 @@
     <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
     </Reference>
+    <Reference Include="SharpCompress, Version=0.26.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpCompress.0.26.0\lib\net46\SharpCompress.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.dll</HintPath>
     </Reference>
-    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
+      <HintPath>..\packages\System.Memory.4.5.4\lib\netstandard1.1\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -183,10 +190,17 @@
     <Compile Include="DummyPropertyWindow.Designer.cs">
       <DependentUpon>DummyPropertyWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="HardwareConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HardwareConfigForm.Designer.cs">
+      <DependentUpon>HardwareConfigForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\Browser.cs" />
     <Compile Include="lib\CrossThreadSafe.cs" />
     <Compile Include="lib\DbClient.cs" />
     <Compile Include="lib\FileUtil.cs" />
+    <Compile Include="lib\HardwareConfig.cs" />
     <Compile Include="SolutionExplorer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -267,6 +281,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>DummyPropertyWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HardwareConfigForm.resx">
+      <DependentUpon>HardwareConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SolutionExplorer.resx">
       <DependentUpon>SolutionExplorer.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -314,6 +331,7 @@
     <Compile Include="ToolWindow.Designer.cs">
       <DependentUpon>ToolWindow.cs</DependentUpon>
     </Compile>
+    <None Include="Resources\winutils.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CustomControls\CustomControls.csproj">
@@ -375,6 +393,7 @@
   <ItemGroup>
     <Content Include="Images\Logo.ico" />
     <Content Include="Images\SplashScreen.png" />
+    <None Include="Resources\progressBar.gif" />
     <None Include="Resources\f_pyico.ico" />
     <None Include="Resources\f_xml.png" />
     <None Include="Resources\f_text.png" />
@@ -409,6 +428,9 @@
     <None Include="Resources\loader.gif" />
     <None Include="Images\SplashScreenKockpit.png" />
     <Content Include="Logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Packages\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

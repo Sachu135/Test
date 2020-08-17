@@ -49,8 +49,8 @@ namespace DockSample
 
             showRightToLeft.Checked = (RightToLeft == RightToLeft.Yes);
             RightToLeftLayout = showRightToLeft.Checked;
-            m_solutionExplorer.RightToLeftLayout = RightToLeftLayout;
-            //m_solutionExplorer.DockState = DockState.DockLeft;
+            //m_solutionExplorer.RightToLeftLayout = RightToLeftLayout;
+            m_solutionExplorer.DockState = DockState.DockLeft;
             m_deserializeDockContent = new DeserializeDockContent(GetContentFromPersistString);
 
             vsToolStripExtender1.DefaultRenderer = _toolStripProfessionalRenderer;
@@ -705,6 +705,9 @@ namespace DockSample
 
             if (File.Exists(configFile))
                 dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
+
+            //Mahesh  to show the default solution explorer on page load
+            menuItemSolutionExplorer_Click(sender, e);
         }
 
         public void EnableDisableControls()
@@ -876,7 +879,7 @@ namespace DockSample
             m_toolbox = new DummyToolbox();
             //m_outputWindow = new DummyOutputWindow();          
             m_taskList = new DummyTaskList();
-
+            m_solutionExplorer.Show(dockPanel, DockState.DockLeft);
             if (studioConfig.databaseConnections != null)
             {
                 var dbConns = studioConfig.databaseConnections.Where(c => c.DbType.Equals("Sql Server") || c.DbType.Equals("Postgres")).Select(c => c.ConnName).ToList();

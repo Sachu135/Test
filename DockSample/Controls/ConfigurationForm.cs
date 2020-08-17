@@ -528,6 +528,7 @@ namespace DockSample.Controls
                             HideLoader();
                             return;
                         }
+
                         ProjectInfo proInfo = new ProjectInfo();
                         proInfo.sSHClientInfo = new SSHClientInfo();
                         proInfo.ProjectName = txtProName.Text.Trim();
@@ -590,6 +591,17 @@ namespace DockSample.Controls
                         if (editIndex > -1)
                         {
                             config.projectInfoList.RemoveAt(editIndex);
+                        }
+
+                        if (proInfo.IsWindows && editIndex == -1)
+                        {
+                            using (HardwareConfigForm form = new HardwareConfigForm())
+                            {
+                                this.PerformSafely(() =>
+                                {
+                                    form.ShowDialog(this);
+                                });
+                            }
                         }
                         editIndex = -1;
                         config.projectInfoList.Add(proInfo);

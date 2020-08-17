@@ -17,7 +17,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockSample
 {
-    public partial class SolutionExplorer : DockContent// Form// 
+    public partial class SolutionExplorer : DockContent //Form
     {
         StudioConfig studioConfig;
         MainForm mainFrm;
