@@ -27,25 +27,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingAutoHideStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingTheme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingAutoHideStrip.cs" />
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneCaption.cs" />
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneStrip.cs" />
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingPaneIndicator.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingPanelIndicator.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingPaneIndicator.cs" />
+    <Compile Include="ThemeVS2005Multithreading\VS2005MultithreadingPanelIndicator.cs" />
     <Compile Include="ThemeVS2005\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

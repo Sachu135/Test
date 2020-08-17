@@ -27,9 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ThemeVS2003\InertButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2003\InertButton.cs" />
     <Compile Include="ThemeVS2003\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -40,18 +38,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="ThemeVS2003\VS2003AutoHideStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2003\VS2003DockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2003\VS2003DockPaneStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2003\VS2003Theme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2003\VS2003AutoHideStrip.cs" />
+    <Compile Include="ThemeVS2003\VS2003DockPaneCaption.cs" />
+    <Compile Include="ThemeVS2003\VS2003DockPaneStrip.cs" />
+    <Compile Include="ThemeVS2003\VS2003Theme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThemeVS2005\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

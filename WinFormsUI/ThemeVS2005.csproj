@@ -38,21 +38,13 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ThemeVS2005\VS2005AutoHideStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005AutoHideStrip.cs" />
     <Compile Include="ThemeVS2005\VS2005AutoHideWindowFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005DockIndicatorFactory.cs" />
-    <Compile Include="ThemeVS2005\VS2005DockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005DockPaneCaption.cs" />
     <Compile Include="ThemeVS2005\VS2005DockPaneSplitterControlFactory.cs" />
-    <Compile Include="ThemeVS2005\VS2005DockPaneStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005\VS2005Theme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005DockPaneStrip.cs" />
+    <Compile Include="ThemeVS2005\VS2005Theme.cs" />
     <Compile Include="ThemeVS2005\VS2005PaneIndicatorFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005PanelIndicatorFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005DockOutlineFactory.cs" />
