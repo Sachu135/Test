@@ -378,11 +378,18 @@ namespace DockSample
 				connectString = "Data Source=" + dbConn.ServerName + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
 				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
 				this.Text = connectDescription;
-			}
-			else
+			}//server=localhost;port=3306;database=solarariseactivity;uid=root;password=root
+			else if (dbConn.DbType.Equals("Postgres"))
 			{
 				clientFactory = new PostgresFactory();
 				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False";
+				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
+				this.Text = connectDescription;
+			}
+			else
+			{
+				clientFactory = new MySqlFactory();
+				connectString = "server=" + dbConn.ServerName + ";port=3306;database=" + dbConn.DbName + ";uid=" + dbConn.UserName + ";password=" + dbConn.Password;
 				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
 				this.Text = connectDescription;
 			}
@@ -398,8 +405,10 @@ namespace DockSample
 
 			if (dbConn.DbType.Equals("Sql Server"))
 				browser = new SqlBrowser(dbClient);
-			else
+			else if(dbConn.DbType.Equals("Postgres"))
 				browser = new PostgresBrowser(dbClient);
+			else
+				browser = new MySqlBrowser(dbClient);
 
 			lastDatabase = dbClient.Database;               // this is so we know when the current database changes
 			HideResults = true;

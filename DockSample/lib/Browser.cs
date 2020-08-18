@@ -776,7 +776,7 @@ namespace DockSample.lib
 		class MySqlNode : TreeNode
 		{
 			internal string type = "";
-			//internal int noOfArgs = 0;
+			internal int noOfArgs = 0;
 			internal string name, owner, safeName, dragText; //
 			public MySqlNode(string text) : base(text) { }
 		}
@@ -799,79 +799,96 @@ namespace DockSample.lib
 			TreeNode[] top = new TreeNode[]
 			{
 				new TreeNode ("User Tables"),
+				new TreeNode ("Views"),
 				new TreeNode ("Procedures"),
 				new TreeNode ("Functions"),
 				//new TreeNode ("User Stored Procs"),
 				
 			};
-			DataSet dsTables = dbClient.Execute(@"show table status;", timeout);
-			DataSet dsPro = dbClient.Execute(@"show PROCEDURE status;", timeout);
-			DataSet dsFunc = dbClient.Execute(@"SHOW FUNCTION STATUS;;", timeout);
-
-			if (dsTables != null && dsTables.Tables.Count > 0)
+			try
 			{
-				foreach (DataRow row in dsTables.Tables[0].Rows)
+				
+				DataSet dsTables = dbClient.Execute(string.Format("SELECT table_name, table_type FROM information_schema.tables WHERE  table_schema = '{0}';", DbClient.Database), timeout);
+				DataSet dsPro = dbClient.Execute(string.Format("SHOW PROCEDURE STATUS WHERE Db = '{0}';", dbClient.Database), timeout);
+				DataSet dsFunc = dbClient.Execute(string.Format("SHOW FUNCTION STATUS WHERE Db = '{0}';", dbClient.Database), timeout);
+
+				var isSystable = dbClient.Database == "information_schema";
+				if (dsTables != null && dsTables.Tables.Count > 0)
 				{
-					MySqlNode node = new MySqlNode(row["Name"].ToString());
-					node.type = "TABLE";
-					node.name = row["Name"].ToString();
-					node.owner = dbClient.Database;
-					// If the object name contains a space, wrap the "safe name" in square brackets.
-
-					node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
-					node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
-
-					top[0].Nodes.Add(node);
-
-					// Add a dummy sub-node to user tables and views so they'll have a clickable expand sign
-					// allowing us to have GetSubObjectHierarchy called so the user can view the columns
-					node.Nodes.Add(new TreeNode());
-				}
-			}
-
-			if (dsPro != null && dsPro.Tables.Count > 0)
-			{
-				foreach (DataRow row in dsPro.Tables[0].Rows)
-				{
-					if (row["Db"].ToString() != "sys")
+					foreach (DataRow row in dsTables.Tables[0].Rows)
 					{
-						MySqlNode node = new MySqlNode(row["Name"].ToString());
-						node.type = "PROC";
-						node.name = row["Name"].ToString();
+						MySqlNode node = new MySqlNode(row[0].ToString());
+
+						node.name = row[0].ToString();
 						node.owner = dbClient.Database;
 
 						node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
 						node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
 
-						top[1].Nodes.Add(node);
-					}
-					
-				}
-			}
+						if (row[1].ToString().Equals("BASE TABLE") || isSystable)
+						{
+							node.type = "TABLE";
+							top[0].Nodes.Add(node);
+							node.Nodes.Add(new TreeNode());
+						}
+						else if (row[1].ToString().Equals("VIEW"))
+						{
+							node.type = "VIEW";
+							top[1].Nodes.Add(node);
+							node.Nodes.Add(new TreeNode());
+						}
 
-			if (dsFunc != null && dsFunc.Tables.Count > 0)
-			{
-				foreach (DataRow row in dsFunc.Tables[0].Rows)
+					}
+				}
+
+				if (dsPro != null && dsPro.Tables.Count > 0)
 				{
-					if (row["Db"].ToString() != "sys")
+					foreach (DataRow row in dsPro.Tables[0].Rows)
 					{
-						MySqlNode node = new MySqlNode(row["Name"].ToString());
-						node.type = "FUNC";
-						node.name = row["Name"].ToString();
-						node.owner = dbClient.Database;
+						if (row["Db"].ToString() != "sys" || isSystable)
+						{
+							MySqlNode node = new MySqlNode(row["Name"].ToString());
+							node.type = "PROC";
+							node.name = row["Name"].ToString();
+							node.owner = dbClient.Database;
 
-						node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
-						node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
+							node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
+							node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
 
-						top[2].Nodes.Add(node);
+							top[2].Nodes.Add(node);
+						}
+
 					}
-
 				}
+
+				if (dsFunc != null && dsFunc.Tables.Count > 0)
+				{
+					foreach (DataRow row in dsFunc.Tables[0].Rows)
+					{
+						if (row["Db"].ToString() != "sys" || isSystable)
+						{
+							MySqlNode node = new MySqlNode(row["Name"].ToString());
+							node.type = "FUNC";
+							node.name = row["Name"].ToString();
+							node.owner = dbClient.Database;
+
+							node.safeName = "`" + dbClient.Database + "`.`" + node.name + "`";
+							node.dragText = "`" + dbClient.Database + "`.`" + node.name + "`";
+
+							top[3].Nodes.Add(node);
+						}
+
+					}
+				}
+
+				if (top[0].Nodes.Count == 0 && top[1].Nodes.Count == 0 && top[2].Nodes.Count == 0 && top[3].Nodes.Count == 0) return null;
+
+				return top;
 			}
-
-			if (top[0].Nodes.Count == 0 || top[1].Nodes.Count == 0 || top[2].Nodes.Count == 0) return null;
-
-			return top;
+			catch (Exception ex)
+			{
+				return null;
+			}
 		}
 
 		public TreeNode[] GetSubObjectHierarchy(TreeNode node)
@@ -880,7 +897,7 @@ namespace DockSample.lib
 			if (node is MySqlNode)
 			{
 				MySqlNode sn = (MySqlNode)node;
-				if (sn.type == "TABLE")                   // break down columns for user tables and views
+				if (sn.type == "TABLE" || sn.type == "VIEW") // break down columns for user tables and views
 				{
 					var query = @"SELECT column_name AS NAME, data_type AS TYPE, is_nullable AS nullable FROM information_schema.columns WHERE table_schema = '" + sn.owner + "' AND table_name = '" + sn.name + "';";
 					DataSet ds = dbClient.Execute(query, timeout);
@@ -891,7 +908,6 @@ namespace DockSample.lib
 
 					foreach (DataRow row in ds.Tables[0].Rows)
 					{
-
 						string nullable = row["nullable"].ToString().StartsWith("Y") ? "null" : "not null";
 
 						MySqlNode column = new MySqlNode(row["name"].ToString() + " ("
@@ -936,21 +952,21 @@ namespace DockSample.lib
 			MySqlNode sn = (MySqlNode)node;
 			StringCollection output = new StringCollection();
 
-			if (sn.type == "TABLE" || sn.type == "VIEW" || sn.type == "FUNCTION")
+			if (sn.type == "TABLE" || sn.type == "VIEW")
 			{
-				/*output.Add("select * from " + sn.safeName + (sn.type == "FUNCTION" ? GetArgsText(sn.noOfArgs) : "") + ";");*/
-				//output.Add("sp_help " + sn.safeName);
-				//if (sn.type != "V")
-				//{
-				//	output.Add("sp_helpindex " + sn.safeName);
-				//	output.Add("sp_helpconstraint " + sn.safeName);
-				//	output.Add("sp_helptrigger " + sn.safeName);
-				//}
-				output.Add("(insert all fields)");
-				output.Add("(insert all fields, table prefixed)");
+				output.Add("select * from " + sn.safeName + (sn.type == "FUNCTION" ? GetArgsText(sn.noOfArgs) : "") + ";");
+				if (sn.type == "TABLE")
+				{
+					output.Add("(insert all fields)");
+					output.Add("(insert all fields, table prefixed)");
+				}
+				
 			}
-
-			if (sn.type == "VIEW" || sn.type == "FUNCTION") //|| sn.type == "P" || sn.type == "FN"
+			if (sn.type == "PROC" || sn.type == "FUNC")
+			{
+				output.Add("Execute " + sn.safeName);
+			}
+			if (sn.type == "VIEW" || sn.type == "FUNC" || sn.type == "PROC") //|| sn.type == "P" || sn.type == "FN"
 				output.Add("View/Modify " + sn.name);
 
 			//if (sn.type == "CO" && ((SqlNode)sn.Parent).type == "U")
@@ -965,7 +981,7 @@ namespace DockSample.lib
 
 			MySqlNode sn = (MySqlNode)node;
 
-			if (action.StartsWith("select * from ") || action.StartsWith("sp_"))
+			if (action.StartsWith("select * from "))
 				return action;
 
 			if (action.StartsWith("(insert all fields"))
@@ -990,49 +1006,46 @@ namespace DockSample.lib
 
 			if (action.StartsWith("View/Modify "))
 			{
-				if (sn.type == "FUNCTION")
+				var query = string.Empty;
+				var rowNo = 2;
+				if (sn.type == "FUNC")
 				{
-					var query = @"select case when l.lanname = 'internal' then p.prosrc
-								else pg_get_functiondef(p.oid)
-								end as definition
-					from pg_proc p
-					left join pg_namespace n on p.pronamespace = n.oid
-					left join pg_language l on p.prolang = l.oid
-					where n.nspname not in ('pg_catalog', 'information_schema')
-					AND p.proname = '" + sn.name + "';";
-					DataSet ds = dbClient.Execute(query, timeout);
-					if (ds == null || ds.Tables.Count == 0) return null;
-
-					StringBuilder sb = new StringBuilder();
-					foreach (DataRow row in ds.Tables[0].Rows)
-					{
-						string line = row[0].ToString();
-						sb.Append(line);
-					}
-					return sb.ToString().Trim();
+					query = "SHOW CREATE FUNCTION " + sn.name;
+				} 
+				else if (sn.type == "VIEW")
+				{
+					query = "SHOW CREATE VIEW " + sn.name;
+					rowNo = 1;
 				}
 				else
 				{
-					DataSet ds = dbClient.Execute(("select definition from pg_views where viewname = '" + sn.name + "';"), timeout);
-					if (ds == null || ds.Tables.Count == 0) return null;
-
-					StringBuilder sb = new StringBuilder();
-					foreach (DataRow row in ds.Tables[0].Rows)
-					{
-						string line = row[0].ToString();
-						sb.Append("CREATE OR REPLACE VIEW " + "\"" + sn.name + "\"" + "\r\n");
-						sb.Append("AS" + "\r\n");
-						sb.Append(line);
-						//if (!altered && line.Trim().ToUpper().StartsWith("CREATE"))
-						//{
-						//	sb.Append("ALTER" + line.Trim().Substring(6, line.Trim().Length - 6) + "\r\n");
-						//	altered = true;
-						//}
-						//else
-						//	sb.Append(line);
-					}
-					return sb.ToString().Trim();
+					query = "SHOW CREATE PROCEDURE " + sn.name;
 				}
+
+				DataSet ds = dbClient.Execute(query, timeout);
+				if (ds == null || ds.Tables.Count == 0) return null;
+
+				StringBuilder sb = new StringBuilder();
+				foreach (DataRow row in ds.Tables[0].Rows)
+				{
+					string line = row[rowNo].ToString();
+					sb.Append(line);
+				}
+				return sb.ToString().Trim();
+			}
+
+			if (action.StartsWith("Execute "))
+			{
+				var query = string.Empty;
+				if (sn.type == "FUNC")
+				{
+					query = "SELECT " + sn.safeName + "(...);";
+				}
+				else if (sn.type == "PROC")
+				{
+					query = "CALL " + sn.safeName + "(...);";
+				}
+				return query;
 			}
 
 			if (action == "Alter column...")
@@ -1044,7 +1057,7 @@ namespace DockSample.lib
 		public string[] GetDatabases()
 		{
 
-			DataSet ds = dbClient.Execute("SELECT datname AS name FROM pg_database WHERE datistemplate = false order by name", timeout);
+			DataSet ds = dbClient.Execute("SHOW DATABASES;", timeout);
 			if (ds == null || ds.Tables.Count == 0) return null;
 			string[] sa = new string[ds.Tables[0].Rows.Count];
 			int count = 0;

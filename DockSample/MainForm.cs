@@ -879,7 +879,7 @@ namespace DockSample
 
             if (studioConfig.databaseConnections != null)
             {
-                var dbConns = studioConfig.databaseConnections.Where(c => c.DbType.Equals("Sql Server") || c.DbType.Equals("Postgres")).Select(c => c.ConnName).ToList();
+                var dbConns = studioConfig.databaseConnections.Where(c => c.DbType.Equals("Sql Server") || c.DbType.Equals("Postgres") || c.DbType.Equals("MySql")).Select(c => c.ConnName).ToList(); 
                 dbConns.Insert(0, "-Select-");
                 toolBarcbDatabase.ComboBox.DataSource = dbConns;
             }

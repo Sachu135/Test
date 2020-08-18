@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using MySql.Data.MySqlClient;
+using Npgsql;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -129,6 +130,38 @@ namespace DockSample.lib
 		}
 	}
 
+
+	/// <summary> Postgres Client</summary>
+	public class MySqlFactory : IClientFactory
+	{
+		public IDbConnection GetConnection(string connectString, MessageProcessor mp)
+		{
+			//return new SqlConnection (connectString);
+			MySqlConnection cx = new MySqlConnection(connectString);
+			if (mp != null) new Messenger(mp, cx);
+			return cx;
+		}
+
+		public IDbDataAdapter GetDataAdapter(string query, IDbConnection connection)
+		{
+			return new MySqlDataAdapter(query, (MySqlConnection)connection);
+		}
+
+		class Messenger
+		{
+			MessageProcessor mp;
+			public Messenger(MessageProcessor mp, MySqlConnection cx)
+			{
+				this.mp = mp;
+				cx.InfoMessage += Cx_InfoMessage;
+			}
+
+			private void Cx_InfoMessage(object sender, MySqlInfoMessageEventArgs args)
+			{
+				mp(args.ToString());
+			}
+		}
+	}
 	#endregion
 
 	public enum RunState { Idle, Running, Cancelling };
