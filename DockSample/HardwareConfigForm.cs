@@ -35,6 +35,10 @@ namespace DockSample
 
         private void HardwareConfigForm_Shown(object sender, EventArgs e)
         {
+            tabControl1.PerformSafely(() =>
+            {
+                tabControl1.TabPages.Remove(tabPage1);
+            });
             SetConfiguration();
         }
 
@@ -58,6 +62,7 @@ namespace DockSample
                 ///2. check packages installed or not if not then install and set env variables
                 ///3. setup env variables
 
+                #region [Check for Choco]
                 //Stage 1
                 StringBuilder sbChoco = new StringBuilder();
                 sbChoco.AppendLine(@"Set-ExecutionPolicy Bypass -Scope Process -Force");
@@ -110,7 +115,9 @@ namespace DockSample
                 processChoco.BeginErrorReadLine();
                 processChoco.WaitForExit();
                 processChoco.Close();
+                #endregion
 
+                #region [Check for All Packages]
                 //Stage 2
                 //check packages installed or not
                 var processInfoValidate = new ProcessStartInfo("powershell.exe", @"& {choco list --localonly}");
@@ -135,6 +142,8 @@ namespace DockSample
                 processValidate.BeginOutputReadLine();
                 processValidate.WaitForExit();
                 processValidate.Close();
+                #endregion
+
 
                 List<PackageElement> liInstallationPackages = new List<PackageElement>();
                 if (!string.IsNullOrEmpty(strListPackages))
@@ -179,10 +188,13 @@ namespace DockSample
                             processValidateSpark.Close();
                             if (!string.IsNullOrEmpty(strOutput))
                             {
-                                if (!strOutput.Contains("is not recognized as an internal or external command"))
+                                if (strOutput.Contains("Welcome to"))
                                     lfound = true;
                             }
                         }
+
+                        if (lfound)
+                            break;
 
                         foreach (string s in lines)
                         {
@@ -202,6 +214,7 @@ namespace DockSample
                     liInstallationPackages = applications;
                 }
 
+                #region [Install and Set Environment Path]
                 if (liInstallationPackages != null && liInstallationPackages.Count > 0)
                 {
                     bool lSparkExists = false;
@@ -284,14 +297,14 @@ namespace DockSample
                         var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
 
                         //code to create the directory for KockpitStudio
-                        _KockPitDirectory = windowsDriveInfo + "KockpitStudio\\";
+                        _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
                         if (!Directory.Exists(_KockPitDirectory))
                             Directory.CreateDirectory(_KockPitDirectory);
 
                         if (Directory.Exists(_KockPitDirectory))
                         {
-                            _SparkDir = _KockPitDirectory + "\\Spark";
-                            _WinUtilDir = _KockPitDirectory + "\\WinUtil";
+                            _SparkDir = Path.Combine(_KockPitDirectory, "Spark");
+                            _WinUtilDir = Path.Combine(_KockPitDirectory, "WinUtil");
 
                             //Directory for Spark
                             if (!Directory.Exists(_SparkDir))
@@ -315,11 +328,11 @@ namespace DockSample
                                     {
                                         richTextBox2.PerformSafely(() =>
                                         {
-                                            richTextBox2.Text += ("Downloading Spark From https://downloads.apache.org/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz" + Environment.NewLine);
+                                            richTextBox2.Text += ("Downloading Spark From https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz" + Environment.NewLine);
                                             richTextBox2.SelectionStart = richTextBox2.Text.Length;
                                             richTextBox2.ScrollToCaret();
                                         });
-                                        myWebClient.DownloadFile(new Uri("https://downloads.apache.org/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz"), _SparkDir + "\\spark.tgz");
+                                        myWebClient.DownloadFile(new Uri("https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz"), _SparkDir + "\\spark.tgz");
                                         richTextBox2.PerformSafely(() =>
                                         {
                                             richTextBox2.Text += ("Download Completed" + Environment.NewLine + "Extracting..");
@@ -336,8 +349,8 @@ namespace DockSample
                                     });
 
                                     //Environment Set For Spark
-                                    SetEnv("SPARK_HOME", _SparkDir + "\\spark-3.0.0-bin-hadoop2.7");
-                                    newValue = oldValue + ";" + _SparkDir + "\\spark-3.0.0-bin-hadoop2.7\\bin;";
+                                    SetEnv("SPARK_HOME", _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
+                                    newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
                                 }
                             }
 
@@ -374,8 +387,8 @@ namespace DockSample
                                 });
 
                                 //Environment Set For Spark
-                                SetEnv("HADOOP_HOME", _WinUtilDir + "\\hadoop-3.0.0\\bin");
-                                newValue += ";" + _WinUtilDir + "\\hadoop-3.0.0\\bin;";
+                                SetEnv("HADOOP_HOME", _WinUtilDir + "\\hadoop-3.0.0");
+                                //newValue += ";" + _WinUtilDir + "\\hadoop-3.0.0\\bin;";
                             }
 
                             //set Combine Path
@@ -409,6 +422,11 @@ namespace DockSample
                         dgvData.Columns.Clear();
                         if (tData != null && tData.Rows.Count > 0)
                         {
+                            tabControl1.PerformSafely(() =>
+                            {
+                                tabControl1.TabPages.Add(tabPage1);
+                            });
+
                             dgvData.DataSource = tData;
                             dgvData.AutoGenerateColumns = false;
                             dgvData.Columns["Package"].ReadOnly = true;
@@ -450,6 +468,7 @@ namespace DockSample
                         this.Close();
                     });
                 }
+                #endregion
             });
             t.Start();
         }
