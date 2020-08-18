@@ -345,7 +345,7 @@ namespace DockSample
             // 
             // SolutionExplorer
             // 
-            this.ClientSize = new System.Drawing.Size(284, 404);
+            this.ClientSize = new System.Drawing.Size(350, 404);//284
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.treeView2);
             this.Name = "SolutionExplorer";
