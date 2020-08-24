@@ -184,12 +184,6 @@
     <Compile Include="Controls\NativeTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\PlaceHolderTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\PlaceHolderTextBox.Designer.cs">
-      <DependentUpon>PlaceHolderTextBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\XButton.cs">
       <SubType>Component</SubType>
     </Compile>

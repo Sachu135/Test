@@ -240,7 +240,7 @@ namespace DockSample
                 while (date <= dateTimePickerEndDate.Value.Date)
                 {
                     if (item.CheckDate(date)) // probe this date
-                        listView.Items.Add(date.ToLongDateString());
+                        listView.Items.Add(date.ToLongDateString() + " " + item.TriggerTime.ToShortTimeString());
                     date = date.AddDays(1);
                 }
 
@@ -253,24 +253,25 @@ namespace DockSample
                 listAllView.Parent = Page2;
                 listAllView.Dock = DockStyle.Fill;
                 listAllView.View = View.Details;
-                listAllView.Columns.Add("JobName", 100);
-                listAllView.Columns.Add("Job", 200);
-                listAllView.Columns.Add("Trigger", 100);
-                foreach (TriggerItem jobitem in _taskScheduler.TriggerItems)
+                listAllView.Columns.Add("ETL Job References", 500);
+
+                var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                    .Where(c => (string)c.TagName == (string)item.TagName).FirstOrDefault();
+
+                if (dataSource != null)
                 {
-                    ListViewItem listItem = listAllView.Items.Add(jobitem.TagName.ToString());
-                    listItem.SubItems.Add(jobitem.Tag.ToString());
-                    listItem.Tag = item;
-                    DateTime nextDate = item.GetNextTriggerDateTime();
-                    if (nextDate != DateTime.MaxValue)
-                        listItem.SubItems.Add(nextDate.ToString());
-                    else
-                        listItem.SubItems.Add("Never");
+                    string[] liTags = dataSource.Tag.ToString()
+                    .Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (liTags != null && liTags.Length > 0)
+                    {
+                        foreach (string s in liTags)
+                            listAllView.Items.Add(s);
+                    }
                 }
 
                 tabControl.TabPages.Add(Page1);
                 tabControl.TabPages.Add(Page2);
-                form.Show();
+                form.ShowDialog();
             }
             else
                 MessageBox.Show("Please select a trigger!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -518,8 +519,12 @@ namespace DockSample
         #region [Clicks]
         private void buttonCreateTrigger_Click(object sender, EventArgs e)
         {
-            if(ValidateEntry())
+            if (ValidateEntry())
+            {
                 CreateSchedulerItem();
+                txtTagName.Text = "";
+                textBoxlabelOneTimeOnlyTag.Text = "";
+            }
         }
         private void buttonReset_Click(object sender, EventArgs e)
         {
@@ -616,11 +621,11 @@ namespace DockSample
                 }
                 else if (cell.ColumnIndex == 4)
                 {
-                    if (IsServiceRunning("KockpitStudioService").Item1)
+                    DialogResult dialogResult = MessageBox.Show("All the background running jobs will terminated. " + Environment.NewLine + " Are you sure want to delete the job ?",
+                        "Delete Job", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
-                        DialogResult dialogResult = MessageBox.Show("All the background running jobs will terminated. " + Environment.NewLine + " Are you sure want to delete the job ?",
-                            "Delete Job", MessageBoxButtons.YesNo);
-                        if (dialogResult == DialogResult.Yes)
+                        if (IsServiceRunning("KockpitStudioService").Item1)
                         {
                             //remove
                             if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
@@ -640,19 +645,19 @@ namespace DockSample
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        //remove
-                        if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
+                        else
                         {
-                            var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
-                                .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
-                            if (dataSource != null)
+                            //remove
+                            if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
                             {
-                                _taskScheduler.TriggerItems.Remove(dataSource);
-                                UpdateTaskList();
-                                SaveConfig();
+                                var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                    .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
+                                if (dataSource != null)
+                                {
+                                    _taskScheduler.TriggerItems.Remove(dataSource);
+                                    UpdateTaskList();
+                                    SaveConfig();
+                                }
                             }
                         }
                     }

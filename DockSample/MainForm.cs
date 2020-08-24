@@ -142,9 +142,12 @@ namespace DockSample
             else
             {
                 foreach (IDockContent content in dockPanel.Documents)
+                {
+                    //if(content is TaskSchedulerForm)
                     if (content.DockHandler.TabText == text)
                         return content;
-
+                }
+                    
                 return null;
             }
         }
@@ -1117,11 +1120,27 @@ namespace DockSample
             new Task(() =>
             {
                 var tabText = "Scheduler";
-                if (CheckTerminalOrConfiguratorOpen(tabText))
+                if (!CurrentProj.IsWindows)
                 {
-                    MessageBox.Show("Scheduler already opened!");
-                    return;
+                    if (CheckTerminalOrConfiguratorOpen(tabText))
+                    {
+                        MessageBox.Show("Scheduler already opened!");
+                        return;
+                    }
                 }
+                else
+                {
+                    //Code to check Tab is already open or not
+                    foreach (IDockContent content in dockPanel.Documents)
+                    {
+                        if(content is TaskSchedulerForm)
+                        {
+                            MessageBox.Show("Task Scheduler already opened!");
+                            return;
+                        }    
+                    }
+                }
+                
                 dockPanel.PerformSafely(() =>
                 {
                     if (!CurrentProj.IsWindows)
