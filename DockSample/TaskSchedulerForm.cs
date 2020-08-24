@@ -41,11 +41,11 @@ namespace DockSample
 
         void triggerItem_OnTrigger(object sender, TaskScheduler.OnTriggerEventArgs e)
         {
-            String nextTrigger = String.Empty;
-            if (e.Item.GetNextTriggerDateTime() != DateTime.MaxValue)
-                nextTrigger = e.Item.GetNextTriggerDateTime().DayOfWeek.ToString() + ", " + e.Item.GetNextTriggerDateTime().ToString();
-            else
-                nextTrigger = "Never";
+            //String nextTrigger = String.Empty;
+            //if (e.Item.GetNextTriggerDateTime() != DateTime.MaxValue)
+            //    nextTrigger = e.Item.GetNextTriggerDateTime().DayOfWeek.ToString() + ", " + e.Item.GetNextTriggerDateTime().ToString();
+            //else
+            //    nextTrigger = "Never";
             //textBoxEvents.AppendText(e.TriggerDate.ToString() + ": " + e.Item.Tag + ", next trigger: " + nextTrigger + "\r\n");
             UpdateTaskList();
         }
