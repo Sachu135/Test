@@ -107,7 +107,7 @@
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
     </Reference>
-      <!--<HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    <!--<HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>-->
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -125,6 +125,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -182,6 +183,12 @@
     </Compile>
     <Compile Include="Controls\NativeTreeView.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\PlaceHolderTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\PlaceHolderTextBox.Designer.cs">
+      <DependentUpon>PlaceHolderTextBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\XButton.cs">
       <SubType>Component</SubType>
@@ -363,6 +370,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="TaskSchedulerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TaskSchedulerForm.Designer.cs">
+      <DependentUpon>TaskSchedulerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -387,6 +400,10 @@
     <ProjectReference Include="..\UIFunctionality\UIFunctionality.csproj">
       <Project>{059cc2a1-07d8-4ca6-9dba-a40b567fec6e}</Project>
       <Name>UIFunctionality</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsService\WindowsService.csproj">
+      <Project>{695f4ec1-db72-44e9-9b93-86fe8fb3977e}</Project>
+      <Name>WindowsService</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -418,6 +435,9 @@
     <EmbeddedResource Include="SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TaskSchedulerForm.resx">
+      <DependentUpon>TaskSchedulerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ToolWindow.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ToolWindow.cs</DependentUpon>
@@ -431,6 +451,7 @@
   <ItemGroup>
     <Content Include="Images\Logo.ico" />
     <Content Include="Images\SplashScreen.png" />
+    <None Include="Resources\info.png" />
     <None Include="Resources\progressBar.gif" />
     <None Include="Resources\f_pyico.ico" />
     <None Include="Resources\f_xml.png" />
@@ -469,6 +490,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Packages\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
