@@ -717,7 +717,7 @@ namespace DockSample
                 tsSchedular.Enabled = false;
                 tsHealthCheck.Enabled = false;
                 toolBarButtonLinuxTerminal.Enabled = false;
-
+                
                 if (CurrentProj.otherServices != null)
                 {
                     if (!string.IsNullOrEmpty(CurrentProj.otherServices.AirflowService))
@@ -735,6 +735,11 @@ namespace DockSample
                     {
                         toolBarButtonLinuxTerminal.Enabled = true;
                     }
+                }
+
+                if (CurrentProj.IsWindows)
+                {
+                    tsSchedular.Enabled = true;
                 }
             });
             
@@ -1119,19 +1124,35 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    if (CurrentProj .otherServices.AirflowService.Length > 0)
+                    if (!CurrentProj.IsWindows)
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.AirflowService, tabText);
-                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        if (CurrentProj.otherServices.AirflowService.Length > 0)
                         {
-                            dummyDoc.MdiParent = this;
-                            dummyDoc.Show();
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.AirflowService, tabText);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
                         }
-                        else
-                            dummyDoc.Show(dockPanel);
                     }
-                    
-
+                    else 
+                    {
+                        dockPanel.PerformSafely(() =>
+                        {
+                            TaskSchedulerForm taskSchedulerForm = new TaskSchedulerForm(AppDomain.CurrentDomain.BaseDirectory);
+                            //taskSchedulerForm.Show(dockPanel);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                taskSchedulerForm.MdiParent = this;
+                                taskSchedulerForm.Show();
+                            }
+                            else
+                                taskSchedulerForm.Show(dockPanel);
+                        });
+                    }
                 });
             }).Start();
         }
