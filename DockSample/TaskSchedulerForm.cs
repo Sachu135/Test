@@ -217,7 +217,7 @@ namespace DockSample
             {
                 TriggerItem item = (TriggerItem)triggerItem;
                 Form form = new Form();
-                form.Text = "Full list for Task: " + item.TagName.ToString();
+                form.Text = item.TagName.ToString();
                 form.Width = 400;
                 form.Height = 450;
                 form.StartPosition = FormStartPosition.CenterScreen;
@@ -227,7 +227,7 @@ namespace DockSample
                 tabControl.Dock = DockStyle.Fill;
 
                 TabPage Page1 = new TabPage();
-                Page1.Text = "Upcomming Jobs";
+                Page1.Text = "Scheduled Jobs";
                 Page1.Name = "tPage1";
 
                 ListView listView = new ListView();
