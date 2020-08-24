@@ -114,21 +114,58 @@ namespace WindowsService
                 string[] liTags = e.Item.Tag.ToString()
                     .Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-
                 if (liTags != null && liTags.Length > 0)
                 {
                     foreach (string s in liTags)
                     {
                         //Process.Start(s);
-                        System.Diagnostics.Process process = new System.Diagnostics.Process();
-                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                        startInfo.FileName = "cmd.exe";
-                        startInfo.Arguments = string.Format(@"/c {0}", s); //@"/c python D:\test.py";
-                        process.StartInfo = startInfo;
-                        process.Start();
+                        //System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                        //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                        //startInfo.FileName = "cmd.exe";
+                        //startInfo.Arguments = string.Format(@"/c {0}", s); //@"/c python D:\test.py";
+                        //process.StartInfo = startInfo;
+                        //process.Start();
+                        //process.WaitForExit();
+                        //process.Close();
+
+                        //Task t = new Task(() => {
+                        string strErrorMsg = string.Empty;
+                        var processInfo = new ProcessStartInfo("cmd.exe", @"/c " + s + "");
+                        processInfo.CreateNoWindow = true;
+                        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        processInfo.UseShellExecute = false;
+                        processInfo.RedirectStandardError = true;
+                        processInfo.RedirectStandardOutput = true;
+                        processInfo.Verb = "runas";
+                        var process = Process.Start(processInfo);
+                        //process.OutputDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+                        //{
+                        //    if (e1.Data != null)
+                        //    {}
+                        //};
+                        //process.BeginOutputReadLine();
+                        process.ErrorDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+                        {
+                            if (e1.Data != null)
+                                strErrorMsg += e1.Data + Environment.NewLine;
+                        };
+                        process.BeginErrorReadLine();
                         process.WaitForExit();
                         process.Close();
+                        //code to send mail if error
+                        if (!string.IsNullOrEmpty(strErrorMsg))
+                        {
+                            string sMailOutput = "";
+                            string sMailSubject = string.Format("ETL Job error in KockpitStudio, Job Name: {0}", e.Item.TagName);
+                            string sMailBody = string.Format("Job Name: <h3>{0}</h3> <br/> Error : <h4>{1}</h4>", e.Item.TagName, strErrorMsg);
+                            if (Mail.Send(sMailSubject, sMailBody, out sMailOutput))
+                                writeInfoLogEntry("OnMailSent: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Status: Mail sent successfully..");
+                            else
+                                writeErrorLogEntry("OnMailSent: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Status: " + sMailOutput);
+                        }
+                        //});
+                        //t.Start();
                     }
                 }
             }

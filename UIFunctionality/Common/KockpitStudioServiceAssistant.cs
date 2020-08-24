@@ -26,7 +26,7 @@ namespace UIFunctionality.Common
                     inst.Install(state);
                     inst.Commit(state);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     try
                     {
