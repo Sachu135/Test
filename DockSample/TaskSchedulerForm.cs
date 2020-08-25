@@ -523,7 +523,8 @@ namespace DockSample
             {
                 CreateSchedulerItem();
                 txtTagName.Text = "";
-                textBoxlabelOneTimeOnlyTag.Text = "";
+                textBoxlabelOneTimeOnlyTag.Text = @"spark-submit D:\Workspace\Stage1\DataIngestion.py " + Environment.NewLine + @"spark - submit D:\Workspace\Stage2\AR.py" + Environment.NewLine + @"spark - submit D:\Workspace\Stage3\AP.py" + Environment.NewLine + "...";
+                textBoxlabelOneTimeOnlyTag.ForeColor = Color.Gray;
             }
         }
         private void buttonReset_Click(object sender, EventArgs e)
