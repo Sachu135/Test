@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?define sourceFolder="D:\Git\KockpitStudio_Testing\DockSample\bin\x64\Debug\"?>
+	<?define resourceFolder="D:\Git\KockpitStudio_Testing\KockpitWebService\bin\x64\Debug\netcoreapp3.1\"?>
+	<Product Id="*" Name="KockpitStudioSetup" Language="1033" Version="1.0.0.0" Manufacturer="Kockpit Analytics" UpgradeCode="69e8f614-9c63-481f-a27b-5dffe01d6e8d">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Description="description of project" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<!-- Add installer icon -->
+		<Icon Id="ShortCutIcon" SourceFile="$(var.ProjectDir)\Logo.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="ShortCutIcon" />
+
+		<!-- Check for .NET version -->
+		<!--<Condition Message="This application requires .NET Framework 4.5.2. Please install the .NET Framework then run this installer again.">
+			<![CDATA[Installed OR NETFRAMEWORK45]]>
+		</Condition>-->
+
+
+		<Feature Id="ProductFeature" Title="KockpitStudioSetup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentRef Id="ApplicationShortcut" />
+			<ComponentRef Id="ApplicationShortcutDesktop" />
+			<ComponentRef Id="ResourceComponents" />
+			<ComponentGroupRef Id="HeatGenerated" />
+		</Feature>
+
+
+		<DirectoryRef Id="ApplicationProgramsFolder">
+			<Component Id="ApplicationShortcut" Guid="41cdba80-edb9-4d71-8157-95527beb73a2">
+				<Shortcut Id="ApplicationStartMenuShortcut"
+					Name="Kockpit Studio"
+					Description="Description of project"
+					Target="[INSTALLFOLDER]DockSample.exe"
+					WorkingDirectory="INSTALLFOLDER"
+					Icon="ShortCutIcon"/>
+				<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+				<RegistryValue
+					Root="HKCU"
+					Key="Software\Kockpit Analytics\Kockpit Studio\ProgramMenuShortcut"
+					Name="installed"
+					Type="integer"
+					Value="1"
+					KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+
+		<DirectoryRef Id="DesktopFolder">
+			<Component Id="ApplicationShortcutDesktop" Guid="6d7976ce-e5ed-11ea-adc1-0242ac120002">
+				<Shortcut Id="ApplicationDesktopShortcut"
+					Name="Kockpit Studio"
+					Description="Description of project"
+					Target="[INSTALLFOLDER]DockSample.exe"
+					WorkingDirectory="INSTALLFOLDER"
+					Icon="ShortCutIcon"/>
+				<RemoveFile Id="remove_shortcut" Name="Kockpit Studio" On="uninstall"/>
+				<RemoveFolder Id="DesktopFolder" On="uninstall"/>
+				<RegistryValue
+					Root="HKCU"
+					Key="Software\Kockpit Analytics\Kockpit Studio\DesktopShortcut"
+					Name="installed"
+					Type="integer"
+					Value="1"
+					KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+		
+		<DirectoryRef Id="RESOURCEFOLDER">
+			<Component Id="ResourceComponents" Guid="418ed65e-e691-11ea-adc1-0242ac120002">
+				<RemoveFolder Id="ResourceFolder" On="uninstall"/>
+				<File Id="KockpitWebService.exe" Name="KockpitWebService.exe" Source="$(var.resourceFolder)\KockpitWebService.exe" KeyPath="no"/>
+			</Component>
+		</DirectoryRef>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="ManufacturerFolder" Name="!(bind.property.Manufacturer)">
+					<Directory Id="INSTALLFOLDER" Name="!(bind.property.ProductName)" >
+						<Directory Id="RESOURCEFOLDER" Name="Resources"/>
+					</Directory>
+				</Directory>
+			</Directory>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="!(bind.property.Manufacturer)"/>
+			</Directory>
+			<Directory Id="DesktopFolder" Name="Desktop">
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!--<Component Id="DockSample.exe" Guid="fe306657-c0d5-4a67-8587-f33be1fba9f7">
+				<File Id="DockSample.exe" Name="DockSample.exe" Source="$(var.sourceFolder)\DockSample.exe" KeyPath="yes"/>
+			</Component>
+			<Component Id="DockSample.exe.config" Guid="2e063c52-41a3-446f-9776-6190b917343b">
+				<File Id="DockSample.exe.config" Name="DockSample.exe.config" Source="$(var.sourceFolder)\DockSample.exe.config" KeyPath="yes"/>
+			</Component>-->
+		</ComponentGroup>
+	</Fragment>
+</Wix>
