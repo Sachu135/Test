@@ -50,7 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateLog.cs" />
     <Compile Include="KockpitStudioService.cs">
       <SubType>Component</SubType>
     </Compile>
