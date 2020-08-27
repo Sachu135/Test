@@ -60,7 +60,7 @@
 
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
+			<Directory Id="ProgramFiles64Folder">
 				<Directory Id="INSTALLFOLDER" Name="Kockpit Studio">
 				  <Directory Id="Images" Name="Images" />
 				  <Directory Id="ja_JP" Name="ja-JP" />
@@ -202,6 +202,74 @@
 			<Component Id="WindowsService.exe.config" Guid="8f01b8b4-7d9e-4a12-a1e3-49754ca70d74">
 			  <File Id="WindowsService.exe.config" Name="WindowsService.exe.config" Source="$(var.DockSample_TargetDir)WindowsService.exe.config" />
 			</Component>
+			<Component Id="System.Windows.Forms.dll" Guid="0907e983-ef24-472d-b007-145fabed96f2">
+			  <File Id="System.Windows.Forms.dll" Name="System.Windows.Forms.dll" Source="$(var.DockSample_TargetDir)System.Windows.Forms.dll" />
+			</Component>
+			<Component Id="System.dll" Guid="cc0bd4ee-6553-45ab-976d-210a6c1d01c2">
+			  <File Id="System.dll" Name="System.dll" Source="$(var.DockSample_TargetDir)System.dll" />
+			</Component>
+			<Component Id="System.ServiceProcess.dll" Guid="8c80128e-aeb5-4550-9d3e-9d913b3b678d">
+			  <File Id="System.ServiceProcess.dll" Name="System.ServiceProcess.dll" Source="$(var.DockSample_TargetDir)System.ServiceProcess.dll" />
+			</Component>
+			<Component Id="System.Xml.dll" Guid="847b320b-c2ac-49af-a29b-e5cf0d866065">
+			  <File Id="System.Xml.dll" Name="System.Xml.dll" Source="$(var.DockSample_TargetDir)System.Xml.dll" />
+			</Component>
+			<Component Id="System.Configuration.Install.dll" Guid="5379482a-2cec-4fae-9d25-ba93de906ed8">
+			  <File Id="System.Configuration.Install.dll" Name="System.Configuration.Install.dll" Source="$(var.DockSample_TargetDir)System.Configuration.Install.dll" />
+			</Component>
+			
+			
+			<Component Id="icudtl.dat" Guid="fc62d186-e864-11ea-adc1-0242ac120002">
+				<File Id="icudtl.dat" Name="icudtl.dat" Source="$(var.DockSample_TargetDir)icudtl.dat" />
+			</Component>
+			<Component Id="libcef.dll" Guid="044644be-e865-11ea-adc1-0242ac120002">
+				<File Id="libcef.dll" Name="libcef.dll" Source="$(var.DockSample_TargetDir)libcef.dll" />
+			</Component>
+			<Component Id="CefSharp.BrowserSubprocess.exe" Guid="5edbb2ea-e86c-11ea-adc1-0242ac120002">
+				<File Id="CefSharp.BrowserSubprocess.exe" Name="CefSharp.BrowserSubprocess.exe" Source="$(var.DockSample_TargetDir)CefSharp.BrowserSubprocess.exe" />
+			</Component>
+			<Component Id="CefSharp.BrowserSubprocess.Core.dll" Guid="663eac9a-e86c-11ea-adc1-0242ac120002">
+				<File Id="CefSharp.BrowserSubprocess.Core.dll" Name="CefSharp.BrowserSubprocess.Core.dll" Source="$(var.DockSample_TargetDir)CefSharp.BrowserSubprocess.Core.dll" />
+			</Component>
+			<Component Id="chrome_elf.dll" Guid="6d4082f2-e86c-11ea-adc1-0242ac120002">
+				<File Id="chrome_elf.dll" Name="chrome_elf.dll" Source="$(var.DockSample_TargetDir)chrome_elf.dll" />
+			</Component>
+			<Component Id="snapshot_blob.bin" Guid="7a2af114-e86c-11ea-adc1-0242ac120002">
+				<File Id="snapshot_blob.bin" Name="snapshot_blob.bin" Source="$(var.DockSample_TargetDir)snapshot_blob.bin" />
+			</Component>
+			<Component Id="v8_context_snapshot.bin" Guid="810726e2-e86c-11ea-adc1-0242ac120002">
+				<File Id="v8_context_snapshot.bin" Name="v8_context_snapshot.bin" Source="$(var.DockSample_TargetDir)v8_context_snapshot.bin" />
+			</Component>
+			<Component Id="natives_blob.bin" Guid="eeac6740-e86f-11ea-adc1-0242ac120002">
+				<File Id="natives_blob.bin" Name="natives_blob.bin" Source="$(var.DockSample_TargetDir)natives_blob.bin" />
+			</Component>
+			
+
+			<Component Id="cef.pak" Guid="c1a92d06-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef.pak" Name="cef.pak" Source="$(var.DockSample_TargetDir)cef.pak" />
+			</Component>
+			<Component Id="cef_100_percent.pak" Guid="d5312e46-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_100_percent.pak" Name="cef_100_percent.pak" Source="$(var.DockSample_TargetDir)cef_100_percent.pak" />
+			</Component>
+			<Component Id="cef_200_percent.pak" Guid="dcdff87a-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_200_percent.pak" Name="cef_200_percent.pak" Source="$(var.DockSample_TargetDir)cef_200_percent.pak" />
+			</Component>
+			<Component Id="cef_extensions.pak" Guid="e2d7dd4c-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_extensions.pak" Name="cef_extensions.pak" Source="$(var.DockSample_TargetDir)cef_extensions.pak" />
+			</Component>
+			<Component Id="devtools_resources.pak" Guid="e8d94992-e86e-11ea-adc1-0242ac120002">
+				<File Id="devtools_resources.pak" Name="devtools_resources.pak" Source="$(var.DockSample_TargetDir)devtools_resources.pak" />
+			</Component>
+			<Component Id="d3dcompiler_47.dll" Guid="ef5a9aaa-e86e-11ea-adc1-0242ac120002">
+				<File Id="d3dcompiler_47.dll" Name="d3dcompiler_47.dll" Source="$(var.DockSample_TargetDir)d3dcompiler_47.dll" />
+			</Component>
+			<Component Id="libEGL.dll" Guid="f5b03e0a-e86e-11ea-adc1-0242ac120002">
+				<File Id="libEGL.dll" Name="libEGL.dll" Source="$(var.DockSample_TargetDir)libEGL.dll" />
+			</Component>
+			<Component Id="libGLESv2.dll" Guid="fbf0bba0-e86e-11ea-adc1-0242ac120002">
+				<File Id="libGLESv2.dll" Name="libGLESv2.dll" Source="$(var.DockSample_TargetDir)libGLESv2.dll" />
+			</Component>
+
 		</ComponentGroup>
 	</Fragment>
 	<Fragment>
