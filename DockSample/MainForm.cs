@@ -956,15 +956,21 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
-                    if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                    try
                     {
-                        dummyDoc.MdiParent = this;
-                        dummyDoc.Show();
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
+                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        {
+                            dummyDoc.MdiParent = this;
+                            dummyDoc.Show();
+                        }
+                        else
+                            dummyDoc.Show(dockPanel);
                     }
-                    else
-                        dummyDoc.Show(dockPanel);
-
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 });
             }).Start();
             //

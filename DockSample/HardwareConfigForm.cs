@@ -27,6 +27,7 @@ namespace DockSample
         private string _KockPitDirectory;
         private string _SparkDir;
         private string _WinUtilDir;
+        private string _ETLJobsDir;
 
         public HardwareConfigForm()
         {
@@ -305,6 +306,7 @@ namespace DockSample
                         {
                             _SparkDir = Path.Combine(_KockPitDirectory, "Spark");
                             _WinUtilDir = Path.Combine(_KockPitDirectory, "WinUtil");
+                            _ETLJobsDir = Path.Combine(_KockPitDirectory, "ETLJobs");
 
                             //Directory for Spark
                             if (!Directory.Exists(_SparkDir))
@@ -313,6 +315,10 @@ namespace DockSample
                             //Directory for Winutils
                             if (!Directory.Exists(_WinUtilDir))
                                 Directory.CreateDirectory(_WinUtilDir);
+
+                            //Directory for ETLJobs
+                            if (!Directory.Exists(_ETLJobsDir))
+                                Directory.CreateDirectory(_ETLJobsDir);
 
 
                             var name = "Path";
