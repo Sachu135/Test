@@ -40,7 +40,8 @@
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -376,11 +377,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Filter2HS.png" />
-    <Content Include="favicon.ico" />
-    <Content Include="Resources\FilterAlphabetically_5567_32.bmp" />
     <None Include="Resources\LandscapeHH.bmp" />
     <None Include="Resources\PortraitHH.bmp" />
-    <Content Include="Resources\textwrap.png" />
     <None Include="Resources\trash.cur" />
     <None Include="Resources\VSProject_script.bmp" />
     <None Include="Resources\underlinee.png" />
@@ -480,9 +478,6 @@
     <None Include="Resources\AlignLayoutTop.png" />
     <None Include="Resources\AlignLayoutMiddle.png" />
     <None Include="Resources\AlignLayoutBottom.png" />
-    <Content Include="Resources\full_col_select.cur" />
-    <Content Include="Resources\full_row_select.cur" />
-    <Content Include="Resources\pick_range.cur" />
     <None Include="Resources\top_line_solid.png" />
     <None Include="Resources\top_bottom_solid.png" />
     <None Include="Resources\slash_right_solid.png" />
