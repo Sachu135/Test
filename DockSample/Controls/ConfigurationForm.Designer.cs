@@ -110,9 +110,10 @@
             // 
             // button2
             // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.button2.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button2.Location = new System.Drawing.Point(515, 573);
+            this.button2.Location = new System.Drawing.Point(587, 573);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(111, 33);
             this.button2.TabIndex = 9;
@@ -122,9 +123,10 @@
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.button1.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button1.Location = new System.Drawing.Point(373, 572);
+            this.button1.Location = new System.Drawing.Point(445, 572);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(122, 33);
             this.button1.TabIndex = 8;
@@ -139,7 +141,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(636, 20);
+            this.panel1.Size = new System.Drawing.Size(708, 20);
             this.panel1.TabIndex = 11;
             // 
             // tbDatabase
@@ -149,7 +151,7 @@
             this.tbDatabase.Location = new System.Drawing.Point(4, 22);
             this.tbDatabase.Name = "tbDatabase";
             this.tbDatabase.Padding = new System.Windows.Forms.Padding(3);
-            this.tbDatabase.Size = new System.Drawing.Size(628, 519);
+            this.tbDatabase.Size = new System.Drawing.Size(700, 519);
             this.tbDatabase.TabIndex = 1;
             this.tbDatabase.Text = "Database";
             this.tbDatabase.UseVisualStyleBackColor = true;
@@ -175,7 +177,7 @@
             this.gpBoxNewConn.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gpBoxNewConn.Location = new System.Drawing.Point(6, 3);
             this.gpBoxNewConn.Name = "gpBoxNewConn";
-            this.gpBoxNewConn.Size = new System.Drawing.Size(616, 196);
+            this.gpBoxNewConn.Size = new System.Drawing.Size(688, 213);
             this.gpBoxNewConn.TabIndex = 6;
             this.gpBoxNewConn.TabStop = false;
             this.gpBoxNewConn.Text = "New/Edit Connection";
@@ -185,7 +187,7 @@
             this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button4.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button4.Location = new System.Drawing.Point(328, 145);
+            this.button4.Location = new System.Drawing.Point(409, 148);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(137, 33);
             this.button4.TabIndex = 10;
@@ -196,9 +198,9 @@
             // txtDbName
             // 
             this.txtDbName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtDbName.Location = new System.Drawing.Point(455, 69);
+            this.txtDbName.Location = new System.Drawing.Point(474, 69);
             this.txtDbName.Name = "txtDbName";
-            this.txtDbName.Size = new System.Drawing.Size(138, 23);
+            this.txtDbName.Size = new System.Drawing.Size(200, 23);
             this.txtDbName.TabIndex = 4;
             // 
             // label7
@@ -214,16 +216,16 @@
             // txtConnKey
             // 
             this.txtConnKey.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnKey.Location = new System.Drawing.Point(133, 36);
+            this.txtConnKey.Location = new System.Drawing.Point(124, 36);
             this.txtConnKey.Name = "txtConnKey";
-            this.txtConnKey.Size = new System.Drawing.Size(138, 23);
+            this.txtConnKey.Size = new System.Drawing.Size(200, 23);
             this.txtConnKey.TabIndex = 1;
             // 
             // connKey
             // 
             this.connKey.AutoSize = true;
             this.connKey.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.connKey.Location = new System.Drawing.Point(29, 39);
+            this.connKey.Location = new System.Drawing.Point(16, 39);
             this.connKey.Name = "connKey";
             this.connKey.Size = new System.Drawing.Size(78, 16);
             this.connKey.TabIndex = 0;
@@ -234,7 +236,7 @@
             this.btnSaveConnection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.btnSaveConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSaveConnection.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnSaveConnection.Location = new System.Drawing.Point(471, 145);
+            this.btnSaveConnection.Location = new System.Drawing.Point(552, 148);
             this.btnSaveConnection.Name = "btnSaveConnection";
             this.btnSaveConnection.Size = new System.Drawing.Size(122, 33);
             this.btnSaveConnection.TabIndex = 9;
@@ -256,26 +258,26 @@
             "Xml",
             "Streaming Data",
             "Cloud Storage"});
-            this.cbConnDbType.Location = new System.Drawing.Point(455, 36);
+            this.cbConnDbType.Location = new System.Drawing.Point(474, 36);
             this.cbConnDbType.Name = "cbConnDbType";
-            this.cbConnDbType.Size = new System.Drawing.Size(138, 24);
+            this.cbConnDbType.Size = new System.Drawing.Size(200, 24);
             this.cbConnDbType.TabIndex = 2;
             this.cbConnDbType.SelectedIndexChanged += new System.EventHandler(this.cbConnDbType_SelectedIndexChanged);
             // 
             // txtConnPassword
             // 
             this.txtConnPassword.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnPassword.Location = new System.Drawing.Point(455, 103);
+            this.txtConnPassword.Location = new System.Drawing.Point(474, 103);
             this.txtConnPassword.Name = "txtConnPassword";
             this.txtConnPassword.PasswordChar = '*';
-            this.txtConnPassword.Size = new System.Drawing.Size(138, 23);
+            this.txtConnPassword.Size = new System.Drawing.Size(200, 23);
             this.txtConnPassword.TabIndex = 6;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(352, 106);
+            this.label13.Location = new System.Drawing.Point(354, 106);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(64, 16);
             this.label13.TabIndex = 0;
@@ -284,17 +286,17 @@
             // txtConnUserName
             // 
             this.txtConnUserName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnUserName.Location = new System.Drawing.Point(133, 103);
+            this.txtConnUserName.Location = new System.Drawing.Point(123, 103);
             this.txtConnUserName.Name = "txtConnUserName";
-            this.txtConnUserName.Size = new System.Drawing.Size(138, 23);
+            this.txtConnUserName.Size = new System.Drawing.Size(200, 23);
             this.txtConnUserName.TabIndex = 5;
             // 
             // txtConnServerName
             // 
             this.txtConnServerName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtConnServerName.Location = new System.Drawing.Point(133, 69);
+            this.txtConnServerName.Location = new System.Drawing.Point(123, 69);
             this.txtConnServerName.Name = "txtConnServerName";
-            this.txtConnServerName.Size = new System.Drawing.Size(138, 23);
+            this.txtConnServerName.Size = new System.Drawing.Size(200, 23);
             this.txtConnServerName.TabIndex = 3;
             this.txtConnServerName.TextChanged += new System.EventHandler(this.txtConnServerName_TextChanged);
             // 
@@ -302,7 +304,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(35, 106);
+            this.label10.Location = new System.Drawing.Point(16, 106);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(72, 16);
             this.label10.TabIndex = 0;
@@ -312,7 +314,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(6, 72);
+            this.label11.Location = new System.Drawing.Point(16, 72);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(101, 16);
             this.label11.TabIndex = 0;
@@ -322,7 +324,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(325, 39);
+            this.label12.Location = new System.Drawing.Point(354, 39);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(91, 16);
             this.label12.TabIndex = 0;
@@ -330,13 +332,14 @@
             // 
             // gpBoxSavedConnections
             // 
-            this.gpBoxSavedConnections.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.gpBoxSavedConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gpBoxSavedConnections.Controls.Add(this.dataGridView1);
             this.gpBoxSavedConnections.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gpBoxSavedConnections.Location = new System.Drawing.Point(6, 222);
             this.gpBoxSavedConnections.Name = "gpBoxSavedConnections";
-            this.gpBoxSavedConnections.Size = new System.Drawing.Size(616, 246);
+            this.gpBoxSavedConnections.Size = new System.Drawing.Size(688, 291);
             this.gpBoxSavedConnections.TabIndex = 1;
             this.gpBoxSavedConnections.TabStop = false;
             this.gpBoxSavedConnections.Text = "Saved Connections";
@@ -345,12 +348,15 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(3, 20);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(610, 223);
+            this.dataGridView1.Size = new System.Drawing.Size(682, 265);
             this.dataGridView1.TabIndex = 0;
             // 
             // tbProjects
@@ -359,20 +365,21 @@
             this.tbProjects.Controls.Add(this.groupBox4);
             this.tbProjects.Location = new System.Drawing.Point(4, 22);
             this.tbProjects.Name = "tbProjects";
-            this.tbProjects.Size = new System.Drawing.Size(628, 519);
+            this.tbProjects.Size = new System.Drawing.Size(700, 519);
             this.tbProjects.TabIndex = 2;
             this.tbProjects.Text = "Workspaces";
             this.tbProjects.UseVisualStyleBackColor = true;
             // 
             // groupBox5
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.dataGridView2);
             this.groupBox5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.Location = new System.Drawing.Point(7, 359);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(615, 157);
+            this.groupBox5.Size = new System.Drawing.Size(687, 157);
             this.groupBox5.TabIndex = 8;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Existing Workspaces";
@@ -381,12 +388,15 @@
             // 
             this.dataGridView2.AllowUserToAddRows = false;
             this.dataGridView2.AllowUserToDeleteRows = false;
+            this.dataGridView2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.Location = new System.Drawing.Point(3, 20);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
-            this.dataGridView2.Size = new System.Drawing.Size(609, 134);
+            this.dataGridView2.Size = new System.Drawing.Size(681, 134);
             this.dataGridView2.TabIndex = 0;
             // 
             // groupBox4
@@ -406,7 +416,7 @@
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(7, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(619, 355);
+            this.groupBox4.Size = new System.Drawing.Size(691, 355);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "New Workspace";
@@ -441,8 +451,6 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox9.Controls.Add(this.txtHealthCheck);
             this.groupBox9.Controls.Add(this.label14);
             this.groupBox9.Controls.Add(this.txtAirflow);
@@ -450,9 +458,9 @@
             this.groupBox9.Controls.Add(this.txtTerminalUrl);
             this.groupBox9.Controls.Add(this.label20);
             this.groupBox9.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox9.Location = new System.Drawing.Point(316, 172);
+            this.groupBox9.Location = new System.Drawing.Point(351, 172);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(297, 143);
+            this.groupBox9.Size = new System.Drawing.Size(334, 143);
             this.groupBox9.TabIndex = 13;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Services Info";
@@ -462,7 +470,7 @@
             this.txtHealthCheck.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.txtHealthCheck.Location = new System.Drawing.Point(117, 94);
             this.txtHealthCheck.Name = "txtHealthCheck";
-            this.txtHealthCheck.Size = new System.Drawing.Size(164, 23);
+            this.txtHealthCheck.Size = new System.Drawing.Size(200, 23);
             this.txtHealthCheck.TabIndex = 9;
             this.txtHealthCheck.Tag = "http://23.101.24.36:9045";
             // 
@@ -470,7 +478,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(21, 97);
+            this.label14.Location = new System.Drawing.Point(32, 97);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(85, 16);
             this.label14.TabIndex = 8;
@@ -481,7 +489,7 @@
             this.txtAirflow.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.txtAirflow.Location = new System.Drawing.Point(117, 64);
             this.txtAirflow.Name = "txtAirflow";
-            this.txtAirflow.Size = new System.Drawing.Size(164, 23);
+            this.txtAirflow.Size = new System.Drawing.Size(200, 23);
             this.txtAirflow.TabIndex = 7;
             this.txtAirflow.Tag = "http://23.101.24.36:9046";
             // 
@@ -489,7 +497,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(54, 67);
+            this.label8.Location = new System.Drawing.Point(32, 67);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(52, 16);
             this.label8.TabIndex = 6;
@@ -500,7 +508,7 @@
             this.txtTerminalUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.txtTerminalUrl.Location = new System.Drawing.Point(117, 31);
             this.txtTerminalUrl.Name = "txtTerminalUrl";
-            this.txtTerminalUrl.Size = new System.Drawing.Size(164, 23);
+            this.txtTerminalUrl.Size = new System.Drawing.Size(200, 23);
             this.txtTerminalUrl.TabIndex = 3;
             this.txtTerminalUrl.Tag = "http://23.101.24.36:8080";
             // 
@@ -508,7 +516,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(45, 34);
+            this.label20.Location = new System.Drawing.Point(32, 34);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(61, 16);
             this.label20.TabIndex = 0;
@@ -519,7 +527,7 @@
             this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button3.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.button3.Location = new System.Drawing.Point(493, 317);
+            this.button3.Location = new System.Drawing.Point(562, 317);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(122, 33);
             this.button3.TabIndex = 9;
@@ -529,8 +537,6 @@
             // 
             // groupBox8
             // 
-            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox8.Controls.Add(this.txtSshPass);
             this.groupBox8.Controls.Add(this.txtSshUser);
             this.groupBox8.Controls.Add(this.txtSshIP);
@@ -540,7 +546,7 @@
             this.groupBox8.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox8.Location = new System.Drawing.Point(8, 172);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(297, 143);
+            this.groupBox8.Size = new System.Drawing.Size(337, 143);
             this.groupBox8.TabIndex = 12;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "SSH Client Info";
@@ -548,9 +554,9 @@
             // txtSshPass
             // 
             this.txtSshPass.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtSshPass.Location = new System.Drawing.Point(110, 94);
+            this.txtSshPass.Location = new System.Drawing.Point(121, 94);
             this.txtSshPass.Name = "txtSshPass";
-            this.txtSshPass.Size = new System.Drawing.Size(170, 23);
+            this.txtSshPass.Size = new System.Drawing.Size(200, 23);
             this.txtSshPass.TabIndex = 5;
             this.txtSshPass.Tag = "JunkyardUbuntu!";
             this.txtSshPass.Validated += new System.EventHandler(this.txtSshPass_Validated);
@@ -558,9 +564,9 @@
             // txtSshUser
             // 
             this.txtSshUser.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtSshUser.Location = new System.Drawing.Point(110, 64);
+            this.txtSshUser.Location = new System.Drawing.Point(121, 64);
             this.txtSshUser.Name = "txtSshUser";
-            this.txtSshUser.Size = new System.Drawing.Size(170, 23);
+            this.txtSshUser.Size = new System.Drawing.Size(200, 23);
             this.txtSshUser.TabIndex = 4;
             this.txtSshUser.Tag = "abhishek";
             this.txtSshUser.Validated += new System.EventHandler(this.txtSshUser_Validated);
@@ -568,9 +574,9 @@
             // txtSshIP
             // 
             this.txtSshIP.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSshIP.Location = new System.Drawing.Point(110, 31);
+            this.txtSshIP.Location = new System.Drawing.Point(121, 31);
             this.txtSshIP.Name = "txtSshIP";
-            this.txtSshIP.Size = new System.Drawing.Size(170, 23);
+            this.txtSshIP.Size = new System.Drawing.Size(200, 23);
             this.txtSshIP.TabIndex = 3;
             this.txtSshIP.Tag = "23.101.24.36";
             this.txtSshIP.Validated += new System.EventHandler(this.txtSshIP_Validated);
@@ -579,7 +585,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(28, 97);
+            this.label17.Location = new System.Drawing.Point(23, 97);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(64, 16);
             this.label17.TabIndex = 2;
@@ -589,7 +595,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(20, 67);
+            this.label18.Location = new System.Drawing.Point(23, 67);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(72, 16);
             this.label18.TabIndex = 1;
@@ -617,7 +623,7 @@
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox7.Location = new System.Drawing.Point(8, 75);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(605, 91);
+            this.groupBox7.Size = new System.Drawing.Size(677, 91);
             this.groupBox7.TabIndex = 11;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Explorer Service Info";
@@ -628,9 +634,9 @@
             this.btnDefault.Enabled = false;
             this.btnDefault.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDefault.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnDefault.Location = new System.Drawing.Point(343, 26);
+            this.btnDefault.Location = new System.Drawing.Point(325, 24);
             this.btnDefault.Name = "btnDefault";
-            this.btnDefault.Size = new System.Drawing.Size(102, 23);
+            this.btnDefault.Size = new System.Drawing.Size(102, 28);
             this.btnDefault.TabIndex = 16;
             this.btnDefault.Text = "Set Default";
             this.btnDefault.UseVisualStyleBackColor = false;
@@ -639,9 +645,9 @@
             // txtExplorerServiceUrl
             // 
             this.txtExplorerServiceUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtExplorerServiceUrl.Location = new System.Drawing.Point(119, 57);
+            this.txtExplorerServiceUrl.Location = new System.Drawing.Point(121, 57);
             this.txtExplorerServiceUrl.Name = "txtExplorerServiceUrl";
-            this.txtExplorerServiceUrl.Size = new System.Drawing.Size(207, 23);
+            this.txtExplorerServiceUrl.Size = new System.Drawing.Size(200, 23);
             this.txtExplorerServiceUrl.TabIndex = 5;
             this.txtExplorerServiceUrl.Tag = "http://23.101.24.36:5000";
             // 
@@ -649,7 +655,7 @@
             // 
             this.lblServiceUrl.AutoSize = true;
             this.lblServiceUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblServiceUrl.Location = new System.Drawing.Point(44, 60);
+            this.lblServiceUrl.Location = new System.Drawing.Point(23, 60);
             this.lblServiceUrl.Name = "lblServiceUrl";
             this.lblServiceUrl.Size = new System.Drawing.Size(69, 16);
             this.lblServiceUrl.TabIndex = 4;
@@ -659,7 +665,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(44, 29);
+            this.label16.Location = new System.Drawing.Point(23, 31);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(60, 16);
             this.label16.TabIndex = 0;
@@ -668,10 +674,11 @@
             // txtProLocation
             // 
             this.txtProLocation.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtProLocation.Location = new System.Drawing.Point(119, 26);
+            this.txtProLocation.Location = new System.Drawing.Point(121, 26);
             this.txtProLocation.Name = "txtProLocation";
-            this.txtProLocation.Size = new System.Drawing.Size(207, 23);
+            this.txtProLocation.Size = new System.Drawing.Size(200, 23);
             this.txtProLocation.TabIndex = 3;
+            this.txtProLocation.Enter += new System.EventHandler(this.txtProLocation_Enter);
             // 
             // cmbServerType
             // 
@@ -681,9 +688,9 @@
             this.cmbServerType.Items.AddRange(new object[] {
             "Windows",
             "Linux"});
-            this.cmbServerType.Location = new System.Drawing.Point(459, 36);
+            this.cmbServerType.Location = new System.Drawing.Point(468, 36);
             this.cmbServerType.Name = "cmbServerType";
-            this.cmbServerType.Size = new System.Drawing.Size(138, 24);
+            this.cmbServerType.Size = new System.Drawing.Size(200, 24);
             this.cmbServerType.TabIndex = 2;
             this.cmbServerType.SelectedIndexChanged += new System.EventHandler(this.cmbServerType_SelectedIndexChanged);
             // 
@@ -700,10 +707,10 @@
             // txtProName
             // 
             this.txtProName.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtProName.Location = new System.Drawing.Point(127, 36);
+            this.txtProName.Location = new System.Drawing.Point(129, 36);
             this.txtProName.Name = "txtProName";
             this.txtProName.ShortcutsEnabled = false;
-            this.txtProName.Size = new System.Drawing.Size(207, 23);
+            this.txtProName.Size = new System.Drawing.Size(200, 23);
             this.txtProName.TabIndex = 1;
             this.txtProName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtProName_KeyPress);
             // 
@@ -727,7 +734,7 @@
             this.tbControl.Location = new System.Drawing.Point(0, 21);
             this.tbControl.Name = "tbControl";
             this.tbControl.SelectedIndex = 0;
-            this.tbControl.Size = new System.Drawing.Size(636, 545);
+            this.tbControl.Size = new System.Drawing.Size(708, 545);
             this.tbControl.TabIndex = 11;
             // 
             // ConfigurationForm
@@ -735,7 +742,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.ClientSize = new System.Drawing.Size(636, 618);
+            this.ClientSize = new System.Drawing.Size(708, 618);
             this.Controls.Add(this.tbControl);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button2);

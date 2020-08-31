@@ -497,6 +497,7 @@
     <Content Include="Images\SplashScreen.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\edit.png" />
     <None Include="Resources\info.png" />
     <None Include="Resources\progressBar.gif" />
     <None Include="Resources\f_pyico.ico" />

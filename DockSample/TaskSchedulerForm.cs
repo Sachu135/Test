@@ -23,6 +23,10 @@ namespace DockSample
 
         private TaskScheduler _taskScheduler;
 
+
+        private string strEditJobName = string.Empty;
+        private string strEditJobId = string.Empty;
+
         public TaskSchedulerForm(string appPath)
         {
             this.AppPath = appPath;
@@ -41,12 +45,6 @@ namespace DockSample
 
         void triggerItem_OnTrigger(object sender, TaskScheduler.OnTriggerEventArgs e)
         {
-            //String nextTrigger = String.Empty;
-            //if (e.Item.GetNextTriggerDateTime() != DateTime.MaxValue)
-            //    nextTrigger = e.Item.GetNextTriggerDateTime().DayOfWeek.ToString() + ", " + e.Item.GetNextTriggerDateTime().ToString();
-            //else
-            //    nextTrigger = "Never";
-            //textBoxEvents.AppendText(e.TriggerDate.ToString() + ": " + e.Item.Tag + ", next trigger: " + nextTrigger + "\r\n");
             UpdateTaskList();
         }
 
@@ -55,56 +53,80 @@ namespace DockSample
         {
             TaskScheduler.TriggerItem triggerItem = new TaskScheduler.TriggerItem();
             var tagName = txtTagName.Text.Trim();
-            var existingObj = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+
+            if (!string.IsNullOrEmpty(strEditJobId))  //edit mode
+            {
+                var editTriggerItem = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                   .Where(c => (string)c.TagName == tagName && (string)c.JobId == strEditJobId).FirstOrDefault();
+
+                if(editTriggerItem != null)
+                {
+                    _taskScheduler.TriggerItems.Remove(editTriggerItem);
+                    EnableControls();
+                }
+                else
+                {
+                    //code to show message for already exists..
+                    MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    EnableControls();
+                    return;
+                }
+            }
+            else  //add mode
+            {
+                var existingObj = _taskScheduler.TriggerItems.Cast<TriggerItem>()
                 .FirstOrDefault(c => c.TagName.ToString().Trim().ToLower().Equals(tagName.Trim().ToLower()));
-            if (existingObj != null)
-            {
-                //code to show message for already exists..
-                MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (existingObj != null)
+                {
+                    //code to show message for already exists..
+                    MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    EnableControls();
+                    return;
+                }
             }
-            else
-            {
-                string[] liTags = textBoxlabelOneTimeOnlyTag.Text.ToString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                triggerItem.TagName = tagName;
-                triggerItem.Tag = string.Join(",", liTags); //textBoxlabelOneTimeOnlyTag.Text;
-                triggerItem.StartDate = dateTimePickerStartDate.Value;
-                triggerItem.EndDate = dateTimePickerEndDate.Value;
-                triggerItem.TriggerTime = dateTimePickerTriggerTime.Value;
-                triggerItem.OnTrigger += new TaskScheduler.TriggerItem.OnTriggerEventHandler(triggerItem_OnTrigger); // And the trigger-Event :)
 
-                // Set OneTimeOnly - Active and Date
-                triggerItem.TriggerSettings.OneTimeOnly.Active = checkBoxOneTimeOnlyActive.Checked;
-                triggerItem.TriggerSettings.OneTimeOnly.Date = dateTimePickerOneTimeOnlyDay.Value.Date;
+            string[] liTags = textBoxlabelOneTimeOnlyTag.Text.ToString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            triggerItem.TagName = tagName;
+            triggerItem.Tag = string.Join(",", liTags);
+            triggerItem.StartDate = dateTimePickerStartDate.Value;
+            triggerItem.EndDate = dateTimePickerEndDate.Value;
+            triggerItem.TriggerTime = dateTimePickerTriggerTime.Value;
+            triggerItem.OnTrigger += new TaskScheduler.TriggerItem.OnTriggerEventHandler(triggerItem_OnTrigger); // And the trigger-Event :)
 
-                // Set the interval for daily trigger
-                triggerItem.TriggerSettings.Daily.Interval = (ushort)numericUpDownDaily.Value;
+            // Set OneTimeOnly - Active and Date
+            triggerItem.TriggerSettings.OneTimeOnly.Active = checkBoxOneTimeOnlyActive.Checked;
+            triggerItem.TriggerSettings.OneTimeOnly.Date = dateTimePickerOneTimeOnlyDay.Value.Date;
 
-                // Set the active days for weekly trigger
-                for (byte day = 0; day < 7; day++) // Set the active Days
-                    triggerItem.TriggerSettings.Weekly.DaysOfWeek[day] = checkedListBoxWeeklyDays.GetItemChecked(day);
+            // Set the interval for daily trigger
+            triggerItem.TriggerSettings.Daily.Interval = (ushort)numericUpDownDaily.Value;
 
-                // Set the active months for monthly trigger
-                for (byte month = 0; month < 12; month++)
-                    triggerItem.TriggerSettings.Monthly.Month[month] = checkedListBoxMonthlyMonths.GetItemChecked(month);
+            // Set the active days for weekly trigger
+            for (byte day = 0; day < 7; day++) // Set the active Days
+                triggerItem.TriggerSettings.Weekly.DaysOfWeek[day] = checkedListBoxWeeklyDays.GetItemChecked(day);
 
-                // Set active Days (0..30 = Days, 31=last Day) for monthly trigger
-                for (byte day = 0; day < 32; day++)
-                    triggerItem.TriggerSettings.Monthly.DaysOfMonth[day] = checkedListBoxMonthlyDays.GetItemChecked(day);
+            // Set the active months for monthly trigger
+            for (byte month = 0; month < 12; month++)
+                triggerItem.TriggerSettings.Monthly.Month[month] = checkedListBoxMonthlyMonths.GetItemChecked(month);
 
-                // Set the active weekNumber and DayOfWeek for monthly trigger
-                // f.e. the first monday, or the last friday...
-                for (byte weekNumber = 0; weekNumber < 5; weekNumber++) // 0..4: first, second, third, fourth or last week
-                    triggerItem.TriggerSettings.Monthly.WeekDay.WeekNumber[weekNumber] = checkedListBoxMonthlyWeekNumber.GetItemChecked(weekNumber);
-                for (byte day = 0; day < 7; day++)
-                    triggerItem.TriggerSettings.Monthly.WeekDay.DayOfWeek[day] = checkedListBoxMonthlyWeekDay.GetItemChecked(day);
+            // Set active Days (0..30 = Days, 31=last Day) for monthly trigger
+            for (byte day = 0; day < 32; day++)
+                triggerItem.TriggerSettings.Monthly.DaysOfMonth[day] = checkedListBoxMonthlyDays.GetItemChecked(day);
 
-                triggerItem.Enabled = true; // Set the Item-Active - State
-                _taskScheduler.AddTrigger(triggerItem); // Add the trigger to List
-                _taskScheduler.Enabled = checkBoxEnabled.Checked; // Start the Scheduler
+            // Set the active weekNumber and DayOfWeek for monthly trigger
+            // f.e. the first monday, or the last friday...
+            for (byte weekNumber = 0; weekNumber < 5; weekNumber++) // 0..4: first, second, third, fourth or last week
+                triggerItem.TriggerSettings.Monthly.WeekDay.WeekNumber[weekNumber] = checkedListBoxMonthlyWeekNumber.GetItemChecked(weekNumber);
+            for (byte day = 0; day < 7; day++)
+                triggerItem.TriggerSettings.Monthly.WeekDay.DayOfWeek[day] = checkedListBoxMonthlyWeekDay.GetItemChecked(day);
 
-                UpdateTaskList();
-                SaveConfig();
-            }
+            triggerItem.Enabled = true; // Set the Item-Active - State
+            triggerItem.JobId = Guid.NewGuid().ToString();
+
+            _taskScheduler.AddTrigger(triggerItem); // Add the trigger to List
+            _taskScheduler.Enabled = checkBoxEnabled.Checked; // Start the Scheduler
+
+            UpdateTaskList();
+            SaveConfig();
         }
         private void UpdateTaskList()
         {
@@ -112,6 +134,7 @@ namespace DockSample
             tData.Columns.Add("JobName", typeof(string));
             tData.Columns.Add("Job", typeof(string));
             tData.Columns.Add("JobTrigger", typeof(string));
+            tData.Columns.Add("JobId", typeof(string));
 
             dgvItems.PerformSafely(() =>
             {
@@ -133,11 +156,12 @@ namespace DockSample
                                 dr["JobTrigger"] = nextDate.ToString();
                             else
                                 dr["JobTrigger"] = "Never";
-
+                            dr["JobId"] = item.JobId;
                             tData.Rows.Add(dr);
                         }
 
                         dgvItems.DataSource = tData;
+                        dgvItems.Columns["JobId"].Visible = false;
 
                         //DataGridViewLinkColumn InfoLink = new DataGridViewLinkColumn();
                         //InfoLink.UseColumnTextForLinkValue = true;
@@ -164,6 +188,14 @@ namespace DockSample
                         InfoLink.Width = 20;
                         InfoLink.UseColumnTextForButtonValue = true;
                         dgvItems.Columns.Add(InfoLink);
+
+                        DataGridViewButtonColumn Editlink = new DataGridViewButtonColumn();
+                        Editlink.HeaderText = "Edit";
+                        //Editlink.Text = "Edit";
+                        Editlink.Tag = "Edit";
+                        Editlink.Width = 20;
+                        Editlink.UseColumnTextForButtonValue = true;
+                        dgvItems.Columns.Add(Editlink);
 
                         DataGridViewButtonColumn Deletelink = new DataGridViewButtonColumn();
                         Deletelink.HeaderText = "Delete";
@@ -333,8 +365,9 @@ namespace DockSample
                 SaveAsServiceConfig();
             }
         }
-        private static void InstallService()
+        private static bool InstallService()
         {
+            bool lretval = true;
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
@@ -345,23 +378,28 @@ namespace DockSample
             catch (Exception ex)
             {
                 MessageBox.Show("Error: install service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lretval = false;
             }
             Cursor.Current = Cursors.Default;
+            return lretval;
         }
-        private static void UninstallService()
+        private static bool UninstallService()
         {
+            bool lretval = true;
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
                 var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WindowsService.exe");
                 KockpitStudioServiceAssistant.Uninstall(Assembly.LoadFrom(asmPath));
                 MessageBox.Show("Service removed successfuly", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                lretval = false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: uninstall service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             Cursor.Current = Cursors.Default;
+            return lretval;
         }
         private static void StartService()
         {
@@ -403,7 +441,7 @@ namespace DockSample
 
             if (string.IsNullOrEmpty(txtTagName.Text.Trim()))
             {
-                MessageBox.Show("Please mention Job name.");
+                MessageBox.Show("Please mention ETL Job name.");
                 return false;
             }
 
@@ -475,8 +513,12 @@ namespace DockSample
             //if install disable the install service button else enable 
             //if install enable the uninstall service button else disable
             bool lInstalled = IsServiceInstalled("KockpitStudioService");
-            buttonInstallService.Enabled = !lInstalled;
-            buttonUninstallService.Enabled = lInstalled;
+
+            buttonInstallService.Text = lInstalled ? "Uninstall Service" : "Install Service";
+            buttonInstallService.Tag = lInstalled ? "2" : "1";
+            buttonInstallService.Enabled = true;
+
+            //buttonUninstallService.Enabled = lInstalled;
 
             //code to check the service is start or not
             //if service start then enable the stop service button else disable
@@ -498,6 +540,13 @@ namespace DockSample
                 : (!tplRunningStatus.Item1)
                 ? "Service Not Started, To start click on the Start Service button."
                 : "Service Status : " + tplRunningStatus.Item2;
+
+            buttonReset.Enabled = true;
+            dgvItems.Enabled = true;
+
+            buttonCreateTrigger.Text = "Create Task";
+            strEditJobName = string.Empty;
+            strEditJobId = string.Empty;
         }
         private string ReadXML()
         {
@@ -514,6 +563,50 @@ namespace DockSample
                 return "";
             }
         }
+
+        private void ClearControls()
+        {
+            btnNew.Visible = false;
+            strEditJobName = string.Empty;
+            strEditJobId = string.Empty;
+
+            txtTagName.Text = "";
+            textBoxlabelOneTimeOnlyTag.Text = @"spark-submit D:\Workspace\Stage1\DataIngestion.py " + Environment.NewLine + @"spark - submit D:\Workspace\Stage2\AR.py" + Environment.NewLine + @"spark - submit D:\Workspace\Stage3\AP.py" + Environment.NewLine + "...";
+            textBoxlabelOneTimeOnlyTag.ForeColor = Color.Gray;
+
+            dateTimePickerStartDate.Value = DateTime.Today;
+            dateTimePickerEndDate.Value = DateTime.Today.AddYears(1);
+            dateTimePickerTriggerTime.Value = DateTime.Now.AddMinutes(10); // Add 10 Minutes for testing
+            
+            //onetime
+            dateTimePickerOneTimeOnlyDay.Value = DateTime.Today;
+            checkBoxOneTimeOnlyActive.Checked = false;
+
+            //daily
+            numericUpDownDaily.Value = 0;
+
+            //weekly
+            for (int i = 0; i < checkedListBoxWeeklyDays.Items.Count; i++)
+                checkedListBoxWeeklyDays.SetItemChecked(i, false);
+
+            //monthly
+            for (int i = 0; i < checkedListBoxMonthlyMonths.Items.Count; i++)
+                checkedListBoxMonthlyMonths.SetItemChecked(i, false);
+
+            for (int i = 0; i < checkedListBoxMonthlyDays.Items.Count; i++)
+                checkedListBoxMonthlyDays.SetItemChecked(i, false);
+
+            for (int i = 0; i < checkedListBoxMonthlyWeekNumber.Items.Count; i++)
+                checkedListBoxMonthlyWeekNumber.SetItemChecked(i, false);
+
+            for (int i = 0; i < checkedListBoxMonthlyWeekDay.Items.Count; i++)
+                checkedListBoxMonthlyWeekDay.SetItemChecked(i, false);
+
+            grpOneTime.BackColor = System.Drawing.SystemColors.Control;
+            grpDaily.BackColor = System.Drawing.SystemColors.Control;
+            grpWeekly.BackColor = System.Drawing.SystemColors.Control;
+            grpMonthly.BackColor = System.Drawing.SystemColors.Control;
+        }
         #endregion
 
         #region [Clicks]
@@ -522,9 +615,7 @@ namespace DockSample
             if (ValidateEntry())
             {
                 CreateSchedulerItem();
-                txtTagName.Text = "";
-                textBoxlabelOneTimeOnlyTag.Text = @"spark-submit D:\Workspace\Stage1\DataIngestion.py " + Environment.NewLine + @"spark - submit D:\Workspace\Stage2\AR.py" + Environment.NewLine + @"spark - submit D:\Workspace\Stage3\AP.py" + Environment.NewLine + "...";
-                textBoxlabelOneTimeOnlyTag.ForeColor = Color.Gray;
+                ClearControls();
             }
         }
         private void buttonReset_Click(object sender, EventArgs e)
@@ -534,18 +625,36 @@ namespace DockSample
             if (dialogResult == DialogResult.Yes)
             {
                 ResetScheduler();
+                ClearControls();
             }
         }
         private void buttonInstallService_Click(object sender, EventArgs e)
         {
-            InstallService();
+            string btnTag = (string)buttonInstallService.Tag;
+            if(btnTag == "1")
+            {
+                if (InstallService())
+                {
+                    buttonInstallService.Text = "Uninstall Service";
+                    buttonInstallService.Tag = "2";
+                }
+            }
+            if(btnTag == "2")
+            {
+                if (UninstallService())
+                {
+                    buttonInstallService.Text = "Install Service";
+                    buttonInstallService.Tag = "1";
+                }
+            }
+            
             EnableControls();
         }
-        private void buttonUninstallService_Click(object sender, EventArgs e)
-        {
-            UninstallService();
-            EnableControls();
-        }
+        //private void buttonUninstallService_Click(object sender, EventArgs e)
+        //{
+        //    UninstallService();
+        //    EnableControls();
+        //}
         private void buttonStartService_Click(object sender, EventArgs e)
         {
             StartService();
@@ -575,7 +684,7 @@ namespace DockSample
                 return;
 
             //paint info
-            if (e.ColumnIndex == 3)
+            if (e.ColumnIndex == 4)
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All);
 
@@ -588,8 +697,22 @@ namespace DockSample
                 e.Handled = true;
             }
 
+            //paint edit
+            if (e.ColumnIndex == 5)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+
+                var w = Properties.Resources.edit.Width;
+                var h = Properties.Resources.edit.Height;
+                var x = e.CellBounds.Left + (e.CellBounds.Width - w) / 2;
+                var y = e.CellBounds.Top + (e.CellBounds.Height - h) / 2;
+
+                e.Graphics.DrawImage(Properties.Resources.edit, new Rectangle(x, y, w, h));
+                e.Handled = true;
+            }
+
             //paint delete
-            if (e.ColumnIndex == 4)
+            if (e.ColumnIndex == 6)
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All);
 
@@ -604,70 +727,147 @@ namespace DockSample
         }
         private void dgvItems_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            var senderGrid = (DataGridView)sender;
-            if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                e.RowIndex >= 0)
+            try
             {
-                //TODO - Button Clicked - Execute Code Here
-                DataGridViewButtonCell cell = (DataGridViewButtonCell)dgvItems.CurrentCell;
-                string currentTagName = dgvItems.Rows[e.RowIndex].Cells[0].Value.ToString().Trim();
-                if (cell.ColumnIndex == 3)
+                var senderGrid = (DataGridView)sender;
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
                 {
-                    var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
-                                    .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
-                    if (dataSource != null)
+                    //TODO - Button Clicked - Execute Code Here
+                    DataGridViewButtonCell cell = (DataGridViewButtonCell)dgvItems.CurrentCell;
+                    string currentTagName = dgvItems.Rows[e.RowIndex].Cells[0].Value.ToString().Trim();
+                    if (cell.ColumnIndex == 4)
                     {
-                        ShowAllTriggerDates(dataSource);
-                    }
-                }
-                else if (cell.ColumnIndex == 4)
-                {
-                    DialogResult dialogResult = MessageBox.Show("All the background running jobs will terminated. " + Environment.NewLine + " Are you sure want to delete the job ?",
-                        "Delete Job", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        if (IsServiceRunning("KockpitStudioService").Item1)
+                        var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                        .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
+                        if (dataSource != null)
                         {
-                            //remove
-                            if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
-                            {
-                                var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
-                                    .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
-                                if (dataSource != null)
-                                {
-                                    _taskScheduler.TriggerItems.Remove(dataSource);
-                                    UpdateTaskList();
+                            ShowAllTriggerDates(dataSource);
+                        }
+                    }
+                    else if (cell.ColumnIndex == 5)
+                    {
+                        //edit code
+                        ///steps:
+                        ///read the xml file where tag name = selected tag name
+                        ///populate the items according to the data
 
-                                    SaveAsServiceConfig();
-                                    Cursor.Current = Cursors.WaitCursor;
-                                    KockpitStudioServiceAssistant.StopService();
-                                    KockpitStudioServiceAssistant.StartService();
-                                    EnableControls();
+                        var triggerItem = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                       .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
+                        if (triggerItem != null)
+                        {
+                            txtTagName.Text = (string)triggerItem.TagName;
+                            string[] liTags = triggerItem.Tag.ToString().Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                            textBoxlabelOneTimeOnlyTag.Text = string.Join(Environment.NewLine, liTags);
+                            textBoxlabelOneTimeOnlyTag.ForeColor = System.Drawing.SystemColors.WindowText;
+                            dateTimePickerStartDate.Value = triggerItem.StartDate;
+                            dateTimePickerEndDate.Value = triggerItem.EndDate;
+                            dateTimePickerTriggerTime.Value = Convert.ToDateTime(triggerItem.TriggerTime.ToString("HH:mm:ss tt"));
+
+                            checkBoxOneTimeOnlyActive.Checked = triggerItem.TriggerSettings.OneTimeOnly.Active;
+
+                            dateTimePickerOneTimeOnlyDay.Value = triggerItem.TriggerSettings.OneTimeOnly.Date;
+
+                            numericUpDownDaily.Value = triggerItem.TriggerSettings.Daily.Interval;
+
+                            bool isWeekly = false;
+                            bool isMonthly = false;
+                            //// Set the active days for weekly trigger
+                            for (byte day = 0; day < 7; day++) // Set the active Days
+                            {
+                                if (triggerItem.TriggerSettings.Weekly.DaysOfWeek[day])
+                                    isWeekly = true;
+
+                                checkedListBoxWeeklyDays.SetItemChecked(day, triggerItem.TriggerSettings.Weekly.DaysOfWeek[day]);
+                            }
+
+                            //// Set the active months for monthly trigger
+                            for (byte month = 0; month < 12; month++)
+                            {
+                                if (triggerItem.TriggerSettings.Monthly.Month[month])
+                                    isMonthly = true;
+                                checkedListBoxMonthlyMonths.SetItemChecked(month, triggerItem.TriggerSettings.Monthly.Month[month]);
+                            }
+
+
+                            grpWeekly.BackColor = isWeekly ? Color.FromArgb(255, 242, 157) : System.Drawing.SystemColors.Control;
+                            grpMonthly.BackColor = isMonthly ? Color.FromArgb(255, 242, 157) : System.Drawing.SystemColors.Control;
+
+                            //// Set active Days (0..30 = Days, 31=last Day) for monthly trigger
+                            for (byte day = 0; day < 32; day++)
+                                checkedListBoxMonthlyDays.SetItemChecked(day, triggerItem.TriggerSettings.Monthly.DaysOfMonth[day]);
+
+                            //// Set the active weekNumber and DayOfWeek for monthly trigger
+                            //// f.e. the first monday, or the last friday...
+                            for (byte weekNumber = 0; weekNumber < 5; weekNumber++) // 0..4: first, second, third, fourth or last week
+                                checkedListBoxMonthlyWeekNumber.SetItemChecked(weekNumber, triggerItem.TriggerSettings.Monthly.WeekDay.WeekNumber[weekNumber]);
+                            for (byte day = 0; day < 7; day++)
+                                checkedListBoxMonthlyWeekDay.SetItemChecked(day, triggerItem.TriggerSettings.Monthly.WeekDay.DayOfWeek[day]);
+
+                            checkBoxEnabled.Checked = true;
+
+                            strEditJobName = (string)triggerItem.TagName;
+                            strEditJobId = triggerItem.JobId;
+                            btnNew.Visible = true;
+                            buttonCreateTrigger.Text = "Update Task";
+
+                            buttonInstallService.Enabled = false;
+                            buttonStartService.Enabled = false;
+                            buttonStopService.Enabled = false;
+                            buttonReset.Enabled = false;
+                            dgvItems.Enabled = false;
+                        }
+                    }
+                    else if (cell.ColumnIndex == 6)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("All the background running jobs will terminated. " + Environment.NewLine + " Are you sure want to delete the job ?",
+                            "Delete Job", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            ClearControls();
+                            if (IsServiceRunning("KockpitStudioService").Item1)
+                            {
+                                //remove
+                                if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
+                                {
+                                    var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                        .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
+                                    if (dataSource != null)
+                                    {
+                                        _taskScheduler.TriggerItems.Remove(dataSource);
+                                        UpdateTaskList();
+                                        SaveAsServiceConfig();
+                                        Cursor.Current = Cursors.WaitCursor;
+                                        KockpitStudioServiceAssistant.StopService();
+                                        KockpitStudioServiceAssistant.StartService();
+                                        EnableControls();
+                                        
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            //remove
-                            if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
+                            else
                             {
-                                var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
-                                    .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
-                                if (dataSource != null)
+                                //remove
+                                if (_taskScheduler.TriggerItems != null && _taskScheduler.TriggerItems.Count > 0)
                                 {
-                                    _taskScheduler.TriggerItems.Remove(dataSource);
-                                    UpdateTaskList();
-                                    SaveConfig();
+                                    var dataSource = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                        .Where(c => (string)c.TagName == currentTagName).FirstOrDefault();
+                                    if (dataSource != null)
+                                    {
+                                        _taskScheduler.TriggerItems.Remove(dataSource);
+                                        UpdateTaskList();
+                                        SaveConfig();
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            catch (Exception)
+            {
+            }
         }
-        #endregion
-
-
         private void textBoxlabelOneTimeOnlyTag_Enter(object sender, EventArgs e)
         {
             if (textBoxlabelOneTimeOnlyTag.Text == @"spark-submit D:\Workspace\Stage1\DataIngestion.py " + Environment.NewLine + @"spark - submit D:\Workspace\Stage2\AR.py" + Environment.NewLine + @"spark - submit D:\Workspace\Stage3\AP.py" + Environment.NewLine + "...")
@@ -676,7 +876,6 @@ namespace DockSample
                 textBoxlabelOneTimeOnlyTag.ForeColor = System.Drawing.SystemColors.WindowText;
             }
         }
-
         private void textBoxlabelOneTimeOnlyTag_Leave(object sender, EventArgs e)
         {
             if (textBoxlabelOneTimeOnlyTag.Text == "")
@@ -685,5 +884,239 @@ namespace DockSample
                 textBoxlabelOneTimeOnlyTag.ForeColor = Color.Gray;
             }
         }
+        private void btnPreview_Click(object sender, EventArgs e)
+        {
+            //code to preview the task
+            if (ValidateEntry())
+            {
+                TaskScheduler.TriggerItem triggerItem = new TaskScheduler.TriggerItem();
+                var tagName = txtTagName.Text.Trim();
+                string[] liTags = textBoxlabelOneTimeOnlyTag.Text.ToString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                triggerItem.TagName = tagName;
+                triggerItem.Tag = string.Join(",", liTags);
+                triggerItem.StartDate = dateTimePickerStartDate.Value;
+                triggerItem.EndDate = dateTimePickerEndDate.Value;
+                triggerItem.TriggerTime = dateTimePickerTriggerTime.Value;
+                triggerItem.OnTrigger += new TaskScheduler.TriggerItem.OnTriggerEventHandler(triggerItem_OnTrigger); // And the trigger-Event :)
+
+                // Set OneTimeOnly - Active and Date
+                triggerItem.TriggerSettings.OneTimeOnly.Active = checkBoxOneTimeOnlyActive.Checked;
+                triggerItem.TriggerSettings.OneTimeOnly.Date = dateTimePickerOneTimeOnlyDay.Value.Date;
+
+                // Set the interval for daily trigger
+                triggerItem.TriggerSettings.Daily.Interval = (ushort)numericUpDownDaily.Value;
+
+                // Set the active days for weekly trigger
+                for (byte day = 0; day < 7; day++) // Set the active Days
+                    triggerItem.TriggerSettings.Weekly.DaysOfWeek[day] = checkedListBoxWeeklyDays.GetItemChecked(day);
+
+                // Set the active months for monthly trigger
+                for (byte month = 0; month < 12; month++)
+                    triggerItem.TriggerSettings.Monthly.Month[month] = checkedListBoxMonthlyMonths.GetItemChecked(month);
+
+                // Set active Days (0..30 = Days, 31=last Day) for monthly trigger
+                for (byte day = 0; day < 32; day++)
+                    triggerItem.TriggerSettings.Monthly.DaysOfMonth[day] = checkedListBoxMonthlyDays.GetItemChecked(day);
+
+                // Set the active weekNumber and DayOfWeek for monthly trigger
+                // f.e. the first monday, or the last friday...
+                for (byte weekNumber = 0; weekNumber < 5; weekNumber++) // 0..4: first, second, third, fourth or last week
+                    triggerItem.TriggerSettings.Monthly.WeekDay.WeekNumber[weekNumber] = checkedListBoxMonthlyWeekNumber.GetItemChecked(weekNumber);
+                for (byte day = 0; day < 7; day++)
+                    triggerItem.TriggerSettings.Monthly.WeekDay.DayOfWeek[day] = checkedListBoxMonthlyWeekDay.GetItemChecked(day);
+
+                triggerItem.Enabled = true; // Set the Item-Active - State
+
+
+                Form form = new Form();
+                form.Text = triggerItem.TagName.ToString();
+                form.Width = 400;
+                form.Height = 450;
+                form.StartPosition = FormStartPosition.CenterScreen;
+
+                TabControl tabControl = new TabControl();
+                tabControl.Parent = form;
+                tabControl.Dock = DockStyle.Fill;
+
+                TabPage Page1 = new TabPage();
+                Page1.Text = "Preview of Scheduled Jobs";
+                Page1.Name = "tPage1";
+
+                ListView listView = new ListView();
+                listView.FullRowSelect = true;
+                listView.Parent = Page1;
+                listView.Dock = DockStyle.Fill;
+                listView.View = View.Details;
+                listView.Columns.Add("Date", 400);
+                DateTime date = dateTimePickerStartDate.Value.Date;
+                while (date <= dateTimePickerEndDate.Value.Date)
+                {
+                    if (triggerItem.CheckDate(date)) // probe this date
+                        listView.Items.Add(date.ToLongDateString() + " " + triggerItem.TriggerTime.ToShortTimeString());
+                    date = date.AddDays(1);
+                }
+
+                tabControl.TabPages.Add(Page1);
+                form.ShowDialog();
+            }
+        }
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            ClearControls();
+            EnableControls();
+        }
+        #endregion
+
+
+        #region [Task Groupbox enable disable]
+        private void EnableGroupBox(int nMode)
+        {
+            switch (nMode)
+            {
+                case 1:
+                    grpOneTime.BackColor = Color.FromArgb(255, 242, 157);
+                    grpDaily.BackColor = System.Drawing.SystemColors.Control;
+                    grpWeekly.BackColor = System.Drawing.SystemColors.Control;
+                    grpMonthly.BackColor = System.Drawing.SystemColors.Control;
+
+                    //daily
+                    numericUpDownDaily.Value = 0;
+
+                    //weekly
+                    for (int i = 0; i < checkedListBoxWeeklyDays.Items.Count; i++)
+                        checkedListBoxWeeklyDays.SetItemChecked(i, false);
+
+                    //monthly
+                    for (int i = 0; i < checkedListBoxMonthlyMonths.Items.Count; i++)
+                        checkedListBoxMonthlyMonths.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyDays.Items.Count; i++)
+                        checkedListBoxMonthlyDays.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekNumber.Items.Count; i++)
+                        checkedListBoxMonthlyWeekNumber.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekDay.Items.Count; i++)
+                        checkedListBoxMonthlyWeekDay.SetItemChecked(i, false);
+
+                    checkedListBoxWeeklyDays.ClearSelected();
+                    checkedListBoxMonthlyMonths.ClearSelected();
+                    checkedListBoxMonthlyDays.ClearSelected();
+                    checkedListBoxMonthlyWeekNumber.ClearSelected();
+                    checkedListBoxMonthlyWeekDay.ClearSelected();
+
+                    break;
+                case 2:
+                    grpOneTime.BackColor = System.Drawing.SystemColors.Control;
+                    grpDaily.BackColor = Color.FromArgb(255, 242, 157);
+                    grpWeekly.BackColor = System.Drawing.SystemColors.Control;
+                    grpMonthly.BackColor = System.Drawing.SystemColors.Control;
+
+                    //onetime
+                    dateTimePickerOneTimeOnlyDay.Value = DateTime.Today;
+                    checkBoxOneTimeOnlyActive.Checked = false;
+
+                    //weekly
+                    for (int i = 0; i < checkedListBoxWeeklyDays.Items.Count; i++)
+                        checkedListBoxWeeklyDays.SetItemChecked(i, false);
+
+                    //monthly
+                    for (int i = 0; i < checkedListBoxMonthlyMonths.Items.Count; i++)
+                        checkedListBoxMonthlyMonths.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyDays.Items.Count; i++)
+                        checkedListBoxMonthlyDays.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekNumber.Items.Count; i++)
+                        checkedListBoxMonthlyWeekNumber.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekDay.Items.Count; i++)
+                        checkedListBoxMonthlyWeekDay.SetItemChecked(i, false);
+
+
+                    checkedListBoxWeeklyDays.ClearSelected();
+                    checkedListBoxMonthlyMonths.ClearSelected();
+                    checkedListBoxMonthlyDays.ClearSelected();
+                    checkedListBoxMonthlyWeekNumber.ClearSelected();
+                    checkedListBoxMonthlyWeekDay.ClearSelected();
+                    break;
+                case 3:
+                    grpOneTime.BackColor = System.Drawing.SystemColors.Control;
+                    grpDaily.BackColor = System.Drawing.SystemColors.Control;
+                    grpWeekly.BackColor = Color.FromArgb(255, 242, 157);
+                    grpMonthly.BackColor = System.Drawing.SystemColors.Control;
+
+                    //onetime
+                    dateTimePickerOneTimeOnlyDay.Value = DateTime.Today;
+                    checkBoxOneTimeOnlyActive.Checked = false;
+
+                    //daily
+                    numericUpDownDaily.Value = 0;
+
+                    //monthly
+                    for (int i = 0; i < checkedListBoxMonthlyMonths.Items.Count; i++)
+                        checkedListBoxMonthlyMonths.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyDays.Items.Count; i++)
+                        checkedListBoxMonthlyDays.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekNumber.Items.Count; i++)
+                        checkedListBoxMonthlyWeekNumber.SetItemChecked(i, false);
+
+                    for (int i = 0; i < checkedListBoxMonthlyWeekDay.Items.Count; i++)
+                        checkedListBoxMonthlyWeekDay.SetItemChecked(i, false);
+
+                    checkedListBoxMonthlyMonths.ClearSelected();
+                    checkedListBoxMonthlyDays.ClearSelected();
+                    checkedListBoxMonthlyWeekNumber.ClearSelected();
+                    checkedListBoxMonthlyWeekDay.ClearSelected();
+                    break;
+                case 4:
+                    grpOneTime.BackColor = System.Drawing.SystemColors.Control;
+                    grpDaily.BackColor = System.Drawing.SystemColors.Control;
+                    grpWeekly.BackColor = System.Drawing.SystemColors.Control;
+                    grpMonthly.BackColor = Color.FromArgb(255, 242, 157);
+
+                    //onetime
+                    dateTimePickerOneTimeOnlyDay.Value = DateTime.Today;
+                    checkBoxOneTimeOnlyActive.Checked = false;
+
+                    //daily
+                    numericUpDownDaily.Value = 0;
+
+                    //weekly
+                    for (int i = 0; i < checkedListBoxWeeklyDays.Items.Count; i++)
+                        checkedListBoxWeeklyDays.SetItemChecked(i, false);
+
+                    checkedListBoxWeeklyDays.ClearSelected();
+                    break;
+            }
+        }
+
+        private void checkBoxOneTimeOnlyActive_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableGroupBox(1);
+        }
+
+        private void numericUpDownDaily_ValueChanged(object sender, EventArgs e)
+        {
+            EnableGroupBox(2);
+        }
+
+        private void checkedListBoxWeeklyDays_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            EnableGroupBox(3);
+        }
+
+        private void checkedListBoxMonthlyMonths_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            EnableGroupBox(4);
+        }
+
+        private void numericUpDownDaily_Enter(object sender, EventArgs e)
+        {
+            EnableGroupBox(2);
+        }
+        #endregion
     }
 }

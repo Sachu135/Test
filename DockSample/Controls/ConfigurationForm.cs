@@ -882,5 +882,28 @@ namespace DockSample.Controls
         {
             enableSetDefault();
         }
+
+        private void txtProLocation_Enter(object sender, EventArgs e)
+        {
+            //code to browse for the location if server type  is windows
+            //get the type of server
+            string serverType = string.Empty;
+            cmbServerType.PerformSafely(() => {
+                serverType = cmbServerType.SelectedIndex >= 0
+                ? cmbServerType.SelectedItem.ToString() : string.Empty;
+            });
+
+            if (!string.IsNullOrEmpty(serverType) && serverType == "Windows")
+            {
+                string folderPath = "";
+                FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
+                if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    folderPath = folderBrowserDialog1.SelectedPath;
+                }
+
+                txtProLocation.Text = folderPath;
+            }
+        }
     }
 }
