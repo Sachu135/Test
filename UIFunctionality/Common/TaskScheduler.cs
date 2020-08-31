@@ -366,6 +366,7 @@ namespace UIFunctionality.Common
             private const byte LastDayOfMonthID = 31; // 0..30 = Tage im Monat, 31=Letzter Tag im Monat
             private object _Tag; // Speichert ein Hilfsobjekt
             private object _TagName; // Speichert ein Hilfsobjekt
+            private string _JobId; // new guid
             private bool _Enabled; // Trigger aktiviert
             public delegate void OnTriggerEventHandler(object sender, OnTriggerEventArgs e);
             public event OnTriggerEventHandler OnTrigger;
@@ -553,6 +554,20 @@ namespace UIFunctionality.Common
                         _NextTriggerDate = FindNextTriggerDate(DateTime.Now);
                     else
                         _NextTriggerDate = DateTime.MaxValue;
+                }
+            }
+
+
+            [XmlElement(Order = 7)]
+            public string JobId
+            {
+                get
+                {
+                    return _JobId;
+                }
+                set
+                {
+                    _JobId = value;
                 }
             }
 
