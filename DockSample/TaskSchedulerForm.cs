@@ -56,21 +56,24 @@ namespace DockSample
 
             if (!string.IsNullOrEmpty(strEditJobId))  //edit mode
             {
-                var editTriggerItem = _taskScheduler.TriggerItems.Cast<TriggerItem>()
-                                   .Where(c => (string)c.TagName == tagName && (string)c.JobId == strEditJobId).FirstOrDefault();
-
-                if(editTriggerItem != null)
-                {
-                    _taskScheduler.TriggerItems.Remove(editTriggerItem);
-                    EnableControls();
-                }
-                else
+                var editTriggerItem1 = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                   .Where(c => (string)c.TagName == tagName && (string)c.JobId != strEditJobId).FirstOrDefault();
+                if(editTriggerItem1 != null)
                 {
                     //code to show message for already exists..
                     MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     EnableControls();
                     return;
                 }
+
+                var editTriggerItem = _taskScheduler.TriggerItems.Cast<TriggerItem>()
+                                   .Where(c => (string)c.JobId == strEditJobId).FirstOrDefault();
+                if(editTriggerItem != null)
+                {
+                    _taskScheduler.TriggerItems.Remove(editTriggerItem);
+                    EnableControls();
+                }
+                
             }
             else  //add mode
             {
