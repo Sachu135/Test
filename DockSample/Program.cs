@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.ServiceProcess;
 using System.Windows.Forms;
+using UIFunctionality.Common;
+using WindowsService;
 
 namespace DockSample
 {

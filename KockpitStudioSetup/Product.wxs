@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?define DockSample_TargetDir=$(var.DockSample.TargetDir)?>
+	<?define KockpitWebService_TargetDir=$(var.KockpitWebService.TargetDir)?>
+	<Product Id="*" Name="Kockpit Studio" Language="1033" Version="1.0.0.0" Manufacturer="Kockpit Analytics" UpgradeCode="a7679301-2dfd-42cc-b198-aa173b8d724d">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<UIRef Id="WixUI_Minimal" />
+		
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+		
+		<!-- Add installer icon -->
+		<Icon Id="ShortCutIcon" SourceFile="$(var.ProjectDir)\Logo.ico" />
+		<Property Id="ARPPRODUCTICON" Value="ShortCutIcon" />
+		<Property Id="SOURCEDIRECTORY" Value="$(var.KockpitWebService_TargetDir)" />
+
+		<!--<WixVariable Id="WixUIBannerBmp" Value="Images\"/>
+		<WixVariable Id="WixUIDialogBmp" Value="Images\"/>-->
+		<WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\License.rtf" />
+		
+
+		<Feature Id="ProductFeature" Title="Kockpit Studio" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="Images_files" />
+			<ComponentGroupRef Id="zh_CN_files" />
+			<ComponentGroupRef Id="ja_JP_files" />
+			<ComponentGroupRef Id="ru_RU_files" />
+			<ComponentRef Id="ApplicationShortcut" />
+			<ComponentRef Id="ApplicationShortcutDesktop" />
+			<ComponentRef Id="ApplicationResource" />
+		</Feature>
+
+		<DirectoryRef Id="ApplicationProgramsFolder">
+			<Component Id="ApplicationShortcut" Guid="41cdba80-edb9-4d71-8157-95527beb73a2">
+				<Shortcut Id="ApplicationStartMenuShortcut" Name="Kockpit Studio" Description="Description of project" Target="[INSTALLFOLDER]DockSample.exe" WorkingDirectory="INSTALLFOLDER" Icon="ShortCutIcon" />
+				<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
+				<RegistryValue Root="HKCU" Key="Software\Kockpit Analytics\Kockpit Studio\ProgramMenuShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+			</Component>
+		</DirectoryRef>
+
+		<DirectoryRef Id="DesktopFolder">
+			<Component Id="ApplicationShortcutDesktop" Guid="6d7976ce-e5ed-11ea-adc1-0242ac120002">
+				<Shortcut Id="ApplicationDesktopShortcut" Name="Kockpit Studio" Directory="DesktopFolder" Description="Description of project" Target="[INSTALLFOLDER]DockSample.exe" WorkingDirectory="INSTALLFOLDER" Icon="ShortCutIcon" />
+				<RemoveFile Id="remove_shortcut" Name="Kockpit Studio" On="uninstall" />
+				<RemoveFolder Id="DesktopFolder" Directory="DesktopFolder" On="uninstall" />
+				<RegistryValue Root="HKCU" Key="Software\Kockpit Analytics\Kockpit Studio\DesktopShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+			</Component>
+		</DirectoryRef>
+
+		<DirectoryRef Id="LINUX">
+			<Component Id="ApplicationResource" Guid="A7C42303-1D77-4C70-8D5C-0FD0F9158EB4">
+				<RemoveFile Id="remove_resources_files" Name="LINUX" Directory="LINUX" On="uninstall" />
+				<RemoveFolder Id="remove_resources" Directory="RESOURCEFOLDER" On="uninstall" />
+				<CopyFile Id="SomeId" SourceProperty="SOURCEDIRECTORY" DestinationDirectory="LINUX" SourceName="*" />
+			</Component>
+		</DirectoryRef>
+		
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="INSTALLFOLDER" Name="Kockpit Studio">
+				  <Directory Id="Images" Name="Images" />
+				  <Directory Id="ja_JP" Name="ja-JP" />
+				  <Directory Id="ru_RU" Name="ru-RU" />
+				  <Directory Id="zh_CN" Name="zh-CN" />
+				  <Directory Id="RESOURCEFOLDER" Name="Resources">
+					<Directory Id="LINUX" Name="Linux" />
+				  </Directory>
+				</Directory>
+			</Directory>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="!(bind.property.Manufacturer)" />
+			</Directory>
+			<Directory Id="DesktopFolder" Name="Desktop">
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+			<Component Id="Logo.ico" Guid="b9ea4c05-d7a8-47d0-abeb-4c1f37105f06">
+			  <File Id="Logo.ico" Name="Logo.ico" Source="$(var.DockSample_TargetDir)Logo.ico" />
+			</Component>
+			<Component Id="DockSample.exe" Guid="95e40708-4d40-490d-9c74-711a1c73fb4a">
+			  <File Id="DockSample.exe" Name="DockSample.exe" Source="$(var.DockSample_TargetDir)DockSample.exe" />
+			</Component>
+			<Component Id="DockSample.exe.config" Guid="dd207586-bae6-481a-b761-1bc4bc9f2ac9">
+			  <File Id="DockSample.exe.config" Name="DockSample.exe.config" Source="$(var.DockSample_TargetDir)DockSample.exe.config" />
+			</Component>
+			<Component Id="UIFunctionality.dll" Guid="09ae3fe8-98d4-47db-8029-5cb0343afd4f">
+			  <File Id="UIFunctionality.dll" Name="UIFunctionality.dll" Source="$(var.DockSample_TargetDir)UIFunctionality.dll" />
+			</Component>
+			<Component Id="WeifenLuo.WinFormsUI.Docking.dll" Guid="e01e7ced-8411-4fdf-9415-fe1f9111f799">
+			  <File Id="WeifenLuo.WinFormsUI.Docking.dll" Name="WeifenLuo.WinFormsUI.Docking.dll" Source="$(var.DockSample_TargetDir)WeifenLuo.WinFormsUI.Docking.dll" />
+			</Component>
+			<Component Id="EasyScintilla.dll" Guid="b5663dc3-88cc-495e-9dbe-1dc7be2297e8">
+			  <File Id="EasyScintilla.dll" Name="EasyScintilla.dll" Source="$(var.DockSample_TargetDir)EasyScintilla.dll" />
+			</Component>
+			<Component Id="CefSharp.WinForms.dll" Guid="007b1683-e658-4ce7-80e1-f5bf424dcc49">
+			  <File Id="CefSharp.WinForms.dll" Name="CefSharp.WinForms.dll" Source="$(var.DockSample_TargetDir)CefSharp.WinForms.dll" />
+			</Component>
+			<Component Id="CefSharp.dll" Guid="7ae4c659-d911-4e87-910a-0480c2fd3bd5">
+			  <File Id="CefSharp.dll" Name="CefSharp.dll" Source="$(var.DockSample_TargetDir)CefSharp.dll" />
+			</Component>
+			<Component Id="SFTPEntities.dll" Guid="d121b064-87fd-4c4e-a9d2-200b96693b0c">
+			  <File Id="SFTPEntities.dll" Name="SFTPEntities.dll" Source="$(var.DockSample_TargetDir)SFTPEntities.dll" />
+			</Component>
+			<Component Id="ScintillaNET.dll" Guid="0e5e7365-e3f2-4e2d-8cb7-6fec988539bf">
+			  <File Id="ScintillaNET.dll" Name="ScintillaNET.dll" Source="$(var.DockSample_TargetDir)ScintillaNET.dll" />
+			</Component>
+			<Component Id="SharpCompress.dll" Guid="a40752da-6c6a-4ef9-9673-053c1d2b8fe8">
+			  <File Id="SharpCompress.dll" Name="SharpCompress.dll" Source="$(var.DockSample_TargetDir)SharpCompress.dll" />
+			</Component>
+			<Component Id="System.Management.Automation.dll" Guid="a936541e-7da2-4052-a199-e44ba3786d2e">
+			  <File Id="System.Management.Automation.dll" Name="System.Management.Automation.dll" Source="$(var.DockSample_TargetDir)System.Management.Automation.dll" />
+			</Component>
+			<Component Id="WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll" Guid="8f99a3bb-32d0-4df1-beb4-976e7f775478">
+			  <File Id="WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll" Name="WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll" Source="$(var.DockSample_TargetDir)WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll" />
+			</Component>
+			<Component Id="FontAwesome.Sharp.dll" Guid="d059f85e-0ed7-454a-bb21-aed2d316bba5">
+			  <File Id="FontAwesome.Sharp.dll" Name="FontAwesome.Sharp.dll" Source="$(var.DockSample_TargetDir)FontAwesome.Sharp.dll" />
+			</Component>
+			<Component Id="Npgsql.dll" Guid="8fcecb6b-cdee-4eda-855f-27196d2e9af7">
+			  <File Id="Npgsql.dll" Name="Npgsql.dll" Source="$(var.DockSample_TargetDir)Npgsql.dll" />
+			</Component>
+			<Component Id="MySql.Data.dll" Guid="ac78acbd-e683-40a9-9ba1-2d7994c727d0">
+			  <File Id="MySql.Data.dll" Name="MySql.Data.dll" Source="$(var.DockSample_TargetDir)MySql.Data.dll" />
+			</Component>
+			<Component Id="Renci.SshNet.dll" Guid="663593e0-0f21-4074-a54f-702d33681faf">
+			  <File Id="Renci.SshNet.dll" Name="Renci.SshNet.dll" Source="$(var.DockSample_TargetDir)Renci.SshNet.dll" />
+			</Component>
+			<Component Id="Newtonsoft.Json.dll" Guid="cd0bc494-0408-4a22-9352-82efdfe21741">
+			  <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.DockSample_TargetDir)Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="CefSharp.Core.dll" Guid="630b4222-f6bb-462c-aa62-fd2e717b08fb">
+			  <File Id="CefSharp.Core.dll" Name="CefSharp.Core.dll" Source="$(var.DockSample_TargetDir)CefSharp.Core.dll" />
+			</Component>
+			<Component Id="System.Memory.dll" Guid="3b6c25c1-a260-4b1c-8d17-659e06f9497c">
+			  <File Id="System.Memory.dll" Name="System.Memory.dll" Source="$(var.DockSample_TargetDir)System.Memory.dll" />
+			</Component>
+			<Component Id="System.Runtime.CompilerServices.Unsafe.dll" Guid="f490b87a-66ef-4ae7-9b8c-e5a8a041ebe0">
+			  <File Id="System.Runtime.CompilerServices.Unsafe.dll" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.DockSample_TargetDir)System.Runtime.CompilerServices.Unsafe.dll" />
+			</Component>
+			<Component Id="System.Buffers.dll" Guid="c3e27f75-faf7-41c0-ae33-8242406de668">
+			  <File Id="System.Buffers.dll" Name="System.Buffers.dll" Source="$(var.DockSample_TargetDir)System.Buffers.dll" />
+			</Component>
+			<Component Id="Microsoft.Management.Infrastructure.dll" Guid="66387e8e-b9f9-4a9a-9a43-77573338dd8f">
+			  <File Id="Microsoft.Management.Infrastructure.dll" Name="Microsoft.Management.Infrastructure.dll" Source="$(var.DockSample_TargetDir)Microsoft.Management.Infrastructure.dll" />
+			</Component>
+			<Component Id="System.ValueTuple.dll" Guid="30b1354d-6dc3-4c92-b0de-e561075fe33a">
+			  <File Id="System.ValueTuple.dll" Name="System.ValueTuple.dll" Source="$(var.DockSample_TargetDir)System.ValueTuple.dll" />
+			</Component>
+			<Component Id="System.Threading.Tasks.Extensions.dll" Guid="579f10e2-476b-40d0-81af-67255c95ab1b">
+			  <File Id="System.Threading.Tasks.Extensions.dll" Name="System.Threading.Tasks.Extensions.dll" Source="$(var.DockSample_TargetDir)System.Threading.Tasks.Extensions.dll" />
+			</Component>
+			<Component Id="Google.Protobuf.dll" Guid="25a413eb-f2ff-44c5-adcb-387f4fee57e5">
+			  <File Id="Google.Protobuf.dll" Name="Google.Protobuf.dll" Source="$(var.DockSample_TargetDir)Google.Protobuf.dll" />
+			</Component>
+			<Component Id="Zstandard.Net.dll" Guid="4b75f3aa-72d9-4f5c-9239-5450c51e2e9b">
+			  <File Id="Zstandard.Net.dll" Name="Zstandard.Net.dll" Source="$(var.DockSample_TargetDir)Zstandard.Net.dll" />
+			</Component>
+			<Component Id="K4os.Compression.LZ4.Streams.dll" Guid="3c061005-9ef5-4169-b73e-ef7a7f60a2dc">
+			  <File Id="K4os.Compression.LZ4.Streams.dll" Name="K4os.Compression.LZ4.Streams.dll" Source="$(var.DockSample_TargetDir)K4os.Compression.LZ4.Streams.dll" />
+			</Component>
+			<Component Id="K4os.Compression.LZ4.dll" Guid="205914e6-8407-419d-b5ac-929bc4fd21fa">
+			  <File Id="K4os.Compression.LZ4.dll" Name="K4os.Compression.LZ4.dll" Source="$(var.DockSample_TargetDir)K4os.Compression.LZ4.dll" />
+			</Component>
+			<Component Id="K4os.Hash.xxHash.dll" Guid="876c8007-1205-4c79-9e24-322825f1b931">
+			  <File Id="K4os.Hash.xxHash.dll" Name="K4os.Hash.xxHash.dll" Source="$(var.DockSample_TargetDir)K4os.Hash.xxHash.dll" />
+			</Component>
+			<Component Id="BouncyCastle.Crypto.dll" Guid="31a78ec9-27c4-467e-aebe-9cbacc3602af">
+			  <File Id="BouncyCastle.Crypto.dll" Name="BouncyCastle.Crypto.dll" Source="$(var.DockSample_TargetDir)BouncyCastle.Crypto.dll" />
+			</Component>
+			<Component Id="Ubiety.Dns.Core.dll" Guid="785563fa-8f3e-47a9-b7d3-d6c3096b30fb">
+			  <File Id="Ubiety.Dns.Core.dll" Name="Ubiety.Dns.Core.dll" Source="$(var.DockSample_TargetDir)Ubiety.Dns.Core.dll" />
+			</Component>
+			<Component Id="CustomControls.exe" Guid="26ba5e21-0c0e-4e7a-802c-09becadd4f0e">
+			  <File Id="CustomControls.exe" Name="CustomControls.exe" Source="$(var.DockSample_TargetDir)CustomControls.exe" />
+			</Component>
+			<Component Id="CustomControls.exe.config" Guid="50ed7ae0-ac74-42e7-97ec-fe25d26ada82">
+			  <File Id="CustomControls.exe.config" Name="CustomControls.exe.config" Source="$(var.DockSample_TargetDir)CustomControls.exe.config" />
+			</Component>
+			<Component Id="unvell.ReoGridEditor.exe" Guid="a24c8f56-c753-4173-b1cd-4a88e77d0840">
+			  <File Id="unvell.ReoGridEditor.exe" Name="unvell.ReoGridEditor.exe" Source="$(var.DockSample_TargetDir)unvell.ReoGridEditor.exe" />
+			</Component>
+			<Component Id="unvell.ReoGridEditor.exe.config" Guid="3e6f0463-417b-4ca7-af8f-0774ffb3f21b">
+			  <File Id="unvell.ReoGridEditor.exe.config" Name="unvell.ReoGridEditor.exe.config" Source="$(var.DockSample_TargetDir)unvell.ReoGridEditor.exe.config" />
+			</Component>
+			<Component Id="unvell.ReoGrid.dll" Guid="23188a05-2851-434f-a9fe-971ee9a2c9f5">
+			  <File Id="unvell.ReoGrid.dll" Name="unvell.ReoGrid.dll" Source="$(var.DockSample_TargetDir)unvell.ReoGrid.dll" />
+			</Component>
+			<Component Id="WindowsService.exe" Guid="bcdbc39f-b0fe-4400-b264-c8afdc35a838">
+			  <File Id="WindowsService.exe" Name="WindowsService.exe" Source="$(var.DockSample_TargetDir)WindowsService.exe" />
+			</Component>
+			<Component Id="WindowsService.exe.config" Guid="8f01b8b4-7d9e-4a12-a1e3-49754ca70d74">
+			  <File Id="WindowsService.exe.config" Name="WindowsService.exe.config" Source="$(var.DockSample_TargetDir)WindowsService.exe.config" />
+			</Component>
+			<Component Id="System.Windows.Forms.dll" Guid="0907e983-ef24-472d-b007-145fabed96f2">
+			  <File Id="System.Windows.Forms.dll" Name="System.Windows.Forms.dll" Source="$(var.DockSample_TargetDir)System.Windows.Forms.dll" />
+			</Component>
+			<Component Id="System.dll" Guid="cc0bd4ee-6553-45ab-976d-210a6c1d01c2">
+			  <File Id="System.dll" Name="System.dll" Source="$(var.DockSample_TargetDir)System.dll" />
+			</Component>
+			<Component Id="System.ServiceProcess.dll" Guid="8c80128e-aeb5-4550-9d3e-9d913b3b678d">
+			  <File Id="System.ServiceProcess.dll" Name="System.ServiceProcess.dll" Source="$(var.DockSample_TargetDir)System.ServiceProcess.dll" />
+			</Component>
+			<Component Id="System.Xml.dll" Guid="847b320b-c2ac-49af-a29b-e5cf0d866065">
+			  <File Id="System.Xml.dll" Name="System.Xml.dll" Source="$(var.DockSample_TargetDir)System.Xml.dll" />
+			</Component>
+			<Component Id="System.Configuration.Install.dll" Guid="5379482a-2cec-4fae-9d25-ba93de906ed8">
+			  <File Id="System.Configuration.Install.dll" Name="System.Configuration.Install.dll" Source="$(var.DockSample_TargetDir)System.Configuration.Install.dll" />
+			</Component>
+			
+			
+			<Component Id="icudtl.dat" Guid="fc62d186-e864-11ea-adc1-0242ac120002">
+				<File Id="icudtl.dat" Name="icudtl.dat" Source="$(var.DockSample_TargetDir)icudtl.dat" />
+			</Component>
+			<Component Id="libcef.dll" Guid="044644be-e865-11ea-adc1-0242ac120002">
+				<File Id="libcef.dll" Name="libcef.dll" Source="$(var.DockSample_TargetDir)libcef.dll" />
+			</Component>
+			<Component Id="CefSharp.BrowserSubprocess.exe" Guid="5edbb2ea-e86c-11ea-adc1-0242ac120002">
+				<File Id="CefSharp.BrowserSubprocess.exe" Name="CefSharp.BrowserSubprocess.exe" Source="$(var.DockSample_TargetDir)CefSharp.BrowserSubprocess.exe" />
+			</Component>
+			<Component Id="CefSharp.BrowserSubprocess.Core.dll" Guid="663eac9a-e86c-11ea-adc1-0242ac120002">
+				<File Id="CefSharp.BrowserSubprocess.Core.dll" Name="CefSharp.BrowserSubprocess.Core.dll" Source="$(var.DockSample_TargetDir)CefSharp.BrowserSubprocess.Core.dll" />
+			</Component>
+			<Component Id="chrome_elf.dll" Guid="6d4082f2-e86c-11ea-adc1-0242ac120002">
+				<File Id="chrome_elf.dll" Name="chrome_elf.dll" Source="$(var.DockSample_TargetDir)chrome_elf.dll" />
+			</Component>
+			<Component Id="snapshot_blob.bin" Guid="7a2af114-e86c-11ea-adc1-0242ac120002">
+				<File Id="snapshot_blob.bin" Name="snapshot_blob.bin" Source="$(var.DockSample_TargetDir)snapshot_blob.bin" />
+			</Component>
+			<Component Id="v8_context_snapshot.bin" Guid="810726e2-e86c-11ea-adc1-0242ac120002">
+				<File Id="v8_context_snapshot.bin" Name="v8_context_snapshot.bin" Source="$(var.DockSample_TargetDir)v8_context_snapshot.bin" />
+			</Component>
+			<Component Id="natives_blob.bin" Guid="eeac6740-e86f-11ea-adc1-0242ac120002">
+				<File Id="natives_blob.bin" Name="natives_blob.bin" Source="$(var.DockSample_TargetDir)natives_blob.bin" />
+			</Component>
+			
+
+			<Component Id="cef.pak" Guid="c1a92d06-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef.pak" Name="cef.pak" Source="$(var.DockSample_TargetDir)cef.pak" />
+			</Component>
+			<Component Id="cef_100_percent.pak" Guid="d5312e46-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_100_percent.pak" Name="cef_100_percent.pak" Source="$(var.DockSample_TargetDir)cef_100_percent.pak" />
+			</Component>
+			<Component Id="cef_200_percent.pak" Guid="dcdff87a-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_200_percent.pak" Name="cef_200_percent.pak" Source="$(var.DockSample_TargetDir)cef_200_percent.pak" />
+			</Component>
+			<Component Id="cef_extensions.pak" Guid="e2d7dd4c-e86e-11ea-adc1-0242ac120002">
+				<File Id="cef_extensions.pak" Name="cef_extensions.pak" Source="$(var.DockSample_TargetDir)cef_extensions.pak" />
+			</Component>
+			<Component Id="devtools_resources.pak" Guid="e8d94992-e86e-11ea-adc1-0242ac120002">
+				<File Id="devtools_resources.pak" Name="devtools_resources.pak" Source="$(var.DockSample_TargetDir)devtools_resources.pak" />
+			</Component>
+			<Component Id="d3dcompiler_47.dll" Guid="ef5a9aaa-e86e-11ea-adc1-0242ac120002">
+				<File Id="d3dcompiler_47.dll" Name="d3dcompiler_47.dll" Source="$(var.DockSample_TargetDir)d3dcompiler_47.dll" />
+			</Component>
+			<Component Id="libEGL.dll" Guid="f5b03e0a-e86e-11ea-adc1-0242ac120002">
+				<File Id="libEGL.dll" Name="libEGL.dll" Source="$(var.DockSample_TargetDir)libEGL.dll" />
+			</Component>
+			<Component Id="libGLESv2.dll" Guid="fbf0bba0-e86e-11ea-adc1-0242ac120002">
+				<File Id="libGLESv2.dll" Name="libGLESv2.dll" Source="$(var.DockSample_TargetDir)libGLESv2.dll" />
+			</Component>
+
+		</ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="Images_files" Directory="Images">
+	    <Component Id="Images_Logo.ico" Guid="dfd72d97-ebc7-4450-a634-a042ad1754af">
+	      <File Id="Images_Logo.ico" Name="Logo.ico" Source="$(var.DockSample_TargetDir)Images\Logo.ico" />
+	    </Component>
+	    <Component Id="Images_SplashScreen.png" Guid="6bc41656-e2e9-42ce-ad80-2b30ce9304f7">
+	      <File Id="Images_SplashScreen.png" Name="SplashScreen.png" Source="$(var.DockSample_TargetDir)Images\SplashScreen.png" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="zh_CN_files" Directory="zh_CN">
+      <Component Id="zh_CN_unvell.ReoGridEditor.resources.dll" Guid="ae60d1b4-b140-472e-8154-b3dbedd63b62">
+        <File Id="zh_CN_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)zh-CN\unvell.ReoGridEditor.resources.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ja_JP_files" Directory="ja_JP">
+      <Component Id="ja_JP_unvell.ReoGridEditor.resources.dll" Guid="ef3cd580-51b9-4783-8e83-7ce57f69b1c2">
+        <File Id="ja_JP_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)ja-JP\unvell.ReoGridEditor.resources.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ru_RU_files" Directory="ru_RU">
+      <Component Id="ru_RU_unvell.ReoGridEditor.resources.dll" Guid="dac7ca19-9398-4460-b5f7-e4a4ae9f70a3">
+        <File Id="ru_RU_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)ru-RU\unvell.ReoGridEditor.resources.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

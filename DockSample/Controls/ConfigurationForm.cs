@@ -270,7 +270,8 @@ namespace DockSample.Controls
                 }
                 catch (Exception ex)
                 {
-                    throw;
+                    MessageBox.Show("Error:" + ex.Message);
+                    HideLoader();
                 }
                 
             });
@@ -529,6 +530,18 @@ namespace DockSample.Controls
                             return;
                         }
 
+                        if(txtProLocation.Text.Trim().Length != 0)
+                        {
+                            //code to check the path exists or not
+                            if(!Directory.Exists(txtProLocation.Text.Trim()) && serverType == "Windows")
+                            {
+                                MessageBox.Show("Location path does not exists..");
+                                HideLoader();
+                                return;
+                            }
+                        }
+
+
                         ProjectInfo proInfo = new ProjectInfo();
                         proInfo.sSHClientInfo = new SSHClientInfo();
                         proInfo.ProjectName = txtProName.Text.Trim();
@@ -568,20 +581,32 @@ namespace DockSample.Controls
                                 return;
                             }
 
-                            proInfo.sSHClientInfo = new SSHClientInfo()
+                            string message = string.Format("Please ensure that all ports ('{0}','{1}','{2}') are accessible all server",
+                                txtTerminalUrl.Text.Trim(), txtAirflow.Text.Trim(), txtHealthCheck.Text.Trim());
+                            string title = "Confirmation";
+                            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+                            DialogResult result = MessageBox.Show(message, title, buttons);
+                            if (result == DialogResult.OK)
                             {
-                                IPAddress = txtSshIP.Text.Trim(),
-                                UserName = txtSshUser.Text.Trim(),
-                                Password = txtSshPass.Text.Trim()
-                            };
-                            proInfo.terminalInfo = new TerminalInfo()
-                            {
-                                Url = txtTerminalUrl.Text.Trim()
-                            };
+                                proInfo.sSHClientInfo = new SSHClientInfo()
+                                {
+                                    IPAddress = txtSshIP.Text.Trim(),
+                                    UserName = txtSshUser.Text.Trim(),
+                                    Password = txtSshPass.Text.Trim()
+                                };
+                                proInfo.terminalInfo = new TerminalInfo()
+                                {
+                                    Url = txtTerminalUrl.Text.Trim()
+                                };
 
-                            proInfo.KockpitServiceUrl = txtExplorerServiceUrl.Text.Trim();
-                            proInfo.otherServices.AirflowService = txtAirflow.Text;
-                            proInfo.otherServices.HealthCheckService = txtHealthCheck.Text;
+                                proInfo.KockpitServiceUrl = txtExplorerServiceUrl.Text.Trim();
+                                proInfo.otherServices.AirflowService = txtAirflow.Text;
+                                proInfo.otherServices.HealthCheckService = txtHealthCheck.Text;
+                            }
+                            else
+                            {
+                                return;
+                            }
                         }
 
                         proInfo.ProjectPath = txtProLocation.Text.Trim();
@@ -721,16 +746,19 @@ namespace DockSample.Controls
             if (cmbServerType.SelectedIndex == -1)
             {
                 groupBox7.Enabled = groupBox8.Enabled = groupBox9.Enabled = false;
+                btnDefault.Enabled = false;
             }
             else if (cmbServerType.SelectedIndex == 0)
             {
                 groupBox7.Enabled = true;
                 groupBox8.Enabled = groupBox9.Enabled = lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = false;
+                btnDefault.Enabled = true;
             }
             else if (cmbServerType.SelectedIndex == 1)
             {
                 groupBox7.Enabled = true;
                 lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = groupBox8.Enabled = groupBox9.Enabled = true;
+                btnDefault.Enabled = false;
             }
         }
         private async void cmbServerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -771,6 +799,111 @@ namespace DockSample.Controls
             {
                 dataGridView2.Enabled = true;
             });
+        }
+
+        private void btnDefault_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //get the type of server
+                string serverType = string.Empty;
+                cmbServerType.PerformSafely(() => {
+                    serverType = cmbServerType.SelectedIndex >= 0 
+                    ? cmbServerType.SelectedItem.ToString() : string.Empty;
+                });
+
+                if (!string.IsNullOrEmpty(serverType))
+                {
+                    if (serverType == "Windows")
+                    {
+                        ///case when windows
+                        ///on drop down change of server type if windows then enable the default button
+                        ///on default button click set the Location as : C:\KockpitStudio\ETLJobs
+                        ///after click on Add New button create the directory inside KockputStudio name as ETLJobs
+                        ///
+                        var windowsFolderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows);
+                        var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
+                        var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
+                        //code to create the directory for KockpitStudio
+                        string _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
+                        string _ETLJobsDir = Path.Combine(_KockPitDirectory, "ETLJobs");
+
+                        if (!Directory.Exists(_KockPitDirectory))
+                            Directory.CreateDirectory(_KockPitDirectory);
+
+                        //Directory for ETLJobs
+                        if (!Directory.Exists(_ETLJobsDir))
+                            Directory.CreateDirectory(_ETLJobsDir);
+
+                        txtProLocation.Text = _ETLJobsDir;
+                    }
+
+                    if(serverType == "Linux")
+                    {
+                        ///case when linux
+                        ///after filled the ssh client info then enable the default button
+                        ///on default click get the username
+                        ///set the location as : /home/username/KockpitStudio
+                        ///after click on Add New button show the confirmation message of OK and Cancel button. 
+                        string strUsername = txtSshUser.Text.Trim();
+                        if (!string.IsNullOrEmpty(strUsername))
+                            txtProLocation.Text = string.Format("/home/{0}/KockpitStudio", strUsername);
+                        else
+                            MessageBox.Show("Username cannot be blank..");
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private void enableSetDefault()
+        {
+            //code to enable the set default button
+            btnDefault.Enabled = (!string.IsNullOrEmpty(txtSshIP.Text.Trim())
+                && !string.IsNullOrEmpty(txtSshUser.Text.Trim())
+                && !string.IsNullOrEmpty(txtSshPass.Text.Trim())) ? true : false;
+        }
+
+        private void txtSshPass_Validated(object sender, EventArgs e)
+        {
+            enableSetDefault();
+        }
+
+        private void txtSshUser_Validated(object sender, EventArgs e)
+        {
+            enableSetDefault();
+        }
+
+        private void txtSshIP_Validated(object sender, EventArgs e)
+        {
+            enableSetDefault();
+        }
+
+        private void txtProLocation_Enter(object sender, EventArgs e)
+        {
+            //code to browse for the location if server type  is windows
+            //get the type of server
+            string serverType = string.Empty;
+            cmbServerType.PerformSafely(() => {
+                serverType = cmbServerType.SelectedIndex >= 0
+                ? cmbServerType.SelectedItem.ToString() : string.Empty;
+            });
+
+            if (!string.IsNullOrEmpty(serverType) && serverType == "Windows")
+            {
+                string folderPath = "";
+                FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
+                if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    folderPath = folderBrowserDialog1.SelectedPath;
+                }
+
+                txtProLocation.Text = folderPath;
+            }
         }
     }
 }

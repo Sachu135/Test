@@ -27,6 +27,7 @@ namespace DockSample
         private string _KockPitDirectory;
         private string _SparkDir;
         private string _WinUtilDir;
+        private string _ETLJobsDir;
 
         public HardwareConfigForm()
         {
@@ -48,6 +49,15 @@ namespace DockSample
             var applications = (from object value in section.Values
                                 select (PackageElement)value)
                                 .ToList();
+
+            var name = "Path";
+            var scope = EnvironmentVariableTarget.Machine; // or User
+            var oldValue = Environment.GetEnvironmentVariable(name, scope);
+            List<string> liPaths = oldValue.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var windowsFolderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows);
+            var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
+            var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
 
             //Task to install the dependencies
             Task t = new Task(() =>
@@ -115,6 +125,26 @@ namespace DockSample
                 processChoco.BeginErrorReadLine();
                 processChoco.WaitForExit();
                 processChoco.Close();
+
+                ///code to check if environment variable not set for choco then set it
+                if(Directory.Exists(windowsDriveInfo + @"ProgramData\chocolatey\bin"))
+                {
+                    bool lChocoPathExists = false;
+                    foreach (var path in liPaths)
+                    {
+                        if (path.Contains(@"\ProgramData\chocolatey\bin"))
+                        {
+                            lChocoPathExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!lChocoPathExists)
+                    {
+                        oldValue = oldValue + ";" + windowsDriveInfo + @"ProgramData\chocolatey\bin";
+                        Environment.SetEnvironmentVariable(name, oldValue, scope);
+                    }
+                }
                 #endregion
 
                 #region [Check for All Packages]
@@ -201,6 +231,38 @@ namespace DockSample
                             if (s.Contains(item.Package))
                             {
                                 lfound = true;
+                                if (item.Name.ToLower().Trim() == "python")
+                                {
+                                    bool lPython3found = false;
+                                    foreach (var path in liPaths)
+                                    {
+                                        if (path.Contains(@"\Python3"))
+                                        {
+                                            lPython3found = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (lPython3found)
+                                    {
+                                        //code to remove the python
+                                        StringBuilder sbPyUninstall = new StringBuilder();
+                                        sbPyUninstall.AppendLine(@"choco uninstall python -y");
+                                        sbPyUninstall.AppendLine(@"choco uninstall python3 -y");
+                                        var processInfoUnPython = new ProcessStartInfo("powershell.exe", @"& {" + sbPyUninstall.ToString() + "}");
+                                        processInfoUnPython.CreateNoWindow = true;
+                                        processInfoUnPython.WindowStyle = ProcessWindowStyle.Hidden;
+                                        processInfoUnPython.UseShellExecute = false;
+                                        processInfoUnPython.RedirectStandardError = true;
+                                        processInfoUnPython.RedirectStandardOutput = true;
+                                        processInfoUnPython.Verb = "runas";
+                                        var processUnPython = Process.Start(processInfoUnPython);
+                                        processUnPython.WaitForExit();
+                                        processUnPython.Close();
+                                        lfound = false;
+                                    }
+                                      
+                                }
                                 break;
                             }
                         }
@@ -285,6 +347,26 @@ namespace DockSample
                     processInstall.Close();
 
 
+                    ///code to check if environment variable not set for python then set it
+                    if (Directory.Exists(windowsDriveInfo + @"Python37"))
+                    {
+                        bool lPythonPathExists = false;
+                        foreach (var path in liPaths)
+                        {
+                            if (path.Contains(@"\Python37"))
+                            {
+                                lPythonPathExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!lPythonPathExists)
+                        {
+                            oldValue = oldValue + ";" + windowsDriveInfo + @"\Python37\Scripts\" + ";" + windowsDriveInfo + @"\Python37";
+                            Environment.SetEnvironmentVariable(name, oldValue, scope);
+                        }
+                    }
+
                     //code to
                     //1.https://spark.apache.org/downloads.html (2.4.6) (through c# code in c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7
                     //2.Set spark home through C# code 'SPARK_HOME', 'c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7'
@@ -292,10 +374,6 @@ namespace DockSample
                     //4.Set Hadoop Home path
                     if (lSparkExists)
                     {
-                        var windowsFolderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows);
-                        var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
-                        var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
-
                         //code to create the directory for KockpitStudio
                         _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
                         if (!Directory.Exists(_KockPitDirectory))
@@ -305,6 +383,7 @@ namespace DockSample
                         {
                             _SparkDir = Path.Combine(_KockPitDirectory, "Spark");
                             _WinUtilDir = Path.Combine(_KockPitDirectory, "WinUtil");
+                            _ETLJobsDir = Path.Combine(_KockPitDirectory, "ETLJobs");
 
                             //Directory for Spark
                             if (!Directory.Exists(_SparkDir))
@@ -314,10 +393,10 @@ namespace DockSample
                             if (!Directory.Exists(_WinUtilDir))
                                 Directory.CreateDirectory(_WinUtilDir);
 
+                            //Directory for ETLJobs
+                            if (!Directory.Exists(_ETLJobsDir))
+                                Directory.CreateDirectory(_ETLJobsDir);
 
-                            var name = "Path";
-                            var scope = EnvironmentVariableTarget.Machine; // or User
-                            var oldValue = Environment.GetEnvironmentVariable(name, scope);
                             string newValue = "";
                             if (Directory.Exists(_SparkDir))
                             {
@@ -350,7 +429,19 @@ namespace DockSample
 
                                     //Environment Set For Spark
                                     SetEnv("SPARK_HOME", _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
-                                    newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
+
+                                    bool lSparkPathExists = false;
+                                    foreach (var path in liPaths)
+                                    {
+                                        if (path.Contains(@"\spark-2.4.6-bin-hadoop2.7\bin"))
+                                        {
+                                            lSparkPathExists = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!lSparkPathExists)
+                                        newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
                                 }
                             }
 
@@ -398,6 +489,7 @@ namespace DockSample
                             }
                         }
                     }
+
 
                     DataTable tData = new DataTable();
                     tData.Columns.Add("Package", typeof(string));

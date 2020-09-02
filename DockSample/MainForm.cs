@@ -142,9 +142,12 @@ namespace DockSample
             else
             {
                 foreach (IDockContent content in dockPanel.Documents)
+                {
+                    //if(content is TaskSchedulerForm)
                     if (content.DockHandler.TabText == text)
                         return content;
-
+                }
+                    
                 return null;
             }
         }
@@ -717,7 +720,7 @@ namespace DockSample
                 tsSchedular.Enabled = false;
                 tsHealthCheck.Enabled = false;
                 toolBarButtonLinuxTerminal.Enabled = false;
-
+                
                 if (CurrentProj.otherServices != null)
                 {
                     if (!string.IsNullOrEmpty(CurrentProj.otherServices.AirflowService))
@@ -735,6 +738,11 @@ namespace DockSample
                     {
                         toolBarButtonLinuxTerminal.Enabled = true;
                     }
+                }
+
+                if (CurrentProj.IsWindows)
+                {
+                    tsSchedular.Enabled = true;
                 }
             });
             
@@ -948,15 +956,21 @@ namespace DockSample
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
-                    if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                    try
                     {
-                        dummyDoc.MdiParent = this;
-                        dummyDoc.Show();
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
+                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        {
+                            dummyDoc.MdiParent = this;
+                            dummyDoc.Show();
+                        }
+                        else
+                            dummyDoc.Show(dockPanel);
                     }
-                    else
-                        dummyDoc.Show(dockPanel);
-
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 });
             }).Start();
             //
@@ -1112,26 +1126,58 @@ namespace DockSample
             new Task(() =>
             {
                 var tabText = "Scheduler";
-                if (CheckTerminalOrConfiguratorOpen(tabText))
+                if (!CurrentProj.IsWindows)
                 {
-                    MessageBox.Show("Scheduler already opened!");
-                    return;
+                    if (CheckTerminalOrConfiguratorOpen(tabText))
+                    {
+                        MessageBox.Show("Scheduler already opened!");
+                        return;
+                    }
                 }
+                else
+                {
+                    //Code to check Tab is already open or not
+                    foreach (IDockContent content in dockPanel.Documents)
+                    {
+                        if(content is TaskSchedulerForm)
+                        {
+                            MessageBox.Show("Task Scheduler already opened!");
+                            return;
+                        }    
+                    }
+                }
+                
                 dockPanel.PerformSafely(() =>
                 {
-                    if (CurrentProj .otherServices.AirflowService.Length > 0)
+                    if (!CurrentProj.IsWindows)
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.AirflowService, tabText);
-                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        if (CurrentProj.otherServices.AirflowService.Length > 0)
                         {
-                            dummyDoc.MdiParent = this;
-                            dummyDoc.Show();
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.AirflowService, tabText);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
                         }
-                        else
-                            dummyDoc.Show(dockPanel);
                     }
-                    
-
+                    else 
+                    {
+                        dockPanel.PerformSafely(() =>
+                        {
+                            TaskSchedulerForm taskSchedulerForm = new TaskSchedulerForm(AppDomain.CurrentDomain.BaseDirectory);
+                            //taskSchedulerForm.Show(dockPanel);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                taskSchedulerForm.MdiParent = this;
+                                taskSchedulerForm.Show();
+                            }
+                            else
+                                taskSchedulerForm.Show(dockPanel);
+                        });
+                    }
                 });
             }).Start();
         }
