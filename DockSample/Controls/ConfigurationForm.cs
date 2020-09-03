@@ -511,7 +511,7 @@ namespace DockSample.Controls
 
                     if (string.IsNullOrEmpty(txtProName.Text.Trim()))
                     {
-                        MessageBox.Show("Project name cannot be blank!");
+                        MessageBox.Show("Workspace name cannot be blank!");
                     }
                     else if (string.IsNullOrEmpty(serverType))
                     {
@@ -540,7 +540,6 @@ namespace DockSample.Controls
                                 return;
                             }
                         }
-
 
                         ProjectInfo proInfo = new ProjectInfo();
                         proInfo.sSHClientInfo = new SSHClientInfo();
@@ -620,18 +619,26 @@ namespace DockSample.Controls
 
                         if (proInfo.IsWindows && editIndex == -1)
                         {
-                            using (HardwareConfigForm form = new HardwareConfigForm())
+                            using (HardwareConfigForm form = new HardwareConfigForm(proInfo.ProjectName))
                             {
                                 this.PerformSafely(() =>
                                 {
-                                    form.ShowDialog(this);
+                                    DialogResult dresult = form.ShowDialog(this);
+                                    if(dresult == DialogResult.OK)
+                                    {
+                                        editIndex = -1;
+                                        config.projectInfoList.Add(proInfo);
+                                    }
                                 });
                             }
                         }
-                        editIndex = -1;
-                        config.projectInfoList.Add(proInfo);
-                        ShowProjects();
+                        else
+                        {
+                            editIndex = -1;
+                            config.projectInfoList.Add(proInfo);
+                        }
 
+                        ShowProjects();
                         button6_Click(null, null);
                     }
                 }

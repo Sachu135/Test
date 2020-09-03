@@ -556,6 +556,7 @@
             this.txtSshPass.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
             this.txtSshPass.Location = new System.Drawing.Point(121, 94);
             this.txtSshPass.Name = "txtSshPass";
+            this.txtSshPass.PasswordChar = '*';
             this.txtSshPass.Size = new System.Drawing.Size(200, 23);
             this.txtSshPass.TabIndex = 5;
             this.txtSshPass.Tag = "JunkyardUbuntu!";

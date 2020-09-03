@@ -19,6 +19,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UIFunctionality.Common;
 
 namespace DockSample
 {
@@ -29,9 +30,13 @@ namespace DockSample
         private string _WinUtilDir;
         private string _ETLJobsDir;
 
-        public HardwareConfigForm()
+
+        public string _windowServer;
+
+        public HardwareConfigForm(string windowServer)
         {
             InitializeComponent();
+            _windowServer = windowServer;
         }
 
         private void HardwareConfigForm_Shown(object sender, EventArgs e)
@@ -43,25 +48,46 @@ namespace DockSample
             SetConfiguration();
         }
 
-        private async void SetConfiguration()
+        private string CheckForEnvironmentVariables()
         {
-            var section = (PackageValuesSection)ConfigurationManager.GetSection("WindowsPackages");
-            var applications = (from object value in section.Values
-                                select (PackageElement)value)
-                                .ToList();
-
             var name = "Path";
             var scope = EnvironmentVariableTarget.Machine; // or User
             var oldValue = Environment.GetEnvironmentVariable(name, scope);
             List<string> liPaths = oldValue.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            var windowsFolderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows);
-            var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
-            var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
+            string newValue = "";
+            foreach (string s in liPaths)
+            {
+                string sPath = s.Replace(@"\\", @"\");
+                if (Directory.Exists(sPath))
+                    newValue += sPath + ";";
+            }
+            Environment.SetEnvironmentVariable(name, newValue, scope);
+            return newValue;
+        }
 
+        private async void SetConfiguration()
+        {
             //Task to install the dependencies
             Task t = new Task(() =>
             {
+                int vExitCode = -1;
+
+                var section = (PackageValuesSection)ConfigurationManager.GetSection("WindowsPackages");
+                var applications = (from object value in section.Values
+                                    select (PackageElement)value)
+                                    .ToList();
+
+                //to check the paths if not exists the remove it
+                //CheckForEnvironmentVariables();
+
+                var oldValue = CheckForEnvironmentVariables();
+                List<string> liPaths = oldValue.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                var windowsFolderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows);
+                var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
+                var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
+
                 using (RunspaceInvoke invoker = new RunspaceInvoke())
                 {
                     invoker.Invoke("Set-ExecutionPolicy Unrestricted -Scope CurrentUser");
@@ -74,6 +100,7 @@ namespace DockSample
 
                 #region [Check for Choco]
                 //Stage 1
+                SetText("Checking Prerequisites...");
                 StringBuilder sbChoco = new StringBuilder();
                 sbChoco.AppendLine(@"Set-ExecutionPolicy Bypass -Scope Process -Force");
                 sbChoco.AppendLine(@"$testchoco = powershell choco -v");
@@ -90,22 +117,14 @@ namespace DockSample
                 var processChoco = Process.Start(processInfoChoco);
                 processChoco.Exited += (object sender, EventArgs e) =>
                 {
-                    this.PerformSafely(() =>
-                    {
-                        richTextBox2.Text += ("-----------Choco Installed Finished------------" + Environment.NewLine);
-                        richTextBox2.ScrollToCaret();
-                    });
+                    vExitCode = processChoco.ExitCode;
+                    SetText("-----------Process Choco Checking/Installation Finished------------");
                 };
                 processChoco.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
                 {
                     if (e.Data != null)
                     {
-                        richTextBox2.PerformSafely(() =>
-                        {
-                            richTextBox2.Text += (e.Data + Environment.NewLine);
-                            richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                            richTextBox2.ScrollToCaret();
-                        });
+                        SetText(e.Data);
                     }
                 };
                 processChoco.BeginOutputReadLine();
@@ -113,436 +132,22 @@ namespace DockSample
                 {
                     if (e.Data != null)
                     {
-                        richTextBox2.PerformSafely(() =>
-                        {
-                            richTextBox2.Text += ("Error: " + e.Data + Environment.NewLine);
-                            richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                            richTextBox2.ScrollToCaret();
-                        });
-
+                        SetText("Error: " + e.Data);
                     }
                 };
                 processChoco.BeginErrorReadLine();
                 processChoco.WaitForExit();
+                vExitCode = processChoco.ExitCode;
                 processChoco.Close();
-
-                ///code to check if environment variable not set for choco then set it
-                if(Directory.Exists(windowsDriveInfo + @"ProgramData\chocolatey\bin"))
-                {
-                    bool lChocoPathExists = false;
-                    foreach (var path in liPaths)
-                    {
-                        if (path.Contains(@"\ProgramData\chocolatey\bin"))
-                        {
-                            lChocoPathExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!lChocoPathExists)
-                    {
-                        oldValue = oldValue + ";" + windowsDriveInfo + @"ProgramData\chocolatey\bin";
-                        Environment.SetEnvironmentVariable(name, oldValue, scope);
-                    }
-                }
                 #endregion
 
-                #region [Check for All Packages]
-                //Stage 2
-                //check packages installed or not
-                var processInfoValidate = new ProcessStartInfo("powershell.exe", @"& {choco list --localonly}");
-                processInfoValidate.CreateNoWindow = true;
-                processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
-                processInfoValidate.UseShellExecute = false;
-                processInfoValidate.RedirectStandardError = true;
-                processInfoValidate.RedirectStandardOutput = true;
-                processInfoValidate.Verb = "runas";
-                var processValidate = Process.Start(processInfoValidate);
-                string strListPackages = string.Empty;
-                processValidate.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                if (vExitCode != 0)
                 {
-                    if (e.Data != null)
+                    btnProceed.Tag = (string)"0";
+                    btnProceed.PerformSafely(() =>
                     {
-                        this.PerformSafely(() =>
-                        {
-                            strListPackages += (e.Data + Environment.NewLine);
-                        });
-                    }
-                };
-                processValidate.BeginOutputReadLine();
-                processValidate.WaitForExit();
-                processValidate.Close();
-                #endregion
-
-
-                List<PackageElement> liInstallationPackages = new List<PackageElement>();
-                if (!string.IsNullOrEmpty(strListPackages))
-                {
-                    //check the packages if exists then remove from the applications list otherwise continue
-                    List<string> lines = strListPackages.Split(
-                                            new[] { "\r\n", "\r", "\n" },
-                                            StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                    foreach (var item in applications)
-                    {
-                        bool lfound = false;
-                        if (item.Name.ToLower().Trim() == "spark")
-                        {
-                            //Check for pyspark is installed or not
-                            var processInfoValidateSpark = new ProcessStartInfo("powershell.exe", @"pyspark --version");
-                            processInfoValidateSpark.CreateNoWindow = true;
-                            processInfoValidateSpark.WindowStyle = ProcessWindowStyle.Hidden;
-                            processInfoValidateSpark.UseShellExecute = false;
-                            processInfoValidateSpark.RedirectStandardError = true;
-                            processInfoValidateSpark.RedirectStandardOutput = true;
-                            processInfoValidateSpark.Verb = "runas";
-                            var processValidateSpark = Process.Start(processInfoValidateSpark);
-                            string strOutput = string.Empty;
-                            processValidateSpark.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
-                            {
-                                if (e.Data != null)
-                                {
-                                    strOutput += (e.Data + Environment.NewLine);
-                                }
-                            };
-                            processValidateSpark.BeginOutputReadLine();
-                            processValidateSpark.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
-                            {
-                                if (e.Data != null)
-                                {
-                                    strOutput += (e.Data + Environment.NewLine);
-                                }
-                            };
-                            processValidateSpark.BeginErrorReadLine();
-                            processValidateSpark.WaitForExit();
-                            processValidateSpark.Close();
-                            if (!string.IsNullOrEmpty(strOutput))
-                            {
-                                if (strOutput.Contains("Welcome to"))
-                                    lfound = true;
-                            }
-                        }
-
-                        if (lfound)
-                            break;
-
-                        foreach (string s in lines)
-                        {
-                            if (s.Contains(item.Package))
-                            {
-                                lfound = true;
-                                if (item.Name.ToLower().Trim() == "python")
-                                {
-                                    bool lPython3found = false;
-                                    foreach (var path in liPaths)
-                                    {
-                                        if (path.Contains(@"\Python3"))
-                                        {
-                                            lPython3found = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (lPython3found)
-                                    {
-                                        //code to remove the python
-                                        StringBuilder sbPyUninstall = new StringBuilder();
-                                        sbPyUninstall.AppendLine(@"choco uninstall python -y");
-                                        sbPyUninstall.AppendLine(@"choco uninstall python3 -y");
-                                        var processInfoUnPython = new ProcessStartInfo("powershell.exe", @"& {" + sbPyUninstall.ToString() + "}");
-                                        processInfoUnPython.CreateNoWindow = true;
-                                        processInfoUnPython.WindowStyle = ProcessWindowStyle.Hidden;
-                                        processInfoUnPython.UseShellExecute = false;
-                                        processInfoUnPython.RedirectStandardError = true;
-                                        processInfoUnPython.RedirectStandardOutput = true;
-                                        processInfoUnPython.Verb = "runas";
-                                        var processUnPython = Process.Start(processInfoUnPython);
-                                        processUnPython.WaitForExit();
-                                        processUnPython.Close();
-                                        lfound = false;
-                                    }
-                                      
-                                }
-                                break;
-                            }
-                        }
-
-                        if (!lfound)
-                            liInstallationPackages.Add(item);
-                    }
-                }
-                else
-                {
-                    liInstallationPackages = applications;
-                }
-
-                #region [Install and Set Environment Path]
-                if (liInstallationPackages != null && liInstallationPackages.Count > 0)
-                {
-                    bool lSparkExists = false;
-                    //Stage 3
-                    //check packages installed or not
-
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var item in liInstallationPackages)
-                    {
-                        if (item.Name == "spark")
-                        {
-                            lSparkExists = true;
-                            continue;
-                        }
-
-                        if (!string.IsNullOrEmpty(item.Version))
-                            sb.AppendLine(@"choco install " + item.Package + " --version=" + item.Version + " -y");
-                        else
-                            sb.AppendLine(@"choco install " + item.Package + " -y");
-                    }
-
-                    var processInfoInstall = new ProcessStartInfo("powershell.exe", @"& {" + sb.ToString() + "}");
-                    processInfoInstall.CreateNoWindow = true;
-                    processInfoInstall.WindowStyle = ProcessWindowStyle.Hidden;
-                    processInfoInstall.UseShellExecute = false;
-                    processInfoInstall.RedirectStandardError = true;
-                    processInfoInstall.RedirectStandardOutput = true;
-                    processInfoInstall.Verb = "runas";
-                    var processInstall = Process.Start(processInfoInstall);
-                    processInstall.Exited += (object sender, EventArgs e) =>
-                    {
-                        this.PerformSafely(() =>
-                        {
-                            richTextBox2.Text += ("-----------Finished------------" + Environment.NewLine);
-                            richTextBox2.ScrollToCaret();
-                        });
-                    };
-                    processInstall.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
-                    {
-                        var d = e.Data;
-                        if (e.Data != null)
-                        {
-                            richTextBox2.PerformSafely(() =>
-                            {
-                                richTextBox2.Text += (e.Data + Environment.NewLine);
-                                richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                richTextBox2.ScrollToCaret();
-                            });
-                        }
-                    };
-                    processInstall.BeginOutputReadLine();
-                    processInstall.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
-                    {
-                        var d = e.Data;
-                        if (e.Data != null)
-                        {
-                            richTextBox2.PerformSafely(() =>
-                            {
-                                richTextBox2.Text += ("Error: " + e.Data + Environment.NewLine);
-                                richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                richTextBox2.ScrollToCaret();
-                            });
-
-                        }
-                    };
-                    processInstall.BeginErrorReadLine();
-                    processInstall.WaitForExit();
-                    processInstall.Close();
-
-
-                    ///code to check if environment variable not set for python then set it
-                    if (Directory.Exists(windowsDriveInfo + @"Python37"))
-                    {
-                        bool lPythonPathExists = false;
-                        foreach (var path in liPaths)
-                        {
-                            if (path.Contains(@"\Python37"))
-                            {
-                                lPythonPathExists = true;
-                                break;
-                            }
-                        }
-
-                        if (!lPythonPathExists)
-                        {
-                            oldValue = oldValue + ";" + windowsDriveInfo + @"\Python37\Scripts\" + ";" + windowsDriveInfo + @"\Python37";
-                            Environment.SetEnvironmentVariable(name, oldValue, scope);
-                        }
-                    }
-
-                    //code to
-                    //1.https://spark.apache.org/downloads.html (2.4.6) (through c# code in c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7
-                    //2.Set spark home through C# code 'SPARK_HOME', 'c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7'
-                    //3.c:\KockpitStudio\Spark\Winutil
-                    //4.Set Hadoop Home path
-                    if (lSparkExists)
-                    {
-                        //code to create the directory for KockpitStudio
-                        _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
-                        if (!Directory.Exists(_KockPitDirectory))
-                            Directory.CreateDirectory(_KockPitDirectory);
-
-                        if (Directory.Exists(_KockPitDirectory))
-                        {
-                            _SparkDir = Path.Combine(_KockPitDirectory, "Spark");
-                            _WinUtilDir = Path.Combine(_KockPitDirectory, "WinUtil");
-                            _ETLJobsDir = Path.Combine(_KockPitDirectory, "ETLJobs");
-
-                            //Directory for Spark
-                            if (!Directory.Exists(_SparkDir))
-                                Directory.CreateDirectory(_SparkDir);
-
-                            //Directory for Winutils
-                            if (!Directory.Exists(_WinUtilDir))
-                                Directory.CreateDirectory(_WinUtilDir);
-
-                            //Directory for ETLJobs
-                            if (!Directory.Exists(_ETLJobsDir))
-                                Directory.CreateDirectory(_ETLJobsDir);
-
-                            string newValue = "";
-                            if (Directory.Exists(_SparkDir))
-                            {
-                                //Code to download the file from URL and unzip it
-                                using (WebClient myWebClient = new WebClient())
-                                {
-                                    if(!File.Exists(_SparkDir + "\\spark.tgz"))
-                                    {
-                                        richTextBox2.PerformSafely(() =>
-                                        {
-                                            richTextBox2.Text += ("Downloading Spark From https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz" + Environment.NewLine);
-                                            richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                            richTextBox2.ScrollToCaret();
-                                        });
-                                        myWebClient.DownloadFile(new Uri("https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz"), _SparkDir + "\\spark.tgz");
-                                        richTextBox2.PerformSafely(() =>
-                                        {
-                                            richTextBox2.Text += ("Download Completed" + Environment.NewLine + "Extracting..");
-                                            richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                            richTextBox2.ScrollToCaret();
-                                        });
-                                    }
-                                    DownloadCompleted(_SparkDir + "\\spark.tgz", _SparkDir);
-                                    richTextBox2.PerformSafely(() =>
-                                    {
-                                        richTextBox2.Text += ("Extraction Completed" + Environment.NewLine);
-                                        richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                        richTextBox2.ScrollToCaret();
-                                    });
-
-                                    //Environment Set For Spark
-                                    SetEnv("SPARK_HOME", _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
-
-                                    bool lSparkPathExists = false;
-                                    foreach (var path in liPaths)
-                                    {
-                                        if (path.Contains(@"\spark-2.4.6-bin-hadoop2.7\bin"))
-                                        {
-                                            lSparkPathExists = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!lSparkPathExists)
-                                        newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
-                                }
-                            }
-
-                            if (Directory.Exists(_WinUtilDir))
-                            {
-                                richTextBox2.PerformSafely(() =>
-                                {
-                                    richTextBox2.Text += ("Extracting winutils.exe" + Environment.NewLine);
-                                    richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                    richTextBox2.ScrollToCaret();
-                                });
-                                //code to pull the zip from resources and unzip it.
-                                using (Stream stream = new MemoryStream(Resources.winutils))
-                                {
-                                    var reader = ReaderFactory.Open(stream);
-                                    while (reader.MoveToNextEntry())
-                                    {
-                                        if (!reader.Entry.IsDirectory)
-                                        {
-                                            ExtractionOptions opt = new ExtractionOptions
-                                            {
-                                                ExtractFullPath = true,
-                                                Overwrite = true
-                                            };
-                                            reader.WriteEntryToDirectory(_WinUtilDir, opt);
-                                        }
-                                    }
-                                }
-                                richTextBox2.PerformSafely(() =>
-                                {
-                                    richTextBox2.Text += ("Extraction Completed" + Environment.NewLine);
-                                    richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                    richTextBox2.ScrollToCaret();
-                                });
-
-                                //Environment Set For Spark
-                                SetEnv("HADOOP_HOME", _WinUtilDir + "\\hadoop-3.0.0");
-                                //newValue += ";" + _WinUtilDir + "\\hadoop-3.0.0\\bin;";
-                            }
-
-                            //set Combine Path
-                            if (!string.IsNullOrEmpty(newValue))
-                            {
-                                Environment.SetEnvironmentVariable(name, newValue, scope);
-                            }
-                        }
-                    }
-
-
-                    DataTable tData = new DataTable();
-                    tData.Columns.Add("Package", typeof(string));
-                    tData.Columns.Add("Variable", typeof(string));
-                    tData.Columns.Add("Path", typeof(string));
-                    foreach (var item in liInstallationPackages)
-                    {
-                        if (item.IsEnvPathRequired && item.Name != "spark")
-                        {
-                            DataRow dr = tData.NewRow();
-                            dr["Package"] = item.Package.ToString().Trim();
-                            dr["Variable"] = item.EnvVariable.ToString().Trim();
-                            dr["Path"] = "";
-                            tData.Rows.Add(dr);
-                        }
-                    }
-
-                    dgvData.PerformSafely(() =>
-                    {
-                        dgvData.DataSource = null;
-                        dgvData.Rows.Clear();
-                        dgvData.Columns.Clear();
-                        if (tData != null && tData.Rows.Count > 0)
-                        {
-                            tabControl1.PerformSafely(() =>
-                            {
-                                tabControl1.TabPages.Add(tabPage1);
-                            });
-
-                            dgvData.DataSource = tData;
-                            dgvData.AutoGenerateColumns = false;
-                            dgvData.Columns["Package"].ReadOnly = true;
-                            dgvData.Columns["Variable"].ReadOnly = true;
-
-                            btnSetEnvVar.PerformSafely(() =>
-                            {
-                                btnSetEnvVar.Enabled = true;
-                            });
-
-                            tabControl1.PerformSafely(() =>
-                            {
-                                tabControl1.SelectedTab = tabPage1;
-                            });
-                        }
-                        else
-                        {
-                            btnProceed.PerformSafely(() =>
-                            {
-                                btnProceed.Enabled = true;
-                            });
-                        }
+                        btnProceed.Enabled = true;
                     });
-
                     panel1.PerformSafely(() =>
                     {
                         panel1.Visible = false;
@@ -554,13 +159,450 @@ namespace DockSample
                 }
                 else
                 {
-                    this.PerformSafely(() =>
+                    ///code to check if environment variable not set for choco then set it
+                    if (Directory.Exists(windowsDriveInfo + @"ProgramData\chocolatey\bin"))
                     {
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
-                    });
+                        SetText("Checking for Choco Environment Variable...");
+                        bool lChocoPathExists = false;
+                        foreach (var path in liPaths)
+                        {
+                            if (path.Contains(@"\ProgramData\chocolatey\bin"))
+                            {
+                                SetText("Choco Environment Variable exists.");
+                                lChocoPathExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!lChocoPathExists)
+                        {
+                            SetText("Choco Environment Variable not exists.");
+                            oldValue = oldValue + ";" + windowsDriveInfo + @"ProgramData\chocolatey\bin";
+                            Environment.SetEnvironmentVariable("Path", oldValue, EnvironmentVariableTarget.Machine);
+                            SetText("Setting the Choco Environment variable.");
+                        }
+                    }
+
+                    #region [Check for All Packages]
+                    //Stage 2
+                    //check packages installed or not
+                    SetText("Checking for required packages.");
+                    var processInfoValidate = new ProcessStartInfo("powershell.exe", @"& {choco list --localonly}");
+                    processInfoValidate.CreateNoWindow = true;
+                    processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
+                    processInfoValidate.UseShellExecute = false;
+                    processInfoValidate.RedirectStandardError = true;
+                    processInfoValidate.RedirectStandardOutput = true;
+                    processInfoValidate.Verb = "runas";
+                    var processValidate = Process.Start(processInfoValidate);
+                    string strListPackages = string.Empty;
+                    processValidate.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                    {
+                        if (e.Data != null)
+                        {
+                            this.PerformSafely(() =>
+                            {
+                                strListPackages += (e.Data + Environment.NewLine);
+                            });
+                        }
+                    };
+                    processValidate.BeginOutputReadLine();
+                    processValidate.WaitForExit();
+                    processValidate.Close();
+                    #endregion
+
+                    #region [Install and Set Environment Path]
+                    List<PackageElement> liInstallationPackages = new List<PackageElement>();
+                    if (!string.IsNullOrEmpty(strListPackages))
+                    {
+                        //check the packages if exists then remove from the applications list otherwise continue
+                        List<string> lines = strListPackages.Split(
+                                                new[] { "\r\n", "\r", "\n" },
+                                                StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                        foreach (var item in applications)
+                        {
+                            bool lfound = false;
+                            if (item.Name.ToLower().Trim() == "spark")
+                            {
+                                //Check for pyspark is installed or not
+                                var processInfoValidateSpark = new ProcessStartInfo("powershell.exe", @"pyspark --version");
+                                processInfoValidateSpark.CreateNoWindow = true;
+                                processInfoValidateSpark.WindowStyle = ProcessWindowStyle.Hidden;
+                                processInfoValidateSpark.UseShellExecute = false;
+                                processInfoValidateSpark.RedirectStandardError = true;
+                                processInfoValidateSpark.RedirectStandardOutput = true;
+                                processInfoValidateSpark.Verb = "runas";
+                                var processValidateSpark = Process.Start(processInfoValidateSpark);
+                                string strOutput = string.Empty;
+                                processValidateSpark.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                                {
+                                    if (e.Data != null)
+                                    {
+                                        strOutput += (e.Data + Environment.NewLine);
+                                    }
+                                };
+                                processValidateSpark.BeginOutputReadLine();
+                                processValidateSpark.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                                {
+                                    if (e.Data != null)
+                                    {
+                                        strOutput += (e.Data + Environment.NewLine);
+                                    }
+                                };
+                                processValidateSpark.BeginErrorReadLine();
+                                processValidateSpark.WaitForExit();
+                                processValidateSpark.Close();
+                                if (!string.IsNullOrEmpty(strOutput))
+                                {
+                                    if (strOutput.Contains("Welcome to"))
+                                        lfound = true;
+                                }
+                            }
+
+                            if (lfound)
+                                break;
+
+                            foreach (string s in lines)
+                            {
+                                if (s.Contains(item.Package))
+                                {
+                                    lfound = true;
+                                    if (item.Name.ToLower().Trim() == "python")
+                                    {
+                                        bool lPython3found = false;
+                                        foreach (var path in liPaths)
+                                        {
+                                            if (path.Contains(@"\Python3") && !path.Contains(@"\Python36"))
+                                            {
+                                                lPython3found = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (lPython3found)
+                                        {
+                                            //code to remove the python
+                                            StringBuilder sbPyUninstall = new StringBuilder();
+                                            sbPyUninstall.AppendLine(@"choco uninstall python -y");
+                                            sbPyUninstall.AppendLine(@"choco uninstall python3 -y");
+                                            var processInfoUnPython = new ProcessStartInfo("powershell.exe", @"& {" + sbPyUninstall.ToString() + "}");
+                                            processInfoUnPython.CreateNoWindow = true;
+                                            processInfoUnPython.WindowStyle = ProcessWindowStyle.Hidden;
+                                            processInfoUnPython.UseShellExecute = false;
+                                            processInfoUnPython.RedirectStandardError = true;
+                                            processInfoUnPython.RedirectStandardOutput = true;
+                                            processInfoUnPython.Verb = "runas";
+                                            var processUnPython = Process.Start(processInfoUnPython);
+                                            processUnPython.WaitForExit();
+                                            processUnPython.Close();
+                                            lfound = false;
+
+                                            oldValue = CheckForEnvironmentVariables();
+                                            liPaths = oldValue.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                                        }
+                                        else
+                                            SetText(item.Package + " already installed");
+                                    }
+                                    else
+                                        SetText(item.Package + " already installed");
+                                    break;
+                                }
+                            }
+
+                            if (!lfound)
+                                liInstallationPackages.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        liInstallationPackages = applications;
+                    }
+
+                    if (liInstallationPackages != null && liInstallationPackages.Count > 0)
+                    {
+                        bool lSparkExists = false;
+                        //Stage 3
+                        //check packages installed or not
+
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var item in liInstallationPackages)
+                        {
+                            if (item.Name == "spark")
+                            {
+                                lSparkExists = true;
+                                continue;
+                            }
+
+                            if (!string.IsNullOrEmpty(item.Version))
+                                sb.AppendLine(@"choco install " + item.Package + " --version=" + item.Version + " -y");
+                            else
+                                sb.AppendLine(@"choco install " + item.Package + " -y");
+                        }
+
+                        var processInfoInstall = new ProcessStartInfo("powershell.exe", @"& {" + sb.ToString() + "}");
+                        processInfoInstall.CreateNoWindow = true;
+                        processInfoInstall.WindowStyle = ProcessWindowStyle.Hidden;
+                        processInfoInstall.UseShellExecute = false;
+                        processInfoInstall.RedirectStandardError = true;
+                        processInfoInstall.RedirectStandardOutput = true;
+                        processInfoInstall.Verb = "runas";
+                        var processInstall = Process.Start(processInfoInstall);
+                        processInstall.Exited += (object sender, EventArgs e) =>
+                        {
+                            vExitCode = processInstall.ExitCode;
+                            SetText("-----------Packages Installation Finished------------");
+                        };
+                        processInstall.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                        {
+                            var d = e.Data;
+                            if (e.Data != null)
+                                SetText(e.Data);
+                        };
+                        processInstall.BeginOutputReadLine();
+                        processInstall.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                        {
+                            var d = e.Data;
+                            if (e.Data != null)
+                                SetText("Error: " + e.Data);
+                        };
+                        processInstall.BeginErrorReadLine();
+                        processInstall.WaitForExit();
+                        vExitCode = processInstall.ExitCode;
+                        processInstall.Close();
+
+                        if (vExitCode != 0)
+                        {
+                            btnProceed.Tag = (string)"0";
+                            btnProceed.PerformSafely(() =>
+                            {
+                                btnProceed.Enabled = true;
+                            });
+                            panel1.PerformSafely(() =>
+                            {
+                                panel1.Visible = false;
+                            });
+                            panel2.PerformSafely(() =>
+                            {
+                                panel2.Dock = DockStyle.Fill;
+                            });
+                        }
+                        else
+                        {
+                            ///code to check if environment variable not set for python then set it
+                            if (Directory.Exists(windowsDriveInfo + @"Python36"))
+                            {
+                                SetText("Checking for Python Environment Variable...");
+                                bool lPythonPathExists = false;
+                                foreach (var path in liPaths)
+                                {
+                                    if (path.Contains(@"\Python36"))
+                                    {
+                                        SetText("Python Environment Variable exists.");
+                                        lPythonPathExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!lPythonPathExists)
+                                {
+                                    SetText("Python Environment Variable not exists.");
+                                    oldValue = oldValue + ";" + windowsDriveInfo + @"\Python36\Scripts\" + ";" + windowsDriveInfo + @"\Python36";
+                                    Environment.SetEnvironmentVariable("Path", oldValue, EnvironmentVariableTarget.Machine);
+                                    SetText("Setting Python Environment Variable.");
+                                }
+                            }
+
+                            //code to
+                            //1.https://spark.apache.org/downloads.html (2.4.6) (through c# code in c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7
+                            //2.Set spark home through C# code 'SPARK_HOME', 'c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7'
+                            //3.c:\KockpitStudio\Spark\Winutil
+                            //4.Set Hadoop Home path
+                            if (lSparkExists)
+                            {
+                                //code to create the directory for KockpitStudio
+                                _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
+                                if (!Directory.Exists(_KockPitDirectory))
+                                    Directory.CreateDirectory(_KockPitDirectory);
+
+                                if (Directory.Exists(_KockPitDirectory))
+                                {
+                                    _SparkDir = Path.Combine(_KockPitDirectory, "Spark");
+                                    _WinUtilDir = Path.Combine(_KockPitDirectory, "WinUtil");
+                                    _ETLJobsDir = Path.Combine(_KockPitDirectory, "ETLJobs");
+
+                                    //Directory for Spark
+                                    if (!Directory.Exists(_SparkDir))
+                                        Directory.CreateDirectory(_SparkDir);
+
+                                    //Directory for Winutils
+                                    if (!Directory.Exists(_WinUtilDir))
+                                        Directory.CreateDirectory(_WinUtilDir);
+
+                                    //Directory for ETLJobs
+                                    if (!Directory.Exists(_ETLJobsDir))
+                                        Directory.CreateDirectory(_ETLJobsDir);
+
+                                    string newValue = "";
+                                    if (Directory.Exists(_SparkDir))
+                                    {
+                                        //Code to download the file from URL and unzip it
+                                        using (WebClient myWebClient = new WebClient())
+                                        {
+                                            if (!File.Exists(_SparkDir + "\\spark.tgz"))
+                                            {
+                                                SetText("Downloading Spark From https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz");
+                                                myWebClient.DownloadFile(new Uri("https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz"), _SparkDir + "\\spark.tgz");
+                                                SetText("Download Completed");
+                                            }
+                                            DownloadCompleted(_SparkDir + "\\spark.tgz", _SparkDir);
+                                            SetText("Extraction Completed");
+
+                                            //Environment Set For Spark
+                                            SetEnv("SPARK_HOME", _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
+                                            SetText("Environment Variable Path is set for SPARK_HOME");
+
+                                            bool lSparkPathExists = false;
+                                            foreach (var path in liPaths)
+                                            {
+                                                if (path.Contains(@"\spark-2.4.6-bin-hadoop2.7\bin"))
+                                                {
+                                                    lSparkPathExists = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (!lSparkPathExists)
+                                                newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
+                                        }
+                                    }
+
+                                    if (Directory.Exists(_WinUtilDir))
+                                    {
+                                        SetText("Extracting winutils.exe");
+                                        //code to pull the zip from resources and unzip it.
+                                        using (Stream stream = new MemoryStream(Resources.winutils))
+                                        {
+                                            var reader = ReaderFactory.Open(stream);
+                                            while (reader.MoveToNextEntry())
+                                            {
+                                                if (!reader.Entry.IsDirectory)
+                                                {
+                                                    ExtractionOptions opt = new ExtractionOptions
+                                                    {
+                                                        ExtractFullPath = true,
+                                                        Overwrite = true
+                                                    };
+                                                    reader.WriteEntryToDirectory(_WinUtilDir, opt);
+                                                }
+                                            }
+                                        }
+                                        SetText("Extraction Completed");
+
+                                        //Environment Set For Spark
+                                        SetEnv("HADOOP_HOME", _WinUtilDir + "\\hadoop-3.0.0");
+                                        SetText("Environment Variable Path is set for HADOOP_HOME");
+                                        //newValue += ";" + _WinUtilDir + "\\hadoop-3.0.0\\bin;";
+                                    }
+
+                                    //set Combine Path
+                                    if (!string.IsNullOrEmpty(newValue))
+                                    {
+                                        Environment.SetEnvironmentVariable("Path", newValue, EnvironmentVariableTarget.Machine);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SetText("Spark already installed");
+                                SetText("Hadoop already installed");
+                                SetText("--Finished--");
+                            }
+
+                            DataTable tData = new DataTable();
+                            tData.Columns.Add("Package", typeof(string));
+                            tData.Columns.Add("Variable", typeof(string));
+                            tData.Columns.Add("Path", typeof(string));
+                            foreach (var item in liInstallationPackages)
+                            {
+                                if (item.IsEnvPathRequired && item.Name != "spark")
+                                {
+                                    DataRow dr = tData.NewRow();
+                                    dr["Package"] = item.Package.ToString().Trim();
+                                    dr["Variable"] = item.EnvVariable.ToString().Trim();
+                                    dr["Path"] = "";
+                                    tData.Rows.Add(dr);
+                                }
+                            }
+
+                            dgvData.PerformSafely(() =>
+                            {
+                                dgvData.DataSource = null;
+                                dgvData.Rows.Clear();
+                                dgvData.Columns.Clear();
+                                if (tData != null && tData.Rows.Count > 0)
+                                {
+                                    tabControl1.PerformSafely(() =>
+                                    {
+                                        tabControl1.TabPages.Add(tabPage1);
+                                    });
+
+                                    dgvData.DataSource = tData;
+                                    dgvData.AutoGenerateColumns = false;
+                                    dgvData.Columns["Package"].ReadOnly = true;
+                                    dgvData.Columns["Variable"].ReadOnly = true;
+
+                                    btnSetEnvVar.PerformSafely(() =>
+                                    {
+                                        btnSetEnvVar.Enabled = true;
+                                    });
+
+                                    tabControl1.PerformSafely(() =>
+                                    {
+                                        tabControl1.SelectedTab = tabPage1;
+                                    });
+                                }
+                                else
+                                {
+                                    btnProceed.Tag = (string)"1";
+                                    btnProceed.PerformSafely(() =>
+                                    {
+                                        btnProceed.Enabled = true;
+                                    });
+                                }
+                            });
+
+                            panel1.PerformSafely(() =>
+                            {
+                                panel1.Visible = false;
+                            });
+                            panel2.PerformSafely(() =>
+                            {
+                                panel2.Dock = DockStyle.Fill;
+                            });
+                        }
+                    }
+                    else
+                    {
+                        SetText("Spark already installed");
+                        SetText("Hadoop already installed");
+                        SetText("--Finished--");
+                        btnProceed.Tag = (string)"1";
+                        btnProceed.PerformSafely(() =>
+                        {
+                            btnProceed.Enabled = true;
+                        });
+                        panel1.PerformSafely(() =>
+                        {
+                            panel1.Visible = false;
+                        });
+                        panel2.PerformSafely(() =>
+                        {
+                            panel2.Dock = DockStyle.Fill;
+                        });
+                    }
+                    #endregion
                 }
-                #endregion
             });
             t.Start();
         }
@@ -654,22 +696,14 @@ namespace DockSample
                         var process = Process.Start(processInfo);
                         process.Exited += (object sender, EventArgs e) =>
                         {
-                            this.PerformSafely(() =>
-                            {
-                                richTextBox2.Text += ("-----------Finished------------" + Environment.NewLine);
-                            });
+                            SetText("-----------Finished------------");
                         };
                         process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
                         {
                             var d = e.Data;
                             if (e.Data != null)
                             {
-                                richTextBox2.PerformSafely(() =>
-                                {
-                                    richTextBox2.Text += (e.Data + Environment.NewLine);
-                                    richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                    richTextBox2.ScrollToCaret();
-                                });
+                                SetText(e.Data);
                             }
                         };
                         process.BeginOutputReadLine();
@@ -678,13 +712,7 @@ namespace DockSample
                             var d = e.Data;
                             if (e.Data != null)
                             {
-                                richTextBox2.PerformSafely(() =>
-                                {
-                                    richTextBox2.Text += ("Error: " + e.Data + Environment.NewLine);
-                                    richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                                    richTextBox2.ScrollToCaret();
-                                });
-
+                                SetText("Error: " + e.Data);
                             }
                         };
                         process.BeginErrorReadLine();
@@ -700,6 +728,7 @@ namespace DockSample
                             panel2.Dock = DockStyle.Fill;
                         });
 
+                        btnProceed.Tag = (string)"1";
                         btnProceed.PerformSafely(() => {
                             btnProceed.Enabled = true;
                         });
@@ -713,8 +742,24 @@ namespace DockSample
         {
             this.PerformSafely(() =>
             {
-                this.DialogResult = DialogResult.OK;
+                if ((string)btnProceed.Tag != "1")
+                    this.DialogResult = DialogResult.Cancel;
+                else
+                    this.DialogResult = DialogResult.OK;
                 this.Close();
+            });
+        }
+
+
+        private void SetText(string strMsg)
+        {
+            richTextBox2.PerformSafely(() =>
+            {
+                richTextBox2.Text += (strMsg + Environment.NewLine);
+                richTextBox2.SelectionStart = richTextBox2.Text.Length;
+                richTextBox2.ScrollToCaret();
+
+                WindowsConfigLog.Create(_windowServer, strMsg);
             });
         }
     }

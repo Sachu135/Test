@@ -287,6 +287,7 @@
     <Compile Include="lib\DbClient.cs" />
     <Compile Include="lib\FileUtil.cs" />
     <Compile Include="lib\HardwareConfig.cs" />
+    <Compile Include="lib\WindowsConfigLog.cs" />
     <Compile Include="SolutionExplorer.cs">
       <SubType>Form</SubType>
     </Compile>

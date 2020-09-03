@@ -1010,8 +1010,10 @@ namespace DockSample
                     WaitLoader.ShowDialog(this);
                 });
             }).Start();
+
             new Task(() =>
             {
+                Thread.Sleep(2000);
                 dockPanel.PerformSafely(() =>
                 {
                     if (string.IsNullOrEmpty(content))
@@ -1035,7 +1037,7 @@ namespace DockSample
 
                 });
             }).Start();
-            
+
         }
 
         private void menuItemLayoutSpreadSheetViewer_Click(object sender, System.EventArgs e)

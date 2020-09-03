@@ -340,6 +340,10 @@ namespace DockSample
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message, "Error!");
+                            this.PerformSafely(() =>
+                            {
+                                loader.Hide();
+                            });
                         }
                     }).Start();
             };
