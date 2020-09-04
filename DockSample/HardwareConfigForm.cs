@@ -1,5 +1,6 @@
 ﻿using DockSample.lib;
 using DockSample.Properties;
+using Microsoft.Win32;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using System;
@@ -66,7 +67,153 @@ namespace DockSample
             return newValue;
         }
 
-        private async void SetConfiguration()
+        public Dictionary<string, Tuple<string, string>> checkInstalled(string c_name)
+        {
+            Dictionary<string, Tuple<string, string>> dicItems = new Dictionary<string, Tuple<string, string>>();
+            try
+            {
+                string displayName;
+                string registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(registryKey);
+                if (key != null)
+                {
+                    foreach (RegistryKey subkey in key.GetSubKeyNames().Select(keyName => key.OpenSubKey(keyName)))
+                    {
+                        displayName = subkey.GetValue("DisplayName") as string;
+                        if (displayName != null && displayName.Contains(c_name))
+                        {
+                            string testText = subkey.GetValue("UninstallString").ToString().Replace("/I", "/x");
+                            int startindex = testText.IndexOf('{');
+                            int Endindex = testText.IndexOf('}');
+                            string outputstring = testText.Substring(startindex + 1, Endindex - startindex - 1);
+
+                            dicItems.Add(outputstring, new Tuple<string, string>(displayName, testText));
+                        }
+                    }
+                    key.Close();
+                }
+
+                registryKey = @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
+                key = Registry.LocalMachine.OpenSubKey(registryKey);
+                if (key != null)
+                {
+                    foreach (RegistryKey subkey in key.GetSubKeyNames().Select(keyName => key.OpenSubKey(keyName)))
+                    {
+                        displayName = subkey.GetValue("DisplayName") as string;
+                        if (displayName != null && displayName.Contains(c_name))
+                        {
+                            string testText = subkey.GetValue("UninstallString").ToString().Replace("/I", "/x");
+                            int startindex = testText.IndexOf('{');
+                            int Endindex = testText.IndexOf('}');
+                            string outputstring = testText.Substring(startindex + 1, Endindex - startindex - 1);
+
+                            if (!dicItems.Keys.Contains(outputstring))
+                                dicItems.Add(outputstring, new Tuple<string, string>(displayName, testText));
+                        }
+                    }
+                    key.Close();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return dicItems;
+        }
+        public void ProcessExec(string s)
+        {
+            var processInfo = new ProcessStartInfo("cmd.exe", @"/c " + s + "");
+            processInfo.CreateNoWindow = true;
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfo.UseShellExecute = false;
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+            processInfo.Verb = "runas";
+            var process = Process.Start(processInfo);
+            process.WaitForExit();
+            process.Close();
+        }
+        private void UninstallPyton(bool lExecute)
+        {
+            if (!lExecute)
+                return;
+
+            SetText("Checking for external python installation exists..");
+            Dictionary<string, Tuple<string, string>> result = checkInstalled("Python");
+            if (result != null && result.Count > 0)
+            {
+                //code to check the python version
+                //if not python version is 3.6.8
+                //uninstall
+
+                List<string> listPyVersion = new List<string>();
+                foreach (var item in result)
+                {
+                    string pattern = @"Python \d.\d.\d";
+                    string input = item.Value.Item1;
+                    RegexOptions options = RegexOptions.Multiline;
+
+                    foreach (Match m in Regex.Matches(input, pattern, options))
+                    {
+                        listPyVersion.Add(m.Value);
+                    }
+                }
+
+                listPyVersion = listPyVersion.Distinct().ToList();
+                if (listPyVersion.Count > 0)
+                {
+                    bool lPython368found = false;
+                    foreach (string s in listPyVersion)
+                    {
+                        if (s.ToLower().Contains("3.6.8"))
+                        {
+                            lPython368found = true;
+                            break;
+                        }
+                    }
+
+                    if (!lPython368found)
+                    {
+                        SetText("Already Python exists..");
+                        SetText("Please ensure to uninstall it.");
+                        foreach (var item in result)
+                        {
+                            if (item.Value.Item1.ToLower().Contains("bootstrap"))
+                            {
+                                SetText("Uninstalling " + item.Value.Item1);
+                                ProcessExec(item.Value.Item2);
+                                continue;
+                            }
+
+                            if (item.Value.Item1.ToLower().Contains("tcl"))
+                            {
+                                SetText("Uninstalling " + item.Value.Item1);
+                                ProcessExec(item.Value.Item2);
+                                continue;
+                            }
+                        }
+
+                        Dictionary<string, Tuple<string, string>> result1 = checkInstalled("Python");
+                        foreach (var item in result1)
+                        {
+                            SetText("Uninstalling " + item.Value.Item1);
+                            ProcessExec(item.Value.Item2);
+                        }
+
+                        UninstallPyton(true);
+                    }
+                    else
+                        UninstallPyton(false);
+                }
+            }
+            else
+            {
+                UninstallPyton(false);
+            }
+        }
+
+        private void SetConfiguration()
         {
             //Task to install the dependencies
             Task t = new Task(() =>
@@ -88,15 +235,16 @@ namespace DockSample
                 var windowsDrive = windowsFolderPath.Substring(0, windowsFolderPath.IndexOf(System.IO.Path.VolumeSeparatorChar));
                 var windowsDriveInfo = new System.IO.DriveInfo(windowsDrive);
 
-                using (RunspaceInvoke invoker = new RunspaceInvoke())
-                {
-                    invoker.Invoke("Set-ExecutionPolicy Unrestricted -Scope CurrentUser");
-                }
-
                 ///steps:
                 ///1. check choco is install or not if not then install
                 ///2. check packages installed or not if not then install and set env variables
                 ///3. setup env variables
+                ///
+
+                using (RunspaceInvoke invoker = new RunspaceInvoke())
+                {
+                    invoker.Invoke("Set-ExecutionPolicy Unrestricted -Scope CurrentUser");
+                }
 
                 #region [Check for Choco]
                 //Stage 1
@@ -211,6 +359,10 @@ namespace DockSample
                     processValidate.Close();
                     #endregion
 
+                    #region [Uninstall the external python packages]
+                    UninstallPyton(true);
+                    #endregion
+
                     #region [Install and Set Environment Path]
                     List<PackageElement> liInstallationPackages = new List<PackageElement>();
                     if (!string.IsNullOrEmpty(strListPackages))
@@ -284,8 +436,9 @@ namespace DockSample
                                         {
                                             //code to remove the python
                                             StringBuilder sbPyUninstall = new StringBuilder();
-                                            sbPyUninstall.AppendLine(@"choco uninstall python -y");
-                                            sbPyUninstall.AppendLine(@"choco uninstall python3 -y");
+                                            sbPyUninstall.AppendLine(@"cuninst python -y");
+                                            sbPyUninstall.AppendLine(@"cuninst python3 -y");
+                                            sbPyUninstall.AppendLine(@"refreshenv");
                                             var processInfoUnPython = new ProcessStartInfo("powershell.exe", @"& {" + sbPyUninstall.ToString() + "}");
                                             processInfoUnPython.CreateNoWindow = true;
                                             processInfoUnPython.WindowStyle = ProcessWindowStyle.Hidden;
@@ -750,13 +903,14 @@ namespace DockSample
             });
         }
 
-
         private void SetText(string strMsg)
         {
             richTextBox2.PerformSafely(() =>
             {
-                richTextBox2.Text += (strMsg + Environment.NewLine);
+                //richTextBox2.Text += (strMsg);
+                //richTextBox2.Text += Environment.NewLine;
                 richTextBox2.SelectionStart = richTextBox2.Text.Length;
+                richTextBox2.SelectedText = strMsg + Environment.NewLine;
                 richTextBox2.ScrollToCaret();
 
                 WindowsConfigLog.Create(_windowServer, strMsg);
