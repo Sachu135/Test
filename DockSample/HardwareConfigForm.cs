@@ -164,9 +164,23 @@ namespace DockSample
                 if (listPyVersion.Count > 0)
                 {
                     bool lPython368found = false;
+
+                    //check for require version
                     foreach (string s in listPyVersion)
                     {
                         if (s.ToLower().Contains("3.6.8"))
+                        {
+                            lPython368found = true;
+                            break;
+                        }
+                    }
+
+                    //check for python2
+                    foreach (string s in listPyVersion)
+                    {
+                        Regex regex = new Regex(@"2.\d.\d");
+                        Match match = regex.Match(s);
+                        if (match.Success)
                         {
                             lPython368found = true;
                             break;
@@ -218,7 +232,7 @@ namespace DockSample
             //Task to install the dependencies
             Task t = new Task(() =>
             {
-                int vExitCode = -1;
+                int vExitCode = 0;
 
                 var section = (PackageValuesSection)ConfigurationManager.GetSection("WindowsPackages");
                 var applications = (from object value in section.Values
@@ -248,45 +262,124 @@ namespace DockSample
 
                 #region [Check for Choco]
                 //Stage 1
+                //SetText("Checking Prerequisites...");
+                //StringBuilder sbChoco = new StringBuilder();
+                //sbChoco.AppendLine(@"Set-ExecutionPolicy Bypass -Scope Process -Force");
+                //sbChoco.AppendLine(@"$testchoco = powershell choco -v");
+                //sbChoco.AppendLine(@"If(!($testchoco)) {");
+                //sbChoco.AppendLine(@"    Invoke-Expression((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))");
+                //sbChoco.AppendLine(@"}");
+                //var processInfoChoco = new ProcessStartInfo("powershell.exe", @"& {" + sbChoco.ToString() + "}");
+                //processInfoChoco.CreateNoWindow = true;
+                //processInfoChoco.WindowStyle = ProcessWindowStyle.Hidden;
+                //processInfoChoco.UseShellExecute = false;
+                //processInfoChoco.RedirectStandardError = true;
+                //processInfoChoco.RedirectStandardOutput = true;
+                //processInfoChoco.Verb = "runas";
+                //var processChoco = Process.Start(processInfoChoco);
+                //processChoco.Exited += (object sender, EventArgs e) =>
+                //{
+                //    vExitCode = processChoco.ExitCode;
+                //    SetText("-----------Process Choco Checking/Installation Finished------------");
+                //};
+                //processChoco.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                //{
+                //    if (e.Data != null)
+                //    {
+                //        SetText(e.Data);
+                //    }
+                //};
+                //processChoco.BeginOutputReadLine();
+                //processChoco.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                //{
+                //    if (e.Data != null)
+                //    {
+                //        SetText("Error: " + e.Data);
+                //    }
+                //};
+                //processChoco.BeginErrorReadLine();
+                //processChoco.WaitForExit();
+                //vExitCode = processChoco.ExitCode;
+                //processChoco.Close();
+                #endregion
+
+                //if (vExitCode != 0)
+                //{
+                //    btnProceed.Tag = (string)"0";
+                //    btnProceed.PerformSafely(() =>
+                //    {
+                //        btnProceed.Enabled = true;
+                //    });
+                //    panel1.PerformSafely(() =>
+                //    {
+                //        panel1.Visible = false;
+                //    });
+                //    panel2.PerformSafely(() =>
+                //    {
+                //        panel2.Dock = DockStyle.Fill;
+                //    });
+                //}
+                //else
+                //{
+                /////code to check if environment variable not set for choco then set it
+                //if (Directory.Exists(windowsDriveInfo + @"ProgramData\chocolatey\bin"))
+                //{
+                //    SetText("Checking for Choco Environment Variable...");
+                //    bool lChocoPathExists = false;
+                //    foreach (var path in liPaths)
+                //    {
+                //        if (path.Contains(@"\ProgramData\chocolatey\bin"))
+                //        {
+                //            SetText("Choco Environment Variable exists.");
+                //            lChocoPathExists = true;
+                //            break;
+                //        }
+                //    }
+
+                //    if (!lChocoPathExists)
+                //    {
+                //        SetText("Choco Environment Variable not exists.");
+                //        oldValue = oldValue + ";" + windowsDriveInfo + @"ProgramData\chocolatey\bin";
+                //        Environment.SetEnvironmentVariable("Path", oldValue, EnvironmentVariableTarget.Machine);
+                //        SetText("Setting the Choco Environment variable.");
+                //    }
+                //}
+
+                #region [Check for All Packages]
+                //Stage 2
+                //check packages installed or not
                 SetText("Checking Prerequisites...");
-                StringBuilder sbChoco = new StringBuilder();
-                sbChoco.AppendLine(@"Set-ExecutionPolicy Bypass -Scope Process -Force");
-                sbChoco.AppendLine(@"$testchoco = powershell choco -v");
-                sbChoco.AppendLine(@"If(!($testchoco)) {");
-                sbChoco.AppendLine(@"    Invoke-Expression((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))");
-                sbChoco.AppendLine(@"}");
-                var processInfoChoco = new ProcessStartInfo("powershell.exe", @"& {" + sbChoco.ToString() + "}");
-                processInfoChoco.CreateNoWindow = true;
-                processInfoChoco.WindowStyle = ProcessWindowStyle.Hidden;
-                processInfoChoco.UseShellExecute = false;
-                processInfoChoco.RedirectStandardError = true;
-                processInfoChoco.RedirectStandardOutput = true;
-                processInfoChoco.Verb = "runas";
-                var processChoco = Process.Start(processInfoChoco);
-                processChoco.Exited += (object sender, EventArgs e) =>
-                {
-                    vExitCode = processChoco.ExitCode;
-                    SetText("-----------Process Choco Checking/Installation Finished------------");
-                };
-                processChoco.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                var processInfoValidate = new ProcessStartInfo("powershell.exe", @"& {choco list --localonly}");
+                processInfoValidate.CreateNoWindow = true;
+                processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
+                processInfoValidate.UseShellExecute = false;
+                processInfoValidate.RedirectStandardError = true;
+                processInfoValidate.RedirectStandardOutput = true;
+                processInfoValidate.Verb = "runas";
+                var processValidate = Process.Start(processInfoValidate);
+                string strListPackages = string.Empty;
+                processValidate.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
                 {
                     if (e.Data != null)
                     {
-                        SetText(e.Data);
+                        this.PerformSafely(() =>
+                        {
+                            strListPackages += (e.Data + Environment.NewLine);
+                        });
                     }
                 };
-                processChoco.BeginOutputReadLine();
-                processChoco.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                processValidate.BeginOutputReadLine();
+                processValidate.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
                 {
                     if (e.Data != null)
                     {
+                        vExitCode = 1;
                         SetText("Error: " + e.Data);
                     }
                 };
-                processChoco.BeginErrorReadLine();
-                processChoco.WaitForExit();
-                vExitCode = processChoco.ExitCode;
-                processChoco.Close();
+                processValidate.BeginErrorReadLine();
+                processValidate.WaitForExit();
+                processValidate.Close();
                 #endregion
 
                 if (vExitCode != 0)
@@ -307,58 +400,6 @@ namespace DockSample
                 }
                 else
                 {
-                    ///code to check if environment variable not set for choco then set it
-                    if (Directory.Exists(windowsDriveInfo + @"ProgramData\chocolatey\bin"))
-                    {
-                        SetText("Checking for Choco Environment Variable...");
-                        bool lChocoPathExists = false;
-                        foreach (var path in liPaths)
-                        {
-                            if (path.Contains(@"\ProgramData\chocolatey\bin"))
-                            {
-                                SetText("Choco Environment Variable exists.");
-                                lChocoPathExists = true;
-                                break;
-                            }
-                        }
-
-                        if (!lChocoPathExists)
-                        {
-                            SetText("Choco Environment Variable not exists.");
-                            oldValue = oldValue + ";" + windowsDriveInfo + @"ProgramData\chocolatey\bin";
-                            Environment.SetEnvironmentVariable("Path", oldValue, EnvironmentVariableTarget.Machine);
-                            SetText("Setting the Choco Environment variable.");
-                        }
-                    }
-
-                    #region [Check for All Packages]
-                    //Stage 2
-                    //check packages installed or not
-                    SetText("Checking for required packages.");
-                    var processInfoValidate = new ProcessStartInfo("powershell.exe", @"& {choco list --localonly}");
-                    processInfoValidate.CreateNoWindow = true;
-                    processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
-                    processInfoValidate.UseShellExecute = false;
-                    processInfoValidate.RedirectStandardError = true;
-                    processInfoValidate.RedirectStandardOutput = true;
-                    processInfoValidate.Verb = "runas";
-                    var processValidate = Process.Start(processInfoValidate);
-                    string strListPackages = string.Empty;
-                    processValidate.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
-                    {
-                        if (e.Data != null)
-                        {
-                            this.PerformSafely(() =>
-                            {
-                                strListPackages += (e.Data + Environment.NewLine);
-                            });
-                        }
-                    };
-                    processValidate.BeginOutputReadLine();
-                    processValidate.WaitForExit();
-                    processValidate.Close();
-                    #endregion
-
                     #region [Uninstall the external python packages]
                     UninstallPyton(true);
                     #endregion
@@ -517,11 +558,14 @@ namespace DockSample
                         {
                             var d = e.Data;
                             if (e.Data != null)
+                            {
                                 SetText("Error: " + e.Data);
+                                vExitCode = 1;
+                            }
                         };
                         processInstall.BeginErrorReadLine();
                         processInstall.WaitForExit();
-                        vExitCode = processInstall.ExitCode;
+                        //vExitCode = processInstall.ExitCode;
                         processInstall.Close();
 
                         if (vExitCode != 0)
@@ -756,6 +800,7 @@ namespace DockSample
                     }
                     #endregion
                 }
+                //}
             });
             t.Start();
         }
