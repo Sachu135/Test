@@ -3,7 +3,8 @@
 	<?define DockSample_TargetDir=$(var.DockSample.TargetDir)?>
 	<?define KockpitWebService_TargetDir=$(var.KockpitWebService.TargetDir)?>
 	<Product Id="*" Name="Kockpit Studio" Language="1033" Version="1.0.0.0" Manufacturer="Kockpit Analytics" UpgradeCode="a7679301-2dfd-42cc-b198-aa173b8d724d">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"
+				 InstallPrivileges="elevated" AdminImage="yes" />
 
 		<UIRef Id="WixUI_Minimal" />
 		
@@ -55,6 +56,17 @@
 				<CopyFile Id="SomeId" SourceProperty="SOURCEDIRECTORY" DestinationDirectory="LINUX" SourceName="*" />
 			</Component>
 		</DirectoryRef>
+
+		<InstallExecuteSequence>
+			<Custom Action='RunPreviledgeCustomAction' Before='PackageInstallCustomAction'>NOT Installed</Custom>
+			<Custom Action='PackageInstallCustomAction' Before='InstallFinalize'>NOT Installed</Custom>
+		</InstallExecuteSequence>
+		
+		<!--Run as administrator-->
+		<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
+		<!--<Condition Message="Installation requires Administrator privileges">
+			<![CDATA[Privileged]]>
+		</Condition>-->
 		
 	</Product>
 
@@ -306,4 +318,10 @@
       </Component>
     </ComponentGroup>
   </Fragment>
+
+<Fragment>
+	<Binary Id="CustomActionBinary" SourceFile="$(var.KockpitStudioCustomAction.TargetDir)$(var.KockpitStudioCustomAction.TargetName).CA.dll"/>
+	<CustomAction Id="RunPreviledgeCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction1" Execute="immediate" Return="check"/>
+	<CustomAction Id="PackageInstallCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction2" Execute="immediate" Return="check"/>
+</Fragment>
 </Wix>
