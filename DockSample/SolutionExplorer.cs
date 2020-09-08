@@ -885,8 +885,6 @@ namespace DockSample
                             {
                                 //OpenFileDialog.SafeFileName
                                 var content = File.ReadAllBytes(ofd.FileName);
-                                //Mahesh Code to encrpyt
-                                FileUtil.EncryptFile(ofd.FileName, ofd.FileName);
                                 var sshManager = new SSHManager();
                                 var path = string.Empty;
                                 if (CurrentProj.IsWindows)
