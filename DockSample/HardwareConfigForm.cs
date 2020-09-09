@@ -384,6 +384,8 @@ namespace DockSample
 
                 if (vExitCode != 0)
                 {
+                    SetText("---Finished with Errors----");
+                    SetText("---Click on Proceed Button---");
                     btnProceed.Tag = (string)"0";
                     btnProceed.PerformSafely(() =>
                     {
@@ -515,16 +517,17 @@ namespace DockSample
 
                     if (liInstallationPackages != null && liInstallationPackages.Count > 0)
                     {
-                        bool lSparkExists = false;
+                        bool lSparkExistsForInstallation = false;
                         //Stage 3
                         //check packages installed or not
 
+                        SetText("-----------Installing Required Packages------------");
                         StringBuilder sb = new StringBuilder();
                         foreach (var item in liInstallationPackages)
                         {
-                            if (item.Name == "spark")
+                            if (item.Name.ToLower() == "spark")
                             {
-                                lSparkExists = true;
+                                lSparkExistsForInstallation = true;
                                 continue;
                             }
 
@@ -545,7 +548,6 @@ namespace DockSample
                         processInstall.Exited += (object sender, EventArgs e) =>
                         {
                             vExitCode = processInstall.ExitCode;
-                            SetText("-----------Packages Installation Finished------------");
                         };
                         processInstall.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
                         {
@@ -570,6 +572,8 @@ namespace DockSample
 
                         if (vExitCode != 0)
                         {
+                            SetText("---Finished with Errors----");
+                            SetText("---Click on Proceed Button---");
                             btnProceed.Tag = (string)"0";
                             btnProceed.PerformSafely(() =>
                             {
@@ -586,9 +590,19 @@ namespace DockSample
                         }
                         else
                         {
+                            SetText("-----------Packages Installation Finished------------");
                             ///code to check if environment variable not set for python then set it
                             if (Directory.Exists(windowsDriveInfo + @"Python36"))
                             {
+                                //code to create the copy of python.exe => python3.exe
+                                if(!File.Exists(Path.Combine(windowsDriveInfo + @"Python36", "python3.exe")) &&
+                                    File.Exists(Path.Combine(windowsDriveInfo + @"Python36", "python.exe")))
+                                {
+                                    File.Copy(Path.Combine(windowsDriveInfo + @"Python36", "python.exe"),
+                                        Path.Combine(windowsDriveInfo + @"Python36", "python3.exe"));
+                                }
+
+                                SetEnv("PYSPARK_PYTHON", Path.Combine(windowsDriveInfo + @"Python36", "python3.exe"));
                                 SetText("Checking for Python Environment Variable...");
                                 bool lPythonPathExists = false;
                                 foreach (var path in liPaths)
@@ -600,13 +614,12 @@ namespace DockSample
                                         break;
                                     }
                                 }
-
                                 if (!lPythonPathExists)
                                 {
                                     SetText("Python Environment Variable not exists.");
                                     oldValue = oldValue + ";" + windowsDriveInfo + @"\Python36\Scripts\" + ";" + windowsDriveInfo + @"\Python36";
                                     Environment.SetEnvironmentVariable("Path", oldValue, EnvironmentVariableTarget.Machine);
-                                    SetText("Setting Python Environment Variable.");
+                                    SetText("Python Environment Variable set.");
                                 }
                             }
 
@@ -615,7 +628,7 @@ namespace DockSample
                             //2.Set spark home through C# code 'SPARK_HOME', 'c:\KockpitStudio\Spark\spark-2.4.7-bin-hadoop2.7'
                             //3.c:\KockpitStudio\Spark\Winutil
                             //4.Set Hadoop Home path
-                            if (lSparkExists)
+                            if (lSparkExistsForInstallation)
                             {
                                 //code to create the directory for KockpitStudio
                                 _KockPitDirectory = windowsDriveInfo + "KockpitStudio";
@@ -652,6 +665,7 @@ namespace DockSample
                                                 myWebClient.DownloadFile(new Uri("https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz"), _SparkDir + "\\spark.tgz");
                                                 SetText("Download Completed");
                                             }
+                                            SetText("Extracting spark..");
                                             DownloadCompleted(_SparkDir + "\\spark.tgz", _SparkDir);
                                             SetText("Extraction Completed");
 
@@ -707,6 +721,9 @@ namespace DockSample
                                     {
                                         Environment.SetEnvironmentVariable("Path", newValue, EnvironmentVariableTarget.Machine);
                                     }
+
+                                    SetText("--Finished--");
+                                    SetText("--Click on Proceed Button--");
                                 }
                             }
                             else
@@ -714,6 +731,7 @@ namespace DockSample
                                 SetText("Spark already installed");
                                 SetText("Hadoop already installed");
                                 SetText("--Finished--");
+                                SetText("--Click on Proceed Button--");
                             }
 
                             DataTable tData = new DataTable();
@@ -784,6 +802,7 @@ namespace DockSample
                         SetText("Spark already installed");
                         SetText("Hadoop already installed");
                         SetText("--Finished--");
+                        SetText("--Click on Proceed Button--");
                         btnProceed.Tag = (string)"1";
                         btnProceed.PerformSafely(() =>
                         {

@@ -571,13 +571,15 @@ namespace DockSample.Controls
                                 HideLoader();
                                 return;
                             }
-                            
+
 
                             if (txtTerminalUrl.Text.Trim().Length == 0)
                             {
-                                MessageBox.Show("Terminal url not filled");
-                                HideLoader();
-                                return;
+
+                                //uncomment
+                                //MessageBox.Show("Terminal url not filled");
+                                //HideLoader();
+                                //return;
                             }
 
                             string message = string.Format("Please ensure that all ports ('{0}','{1}','{2}') are accessible all server",
@@ -625,6 +627,22 @@ namespace DockSample.Controls
                                 {
                                     DialogResult dresult = form.ShowDialog(this);
                                     if(dresult == DialogResult.OK)
+                                    {
+                                        editIndex = -1;
+                                        config.projectInfoList.Add(proInfo);
+                                    }
+                                });
+                            }
+                        }
+                        if(!proInfo.IsWindows && editIndex == -1)
+                        {
+                            //Mahesh test
+                            using (LinuxConfigForm form = new LinuxConfigForm(proInfo))
+                            {
+                                this.PerformSafely(() =>
+                                {
+                                    DialogResult dresult = form.ShowDialog(this);
+                                    if (dresult == DialogResult.OK)
                                     {
                                         editIndex = -1;
                                         config.projectInfoList.Add(proInfo);
@@ -754,18 +772,21 @@ namespace DockSample.Controls
             {
                 groupBox7.Enabled = groupBox8.Enabled = groupBox9.Enabled = false;
                 btnDefault.Enabled = false;
+                btnBrowse.Enabled = false;
             }
             else if (cmbServerType.SelectedIndex == 0)
             {
                 groupBox7.Enabled = true;
                 groupBox8.Enabled = groupBox9.Enabled = lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = false;
                 btnDefault.Enabled = true;
+                btnBrowse.Enabled = true;
             }
             else if (cmbServerType.SelectedIndex == 1)
             {
                 groupBox7.Enabled = true;
                 lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = groupBox8.Enabled = groupBox9.Enabled = true;
                 btnDefault.Enabled = false;
+                btnBrowse.Enabled = false;
             }
         }
         private async void cmbServerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -890,7 +911,8 @@ namespace DockSample.Controls
             enableSetDefault();
         }
 
-        private void txtProLocation_Enter(object sender, EventArgs e)
+
+        private void btnBrowse_Click(object sender, EventArgs e)
         {
             //code to browse for the location if server type  is windows
             //get the type of server

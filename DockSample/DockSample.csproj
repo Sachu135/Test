@@ -288,6 +288,12 @@
     <Compile Include="lib\FileUtil.cs" />
     <Compile Include="lib\HardwareConfig.cs" />
     <Compile Include="lib\WindowsConfigLog.cs" />
+    <Compile Include="LinuxConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LinuxConfigForm.Designer.cs">
+      <DependentUpon>LinuxConfigForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SolutionExplorer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -370,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HardwareConfigForm.resx">
       <DependentUpon>HardwareConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LinuxConfigForm.resx">
+      <DependentUpon>LinuxConfigForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SolutionExplorer.resx">
       <DependentUpon>SolutionExplorer.cs</DependentUpon>

@@ -72,6 +72,7 @@
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.btnBrowse = new System.Windows.Forms.Button();
             this.btnDefault = new System.Windows.Forms.Button();
             this.txtExplorerServiceUrl = new System.Windows.Forms.TextBox();
             this.lblServiceUrl = new System.Windows.Forms.Label();
@@ -560,6 +561,7 @@
             this.txtSshPass.Size = new System.Drawing.Size(200, 23);
             this.txtSshPass.TabIndex = 5;
             this.txtSshPass.Tag = "JunkyardUbuntu!";
+            this.txtSshPass.Text = "1245";
             this.txtSshPass.Validated += new System.EventHandler(this.txtSshPass_Validated);
             // 
             // txtSshUser
@@ -570,6 +572,7 @@
             this.txtSshUser.Size = new System.Drawing.Size(200, 23);
             this.txtSshUser.TabIndex = 4;
             this.txtSshUser.Tag = "abhishek";
+            this.txtSshUser.Text = "root";
             this.txtSshUser.Validated += new System.EventHandler(this.txtSshUser_Validated);
             // 
             // txtSshIP
@@ -580,6 +583,7 @@
             this.txtSshIP.Size = new System.Drawing.Size(200, 23);
             this.txtSshIP.TabIndex = 3;
             this.txtSshIP.Tag = "23.101.24.36";
+            this.txtSshIP.Text = "192.168.0.103";
             this.txtSshIP.Validated += new System.EventHandler(this.txtSshIP_Validated);
             // 
             // label17
@@ -616,6 +620,7 @@
             // 
             this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.btnBrowse);
             this.groupBox7.Controls.Add(this.btnDefault);
             this.groupBox7.Controls.Add(this.txtExplorerServiceUrl);
             this.groupBox7.Controls.Add(this.lblServiceUrl);
@@ -629,13 +634,27 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Explorer Service Info";
             // 
+            // btnBrowse
+            // 
+            this.btnBrowse.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
+            this.btnBrowse.Enabled = false;
+            this.btnBrowse.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnBrowse.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.btnBrowse.Location = new System.Drawing.Point(327, 23);
+            this.btnBrowse.Name = "btnBrowse";
+            this.btnBrowse.Size = new System.Drawing.Size(102, 28);
+            this.btnBrowse.TabIndex = 16;
+            this.btnBrowse.Text = "Browse";
+            this.btnBrowse.UseVisualStyleBackColor = false;
+            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            // 
             // btnDefault
             // 
             this.btnDefault.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
             this.btnDefault.Enabled = false;
             this.btnDefault.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDefault.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnDefault.Location = new System.Drawing.Point(325, 24);
+            this.btnDefault.Location = new System.Drawing.Point(435, 23);
             this.btnDefault.Name = "btnDefault";
             this.btnDefault.Size = new System.Drawing.Size(102, 28);
             this.btnDefault.TabIndex = 16;
@@ -651,6 +670,7 @@
             this.txtExplorerServiceUrl.Size = new System.Drawing.Size(200, 23);
             this.txtExplorerServiceUrl.TabIndex = 5;
             this.txtExplorerServiceUrl.Tag = "http://23.101.24.36:5000";
+            this.txtExplorerServiceUrl.Text = "http://192.168.0.103:5000";
             // 
             // lblServiceUrl
             // 
@@ -679,7 +699,7 @@
             this.txtProLocation.Name = "txtProLocation";
             this.txtProLocation.Size = new System.Drawing.Size(200, 23);
             this.txtProLocation.TabIndex = 3;
-            this.txtProLocation.Enter += new System.EventHandler(this.txtProLocation_Enter);
+            this.txtProLocation.Text = "/home/kockpit";
             // 
             // cmbServerType
             // 
@@ -831,5 +851,6 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button btnDefault;
+        private System.Windows.Forms.Button btnBrowse;
     }
 }

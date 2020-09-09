@@ -94,14 +94,14 @@ namespace DockSample
             // menuItem2
             // 
             this.menuItem2.Name = "menuItem2";
-            this.menuItem2.Size = new System.Drawing.Size(131, 22);
+            this.menuItem2.Size = new System.Drawing.Size(130, 22);
             this.menuItem2.Text = "Test";
             this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
             // 
             // menuItemCheckTest
             // 
             this.menuItemCheckTest.Name = "menuItemCheckTest";
-            this.menuItemCheckTest.Size = new System.Drawing.Size(131, 22);
+            this.menuItemCheckTest.Size = new System.Drawing.Size(130, 22);
             this.menuItemCheckTest.Text = "Check Test";
             this.menuItemCheckTest.Click += new System.EventHandler(this.menuItemCheckTest_Click);
             // 
@@ -285,7 +285,7 @@ namespace DockSample
             this.toolStripComboBox1.Items.AddRange(new object[] {
             "python",
             "python3",
-            "spark submit"});
+            "spark-submit"});
             this.toolStripComboBox1.Name = "toolStripComboBox1";
             this.toolStripComboBox1.Size = new System.Drawing.Size(121, 25);
             // 
@@ -294,7 +294,7 @@ namespace DockSample
             this.toolStripButton2.Image = global::DockSample.Properties.Resources.sqlexecute;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(67, 22);
+            this.toolStripButton2.Size = new System.Drawing.Size(68, 22);
             this.toolStripButton2.Text = "Execute";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
