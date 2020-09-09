@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UIFunctionality.Common;
@@ -133,7 +134,8 @@ namespace UIFunctionality
             }
         }
 
-        public static void WriteFileContent(string url, string userName, string password, string filePath, string content)
+        public void WriteFileContent(string url, string userName, string password, 
+            string filePath, string content)
         {
             using (SftpClient sftp = new SftpClient(url, userName,  password))
             {
@@ -200,6 +202,25 @@ namespace UIFunctionality
                 }
             }
             
+        }
+
+        public bool DirectoryOrFileExists(string url, string userName, string password, string filePath)
+        {
+            try
+            {
+                using (sftpClient = new SftpClient(url, userName, password))
+                {
+                    sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sftpClient.Connect();
+                    if (!sftpClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+                    return sftpClient.Exists(filePath);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public void WriteFileBytesContentMethod(string url, string userName, string password, string filePath, byte[] content, bool isWindows)
@@ -423,6 +444,51 @@ namespace UIFunctionality
             }
         }
 
+        public void ExecuteCommandOnConsole(string url, string userName, string password, string strCmd, Action opCompleted)
+        {
+            using (SshClient client = new SshClient(url, 22, userName, password))
+            {
+                client.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                client.Connect();
+
+                if (!client.IsConnected)
+                    throw new Exception("Failed to connect ssh");
+
+                var st = client.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
+
+                //// Get logged in and get user prompt
+                //string prompt = st.Expect(new Regex(@"[$>]"));
+                //// Check to send password
+                //if (prompt.Contains(":"))
+                //{
+                //    // Send password
+                //    st.WriteLine(password);
+                //}
+
+                // wait for bash prompt
+                while (!st.DataAvailable)
+                    System.Threading.Thread.Sleep(200);
+
+                st.WriteLine(strCmd);
+                st.WriteLine("exit;");
+                st.Flush();
+
+                StringBuilder output = new StringBuilder();
+                while (client.IsConnected)
+                {
+                    var line = st.ReadLine();
+                    output.Append(line);
+
+                    System.Threading.Thread.Sleep(100);
+                    if (line.Contains("logout"))
+                    {
+                        opCompleted();
+                        break;
+                    }
+                }
+            }
+        }
+
 
         public void ExecuteCommandOnConsoleMethod(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, bool isWindows, Action opCompleted)
         {
@@ -432,8 +498,8 @@ namespace UIFunctionality
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = platform,
-                        Arguments = filePath,
+                        FileName = "powershell.exe",
+                        Arguments = platform + " " + filePath,
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
