@@ -706,8 +706,8 @@ namespace DockSample
 
             string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 
-            if (File.Exists(configFile))
-                dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
+            //if (File.Exists(configFile))
+            //    dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
 
             //Mahesh  to show the default solution explorer on page load
             menuItemSolutionExplorer_Click(sender, e);
