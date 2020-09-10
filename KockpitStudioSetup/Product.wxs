@@ -58,7 +58,7 @@
 		</DirectoryRef>
 
 		<InstallExecuteSequence>
-			<Custom Action='RunPreviledgeCustomAction' Before='PackageInstallCustomAction'>NOT Installed</Custom>
+			<Custom Action='RunPreviledgeCustomAction' Before='InstallFiles'>NOT Installed</Custom>
 			<Custom Action='PackageInstallCustomAction' Before='InstallFinalize'>NOT Installed</Custom>
 		</InstallExecuteSequence>
 		

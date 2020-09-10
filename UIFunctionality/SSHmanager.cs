@@ -219,7 +219,7 @@ namespace UIFunctionality
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 

@@ -561,7 +561,7 @@
             this.txtSshPass.Size = new System.Drawing.Size(200, 23);
             this.txtSshPass.TabIndex = 5;
             this.txtSshPass.Tag = "JunkyardUbuntu!";
-            this.txtSshPass.Text = "1245";
+            this.txtSshPass.Text = "root";
             this.txtSshPass.Validated += new System.EventHandler(this.txtSshPass_Validated);
             // 
             // txtSshUser
@@ -583,7 +583,7 @@
             this.txtSshIP.Size = new System.Drawing.Size(200, 23);
             this.txtSshIP.TabIndex = 3;
             this.txtSshIP.Tag = "23.101.24.36";
-            this.txtSshIP.Text = "192.168.0.103";
+            this.txtSshIP.Text = "192.168.0.105";
             this.txtSshIP.Validated += new System.EventHandler(this.txtSshIP_Validated);
             // 
             // label17
@@ -670,7 +670,7 @@
             this.txtExplorerServiceUrl.Size = new System.Drawing.Size(200, 23);
             this.txtExplorerServiceUrl.TabIndex = 5;
             this.txtExplorerServiceUrl.Tag = "http://23.101.24.36:5000";
-            this.txtExplorerServiceUrl.Text = "http://192.168.0.103:5000";
+            this.txtExplorerServiceUrl.Text = "http://192.168.0.105:5000";
             // 
             // lblServiceUrl
             // 
