@@ -9,6 +9,7 @@ namespace LinuxInstallers
 {
     class Program
     {
+        //"commands": "sudo apt-get update; sudo apt-get install htop[NEXT]ls -a[NEXT]ifconfig[NEXT]####CreateWebTerminal####[NEXT]####CreateHealthCheck####"
         static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
@@ -127,7 +128,7 @@ namespace LinuxInstallers
                     using (StreamWriter sw = File.CreateText(path))
                     {
                         sw.WriteLine("[program:healthcheck]");
-                        sw.WriteLine("command=ttyd -p 5002 htop");
+                        sw.WriteLine("command=ttyd -p 5003 htop");
                         sw.WriteLine("autostart=true");
                         sw.WriteLine("autorestart=true");
                     }
@@ -150,8 +151,8 @@ namespace LinuxInstallers
                     using (StreamWriter sw = File.CreateText(path))
                     {
                         sw.WriteLine("[program:KockpitWebService]");
-                        sw.WriteLine("command=dotnet /etc/KockpitStudio/WebService/KockpitWebService.dll");
-                        sw.WriteLine("directory=/etc/KockpitStudio/WebService/");
+                        sw.WriteLine("command=dotnet /etc/KockpitStudio/Packages/WebService/KockpitWebService.dll");
+                        sw.WriteLine("directory=/etc/KockpitStudio/Packages/");
                         sw.WriteLine("autostart=true");
                         sw.WriteLine("autorestart=true");
                         sw.WriteLine("stderr_logfile=/var/log/KockpitWebService.err.log");

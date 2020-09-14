@@ -575,11 +575,9 @@ namespace DockSample.Controls
 
                             if (txtTerminalUrl.Text.Trim().Length == 0)
                             {
-
-                                //uncomment
-                                //MessageBox.Show("Terminal url not filled");
-                                //HideLoader();
-                                //return;
+                                MessageBox.Show("Terminal url not filled");
+                                HideLoader();
+                                return;
                             }
 
                             string message = string.Format("Please ensure that all ports ('{0}','{1}','{2}') are accessible all server",

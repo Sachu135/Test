@@ -971,10 +971,10 @@ namespace DockSample
         {
             richTextBox2.PerformSafely(() =>
             {
-                //richTextBox2.Text += (strMsg);
-                //richTextBox2.Text += Environment.NewLine;
+                richTextBox2.AppendText(strMsg);
+                richTextBox2.AppendText(Environment.NewLine);
                 richTextBox2.SelectionStart = richTextBox2.Text.Length;
-                richTextBox2.SelectedText = strMsg + Environment.NewLine;
+                //richTextBox2.SelectedText = strMsg + Environment.NewLine;
                 richTextBox2.ScrollToCaret();
 
                 WindowsConfigLog.Create(_windowServer, strMsg);

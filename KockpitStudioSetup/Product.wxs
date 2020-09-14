@@ -2,9 +2,9 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<?define DockSample_TargetDir=$(var.DockSample.TargetDir)?>
 	<?define KockpitWebService_TargetDir=$(var.KockpitWebService.TargetDir)?>
+	<?define LinuxInstaller_TargetDir=$(var.LinuxInstaller.TargetDir)?>
 	<Product Id="*" Name="Kockpit Studio" Language="1033" Version="1.0.0.0" Manufacturer="Kockpit Analytics" UpgradeCode="a7679301-2dfd-42cc-b198-aa173b8d724d">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"
-				 InstallPrivileges="elevated" AdminImage="yes" />
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" AdminImage="yes" />
 
 		<UIRef Id="WixUI_Minimal" />
 		
@@ -15,6 +15,7 @@
 		<Icon Id="ShortCutIcon" SourceFile="$(var.ProjectDir)\Logo.ico" />
 		<Property Id="ARPPRODUCTICON" Value="ShortCutIcon" />
 		<Property Id="SOURCEDIRECTORY" Value="$(var.KockpitWebService_TargetDir)" />
+		<Property Id="LINUXSOURCEDIRECTORY" Value="$(var.LinuxInstaller_TargetDir)" />
 
 		<!--<WixVariable Id="WixUIBannerBmp" Value="Images\"/>
 		<WixVariable Id="WixUIDialogBmp" Value="Images\"/>-->
@@ -53,13 +54,14 @@
 			<Component Id="ApplicationResource" Guid="A7C42303-1D77-4C70-8D5C-0FD0F9158EB4">
 				<RemoveFile Id="remove_resources_files" Name="LINUX" Directory="LINUX" On="uninstall" />
 				<RemoveFolder Id="remove_resources" Directory="RESOURCEFOLDER" On="uninstall" />
-				<CopyFile Id="SomeId" SourceProperty="SOURCEDIRECTORY" DestinationDirectory="LINUX" SourceName="*" />
+				<CopyFile Id="SomeId" SourceProperty="SOURCEDIRECTORY" DestinationDirectory="WEBSERVICE" SourceName="*" />
+				<CopyFile Id="NewSomeId" SourceProperty="LINUXSOURCEDIRECTORY" DestinationDirectory="LIINSTALLER" SourceName="*" />
 			</Component>
 		</DirectoryRef>
 
 		<InstallExecuteSequence>
-			<Custom Action='RunPreviledgeCustomAction' Before='InstallFiles'>NOT Installed</Custom>
-			<Custom Action='PackageInstallCustomAction' Before='InstallFinalize'>NOT Installed</Custom>
+			<Custom Action="RunPreviledgeCustomAction" Before="InstallFiles">NOT Installed</Custom>
+			<Custom Action="PackageInstallCustomAction" Before="InstallFinalize">NOT Installed</Custom>
 		</InstallExecuteSequence>
 		
 		<!--Run as administrator-->
@@ -79,7 +81,10 @@
 				  <Directory Id="ru_RU" Name="ru-RU" />
 				  <Directory Id="zh_CN" Name="zh-CN" />
 				  <Directory Id="RESOURCEFOLDER" Name="Resources">
-					<Directory Id="LINUX" Name="Linux" />
+					  <Directory Id="LINUX" Name="Linux" >
+							<Directory Id="WEBSERVICE" Name="WebService" />
+							<Directory Id="LIINSTALLER" Name="Installer" />
+					  </Directory>
 				  </Directory>
 				</Directory>
 			</Directory>
@@ -320,8 +325,8 @@
   </Fragment>
 
 <Fragment>
-	<Binary Id="CustomActionBinary" SourceFile="$(var.KockpitStudioCustomAction.TargetDir)$(var.KockpitStudioCustomAction.TargetName).CA.dll"/>
-	<CustomAction Id="RunPreviledgeCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction1" Execute="immediate" Return="check"/>
-	<CustomAction Id="PackageInstallCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction2" Execute="immediate" Return="check"/>
+	<Binary Id="CustomActionBinary" SourceFile="$(var.KockpitStudioCustomAction.TargetDir)$(var.KockpitStudioCustomAction.TargetName).CA.dll" />
+	<CustomAction Id="RunPreviledgeCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction1" Execute="immediate" Return="check" />
+	<CustomAction Id="PackageInstallCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction2" Execute="immediate" Return="check" />
 </Fragment>
 </Wix>

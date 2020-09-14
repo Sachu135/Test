@@ -123,9 +123,9 @@ namespace KockpitStudioCustomAction
                 {
                     MessageBox.Show("Installation Failed");
                     this.DialogResult = DialogResult.Cancel;
-                    this.PerformSafely(pictureBox1, () =>
+                    this.PerformSafely(progressBar1, () =>
                     {
-                        pictureBox1.Visible = false;
+                        progressBar1.Visible = false;
                     });
                     this.PerformSafely(richTextBox1, () => 
                     {
@@ -172,9 +172,9 @@ namespace KockpitStudioCustomAction
                         {
                             btnNext.Enabled = true;
                         });
-                        this.PerformSafely(pictureBox1, () =>
+                        this.PerformSafely(progressBar1, () =>
                         {
-                            pictureBox1.Visible = false;
+                            progressBar1.Visible = false;
                         });
                         this.PerformSafely(richTextBox1, () =>
                         {
@@ -185,9 +185,9 @@ namespace KockpitStudioCustomAction
                     {
                         MessageBox.Show("Installation Failed");
                         this.DialogResult = DialogResult.Cancel;
-                        this.PerformSafely(pictureBox1, () =>
+                        this.PerformSafely(progressBar1, () =>
                         {
-                            pictureBox1.Visible = false;
+                            progressBar1.Visible = false;
                         });
                         this.PerformSafely(richTextBox1, () =>
                         {

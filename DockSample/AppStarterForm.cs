@@ -64,6 +64,7 @@ namespace DockSample
                 }
                 catch (Exception ex)
                 {
+                    splashScreen.Hide();
                     ConfigurationForm frm = new ConfigurationForm("Please enter valid Linux configuration information.", ()=> { });
                     frm.ShowDialog(this);
                 }

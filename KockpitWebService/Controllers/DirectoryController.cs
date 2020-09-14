@@ -35,7 +35,13 @@ namespace KockpitWebService.Controllers
                 return await reader.ReadToEndAsync();
             }
         }
-       
+
+        [HttpGet("test", Name = "test")]
+        public IActionResult test()
+        {
+            return Ok("success");
+        }
+
         [HttpGet("GetDirectoryList", Name = "GetDirectoryList")]
         public IActionResult GetDirectoryList([FromQuery(Name = "dirInfo")] string dirInfo)
         {

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UIFunctionality.Common;
@@ -131,6 +132,24 @@ namespace UIFunctionality
                     throw new Exception("Failed to connect ssh");
 
                 return new MemoryStream(sftp.ReadAllBytes(filePath)); 
+            }
+        }
+
+        public int RunCommand(string url, string userName, string password,
+            string strCommand, out string result, out string error)
+        {
+            using (SshClient sftp = new SshClient(url, userName, password))
+            {
+                sftp.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                sftp.Connect();
+                if (!sftp.IsConnected)
+                    throw new Exception("Failed to connect ssh");
+
+                var sshCommand = sftp.RunCommand(strCommand);
+                result = sshCommand.Result;
+                error = sshCommand.Error;
+
+                return sshCommand.ExitStatus;
             }
         }
 
@@ -374,122 +393,7 @@ namespace UIFunctionality
             }
             
         }
-        public static void ExecuteCommandOnConsole(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, Action opCompleted)
-        {
-            List<DirectoryOrFile> filesList = new List<DirectoryOrFile>();
-            using (SshClient client = new SshClient(url, 22, userName, password))
-            {
-                client.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                client.Connect();
-
-                if (!client.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-
-                var st = client.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
-
-                // wait for bash prompt
-                while (!st.DataAvailable)
-                    System.Threading.Thread.Sleep(200);
-
-                //st.WriteLine("echo '####KockpitStudioStart####'; python Kockpit/Stage1/p1.py; echo '####KockpitStudioEnd####'; exit;");
-                st.WriteLine("echo '####KockpitStudioStart####';");
-                st.WriteLine(string.Format("{0} {1};", platform, filePath));
-                st.WriteLine("echo '####KockpitStudioEnd####';");
-                //st.WriteLine("exit;");
-                //st.WriteLine("python Kockpit/Stage1/p1.py; exit;");
-                st.Flush();
-
-                StringBuilder output = new StringBuilder();
-
-                bool loggingStart = false;
-                while (client.IsConnected)
-                {
-                    var line = st.ReadLine();
-                    //Debug.WriteLine(line);
-                    //Debug.WriteLine("--------------------------------------");
-                    output.Append(line);
-
-                    //var ot = output.ToString();
-                    if (line.Equals("####KockpitStudioStart####"))
-                    {
-                        loggingStart = true;
-                        continue;
-                    }
-                    if (line.Contains("####KockpitStudioEnd####"))
-                    {
-                        opCompleted();
-                        break;
-                    }
-                    if (loggingStart) //loggingStart && loggingEnd
-                    {
-                        txtConsoleLog.PerformSafely(() =>
-                        {
-                            txtConsoleLog.AppendText(line);
-                            txtConsoleLog.AppendText(Environment.NewLine);
-                            //txtConsoleLog.AppendText(line, Color.Lime);
-                            txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
-                            txtConsoleLog.ScrollToCaret();
-                        });
-                    }
-
-                    System.Threading.Thread.Sleep(100);
-
-                    if (line.Contains("logout"))
-                    {
-                        opCompleted();
-                        //client.Disconnect();
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void ExecuteCommandOnConsole(string url, string userName, string password, string strCmd, Action opCompleted)
-        {
-            using (SshClient client = new SshClient(url, 22, userName, password))
-            {
-                client.KeepAliveInterval = TimeSpan.FromSeconds(2);
-                client.Connect();
-
-                if (!client.IsConnected)
-                    throw new Exception("Failed to connect ssh");
-
-                var st = client.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
-
-                //// Get logged in and get user prompt
-                //string prompt = st.Expect(new Regex(@"[$>]"));
-                //// Check to send password
-                //if (prompt.Contains(":"))
-                //{
-                //    // Send password
-                //    st.WriteLine(password);
-                //}
-
-                // wait for bash prompt
-                while (!st.DataAvailable)
-                    System.Threading.Thread.Sleep(200);
-
-                st.WriteLine(strCmd);
-                st.WriteLine("exit;");
-                st.Flush();
-
-                StringBuilder output = new StringBuilder();
-                while (client.IsConnected)
-                {
-                    var line = st.ReadLine();
-                    output.Append(line);
-
-                    System.Threading.Thread.Sleep(100);
-                    if (line.Contains("logout"))
-                    {
-                        opCompleted();
-                        break;
-                    }
-                }
-            }
-        }
-
-
+        
         public void ExecuteCommandOnConsoleMethod(string url, string userName, string password, string platform, string filePath, RichTextBox txtConsoleLog, bool isWindows, Action opCompleted)
         {
             if (isWindows)
@@ -546,14 +450,14 @@ namespace UIFunctionality
             {
                 using (sshClient = new SshClient(url, 22, userName, password))
                 {
-                    sshClient.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                    sshClient.KeepAliveInterval = TimeSpan.FromMinutes(10);
                     sshClient.Connect();
 
                     if (!sshClient.IsConnected)
                         throw new Exception("Failed to connect ssh");
 
                     var st = sshClient.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
-
+                    
                     // wait for bash prompt
                     while (!st.DataAvailable)
                         System.Threading.Thread.Sleep(200);
@@ -612,6 +516,105 @@ namespace UIFunctionality
             }
             
         }
+
+        //public void ExecuteTeminalCommand(string url, string userName, string password, string command, 
+        //    RichTextBox txtConsoleLog, Action opCompleted)
+        //{
+        //    CancellationTokenSource tokenSource = new CancellationTokenSource();
+        //    CancellationToken token = tokenSource.Token;
+        //    bool isExit = false;
+        //    Task t = Task.Run(() =>
+        //    {
+        //        using (sshClient = new SshClient(url, 22, userName, password))
+        //        {
+        //            sshClient.KeepAliveInterval = TimeSpan.FromMinutes(50);
+        //            sshClient.Connect();
+
+        //            if (!sshClient.IsConnected)
+        //                throw new Exception("Failed to connect ssh");
+
+        //            var st = sshClient.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
+        //            // wait for bash prompt
+        //            while (!st.DataAvailable)
+        //                System.Threading.Thread.Sleep(200);
+
+        //            txtConsoleLog.PerformSafely(() => {
+        //                txtConsoleLog.AppendText(("Execution Started: " + command));
+        //            });
+        //            st.WriteLine(command);
+        //            st.WriteLine("echo \"####Kockpit Signal Abort####\";");
+        //            st.WriteLine("exit;");
+        //            //st.WriteLine("python Kockpit/Stage1/p1.py; exit;");
+                    
+        //            st.Flush();
+
+        //            st.DataReceived += (object snd, Renci.SshNet.Common.ShellDataEventArgs evt) =>
+        //            {
+        //                if (evt.Data != null)
+        //                {
+        //                    txtConsoleLog.PerformSafely(() =>
+        //                    {
+        //                        var ot = Encoding.UTF8.GetString(evt.Data, 0, evt.Data.Length);
+
+        //                        txtConsoleLog.AppendText(("OTClean: "+ ot));
+
+        //                        var otClean = ot.Replace(@"\r\n", string.Empty);
+        //                        if (otClean.Equals("logout") 
+        //                        || otClean.Contains("####Kockpit Signal Abort####")
+        //                        )
+        //                        {
+        //                            txtConsoleLog.AppendText(("Exit found for : " + command + " Statement: " + otClean));
+        //                            opCompleted();
+        //                            tokenSource.Cancel();
+        //                            isExit = true;
+        //                            //sshClient.Disconnect();
+        //                        }
+        //                        else
+        //                        {
+        //                            txtConsoleLog.AppendText(ot);
+        //                            //txtConsoleLog.AppendText(Environment.NewLine);
+        //                            //txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
+        //                            //txtConsoleLog.ScrollToCaret();
+        //                        }
+        //                    });
+        //                }
+        //            };
+
+        //            st.ErrorOccurred += (object snd, Renci.SshNet.Common.ExceptionEventArgs evt) =>
+        //            {
+        //                if (evt.Exception != null)
+        //                {
+        //                    txtConsoleLog.PerformSafely(() =>
+        //                    {
+        //                        txtConsoleLog.AppendText(string.Format("Error: {0}", evt.Exception.Message));
+        //                        //txtConsoleLog.AppendText(Environment.NewLine);
+        //                        //txtConsoleLog.SelectionStart = txtConsoleLog.Text.Length;
+        //                        //txtConsoleLog.ScrollToCaret();
+        //                    });
+        //                }
+        //            };
+
+        //            while (!isExit)
+        //            {
+                        
+        //            }
+        //            while (!tokenSource.IsCancellationRequested)
+        //            {
+        //                //Thread.Sleep(1);
+        //            }
+
+        //            txtConsoleLog.PerformSafely(() => {
+        //                txtConsoleLog.AppendText(("Exit from function: " + command));
+        //            });
+
+        //            sshClient.Disconnect();
+        //            //sshClient.Dispose();
+        //        }
+        //    }, token);
+        //    t.Wait();
+        //}
+
+        
 
         public static string ListDirectory(string dirPath)
         {
@@ -723,6 +726,97 @@ namespace UIFunctionality
             {
                 sshClient.Dispose();
             }
+        }
+
+
+        public void ExecuteTeminalCommand(string url, string userName, string password, KeyValuePair<string,string> command,
+        RichTextBox txtConsoleLog, Action opCompleted)
+        {
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+            bool isExit = false;
+            Task t = Task.Run(() =>
+            {
+                using (sshClient = new SshClient(url, 22, userName, password))
+                {
+                    sshClient.KeepAliveInterval = TimeSpan.FromMinutes(50);
+                    sshClient.Connect();
+
+                    if (!sshClient.IsConnected)
+                        throw new Exception("Failed to connect ssh");
+
+                    var stKey = sshClient.CreateShellStream("bash", 80, 24, 800, 600, 1024 * 8);
+                    // wait for bash prompt
+                    while (!stKey.DataAvailable)
+                        System.Threading.Thread.Sleep(200);
+
+                    txtConsoleLog.PerformSafely(() => {
+                        txtConsoleLog.AppendText(("Execution Started: " + command));
+                    });
+                    stKey.WriteLine(command.Key);
+                    stKey.WriteLine("echo \"####Kockpit Signal Abort####\";");
+                    stKey.WriteLine("exit;");
+                    stKey.Flush();
+                    stKey.DataReceived += (object snd, Renci.SshNet.Common.ShellDataEventArgs evt) =>
+                    {
+                        if (evt.Data != null)
+                        {
+                            txtConsoleLog.PerformSafely(() =>
+                            {
+                                var ot = Encoding.UTF8.GetString(evt.Data, 0, evt.Data.Length);
+                                var otClean = ot.Replace(@"\r\n", string.Empty);
+
+                                string strComparevalue = command.Value;
+                                if(command.Value == "task2")
+                                    strComparevalue = "Processing triggers for systemd";
+
+                                if (command.Value == "task3")
+                                    strComparevalue = "-- Installing: /usr/local/share/man/man1/ttyd.1";
+
+                                if (otClean.Equals("logout")
+                                || otClean.Contains(strComparevalue)
+                                )
+                                {
+                                    txtConsoleLog.AppendText(("Exit found for : " + command + " Statement: " + otClean));
+                                    opCompleted();
+                                    tokenSource.Cancel();
+                                    isExit = true;
+                                }
+                                else
+                                {
+                                    txtConsoleLog.AppendText(ot);
+                                }
+                            });
+                        }
+                    };
+                    stKey.ErrorOccurred += (object snd, Renci.SshNet.Common.ExceptionEventArgs evt) =>
+                    {
+                        if (evt.Exception != null)
+                        {
+                            txtConsoleLog.PerformSafely(() =>
+                            {
+                                txtConsoleLog.AppendText(string.Format("Error: {0}", evt.Exception.Message));
+                            });
+                        }
+                    };
+
+
+                    while (!isExit)
+                    {
+
+                    }
+                    while (!tokenSource.IsCancellationRequested)
+                    {
+                        //Thread.Sleep(1);
+                    }
+                    txtConsoleLog.PerformSafely(() => {
+                        txtConsoleLog.AppendText(("Exit from function: " + command));
+                    });
+                    sshClient.Disconnect();
+                    //sshClient.Dispose();
+                }
+            }, token);
+            t.Wait();
         }
     }
 }
