@@ -12,8 +12,13 @@ namespace LinuxInstallers
         //"commands": "sudo apt-get update; sudo apt-get install htop[NEXT]ls -a[NEXT]ifconfig[NEXT]####CreateWebTerminal####[NEXT]####CreateHealthCheck####"
         static void Main(string[] args)
         {
+            var _appStngPath = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build()["installerPath"].ToString();
+
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                //.SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(_appStngPath)
                 .AddJsonFile("appsettings.json")
                 .Build();
             var commands = builder["commands"].ToString().Split("[NEXT]").ToList();

@@ -32,8 +32,9 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblTaskStatus = new System.Windows.Forms.Label();
+            this.pnlParent = new System.Windows.Forms.Panel();
             this.pnlBrowse = new System.Windows.Forms.Panel();
-            this.pnlBrowse.SuspendLayout();
+            this.pnlParent.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -74,30 +75,40 @@
             this.lblTaskStatus.AutoSize = true;
             this.lblTaskStatus.Font = new System.Drawing.Font("Segoe UI", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTaskStatus.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.lblTaskStatus.Location = new System.Drawing.Point(326, 26);
+            this.lblTaskStatus.Location = new System.Drawing.Point(419, 26);
             this.lblTaskStatus.Name = "lblTaskStatus";
-            this.lblTaskStatus.Size = new System.Drawing.Size(0, 15);
+            this.lblTaskStatus.Size = new System.Drawing.Size(162, 15);
             this.lblTaskStatus.TabIndex = 4;
+            this.lblTaskStatus.Text = "Task Completed 0 (out of 0)";
             this.lblTaskStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTaskStatus.Visible = false;
+            // 
+            // pnlParent
+            // 
+            this.pnlParent.Controls.Add(this.pnlBrowse);
+            this.pnlParent.Controls.Add(this.lblTaskStatus);
+            this.pnlParent.Controls.Add(this.label1);
+            this.pnlParent.Controls.Add(this.richTextBox1);
+            this.pnlParent.Controls.Add(this.progressBar1);
+            this.pnlParent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlParent.Location = new System.Drawing.Point(0, 0);
+            this.pnlParent.Name = "pnlParent";
+            this.pnlParent.Size = new System.Drawing.Size(593, 404);
+            this.pnlParent.TabIndex = 4;
             // 
             // pnlBrowse
             // 
-            this.pnlBrowse.Controls.Add(this.lblTaskStatus);
-            this.pnlBrowse.Controls.Add(this.label1);
-            this.pnlBrowse.Controls.Add(this.richTextBox1);
-            this.pnlBrowse.Controls.Add(this.progressBar1);
-            this.pnlBrowse.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBrowse.Location = new System.Drawing.Point(0, 0);
+            this.pnlBrowse.Location = new System.Drawing.Point(3, 381);
             this.pnlBrowse.Name = "pnlBrowse";
-            this.pnlBrowse.Size = new System.Drawing.Size(593, 395);
-            this.pnlBrowse.TabIndex = 4;
+            this.pnlBrowse.Size = new System.Drawing.Size(588, 18);
+            this.pnlBrowse.TabIndex = 5;
             // 
             // LinuxConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(593, 395);
-            this.Controls.Add(this.pnlBrowse);
+            this.ClientSize = new System.Drawing.Size(593, 404);
+            this.Controls.Add(this.pnlParent);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -105,8 +116,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LinuxConfigForm";
             this.Shown += new System.EventHandler(this.LinuxConfigForm_Shown);
-            this.pnlBrowse.ResumeLayout(false);
-            this.pnlBrowse.PerformLayout();
+            this.pnlParent.ResumeLayout(false);
+            this.pnlParent.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -116,6 +127,7 @@
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label lblTaskStatus;
+        private System.Windows.Forms.Panel pnlParent;
         private System.Windows.Forms.Panel pnlBrowse;
     }
 }

@@ -88,7 +88,6 @@ namespace DockSample
             loader = new UCLoaderForm();
             browser = new ChromiumWebBrowser(Url);
             browser.DownloadHandler = new DownloadHandler(this, loader);
-            
         }
 
         private void menuItem2_Click(object sender, System.EventArgs e)

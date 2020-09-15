@@ -56,13 +56,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.txtHealthCheck = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.txtAirflow = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtTerminalUrl = new System.Windows.Forms.TextBox();
-            this.label20 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.txtSshPass = new System.Windows.Forms.TextBox();
@@ -74,8 +67,6 @@
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.btnDefault = new System.Windows.Forms.Button();
-            this.txtExplorerServiceUrl = new System.Windows.Forms.TextBox();
-            this.lblServiceUrl = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.txtProLocation = new System.Windows.Forms.TextBox();
             this.cmbServerType = new System.Windows.Forms.ComboBox();
@@ -92,7 +83,6 @@
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.groupBox4.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.tbControl.SuspendLayout();
@@ -406,7 +396,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.button6);
             this.groupBox4.Controls.Add(this.button5);
-            this.groupBox4.Controls.Add(this.groupBox9);
             this.groupBox4.Controls.Add(this.button3);
             this.groupBox4.Controls.Add(this.groupBox8);
             this.groupBox4.Controls.Add(this.groupBox7);
@@ -450,79 +439,6 @@
             this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.txtHealthCheck);
-            this.groupBox9.Controls.Add(this.label14);
-            this.groupBox9.Controls.Add(this.txtAirflow);
-            this.groupBox9.Controls.Add(this.label8);
-            this.groupBox9.Controls.Add(this.txtTerminalUrl);
-            this.groupBox9.Controls.Add(this.label20);
-            this.groupBox9.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox9.Location = new System.Drawing.Point(351, 172);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(334, 143);
-            this.groupBox9.TabIndex = 13;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Services Info";
-            // 
-            // txtHealthCheck
-            // 
-            this.txtHealthCheck.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtHealthCheck.Location = new System.Drawing.Point(117, 94);
-            this.txtHealthCheck.Name = "txtHealthCheck";
-            this.txtHealthCheck.Size = new System.Drawing.Size(200, 23);
-            this.txtHealthCheck.TabIndex = 9;
-            this.txtHealthCheck.Tag = "http://23.101.24.36:9045";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(32, 97);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(85, 16);
-            this.label14.TabIndex = 8;
-            this.label14.Text = "Health Check :";
-            // 
-            // txtAirflow
-            // 
-            this.txtAirflow.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtAirflow.Location = new System.Drawing.Point(117, 64);
-            this.txtAirflow.Name = "txtAirflow";
-            this.txtAirflow.Size = new System.Drawing.Size(200, 23);
-            this.txtAirflow.TabIndex = 7;
-            this.txtAirflow.Tag = "http://23.101.24.36:9046";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(32, 67);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(52, 16);
-            this.label8.TabIndex = 6;
-            this.label8.Text = "Airflow :";
-            // 
-            // txtTerminalUrl
-            // 
-            this.txtTerminalUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtTerminalUrl.Location = new System.Drawing.Point(117, 31);
-            this.txtTerminalUrl.Name = "txtTerminalUrl";
-            this.txtTerminalUrl.Size = new System.Drawing.Size(200, 23);
-            this.txtTerminalUrl.TabIndex = 3;
-            this.txtTerminalUrl.Tag = "http://23.101.24.36:8080";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(32, 34);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(61, 16);
-            this.label20.TabIndex = 0;
-            this.label20.Text = "Terminal :";
-            // 
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
@@ -545,9 +461,9 @@
             this.groupBox8.Controls.Add(this.label18);
             this.groupBox8.Controls.Add(this.label19);
             this.groupBox8.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox8.Location = new System.Drawing.Point(8, 172);
+            this.groupBox8.Location = new System.Drawing.Point(8, 145);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(337, 143);
+            this.groupBox8.Size = new System.Drawing.Size(676, 170);
             this.groupBox8.TabIndex = 12;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "SSH Client Info";
@@ -619,14 +535,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.Controls.Add(this.btnBrowse);
             this.groupBox7.Controls.Add(this.btnDefault);
-            this.groupBox7.Controls.Add(this.txtExplorerServiceUrl);
-            this.groupBox7.Controls.Add(this.lblServiceUrl);
             this.groupBox7.Controls.Add(this.label16);
             this.groupBox7.Controls.Add(this.txtProLocation);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox7.Location = new System.Drawing.Point(8, 75);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(677, 91);
+            this.groupBox7.Size = new System.Drawing.Size(677, 64);
             this.groupBox7.TabIndex = 11;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Explorer Service Info";
@@ -658,25 +572,6 @@
             this.btnDefault.Text = "Set Default";
             this.btnDefault.UseVisualStyleBackColor = false;
             this.btnDefault.Click += new System.EventHandler(this.btnDefault_Click);
-            // 
-            // txtExplorerServiceUrl
-            // 
-            this.txtExplorerServiceUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F);
-            this.txtExplorerServiceUrl.Location = new System.Drawing.Point(121, 57);
-            this.txtExplorerServiceUrl.Name = "txtExplorerServiceUrl";
-            this.txtExplorerServiceUrl.Size = new System.Drawing.Size(200, 23);
-            this.txtExplorerServiceUrl.TabIndex = 5;
-            this.txtExplorerServiceUrl.Tag = "http://23.101.24.36:5000";
-            // 
-            // lblServiceUrl
-            // 
-            this.lblServiceUrl.AutoSize = true;
-            this.lblServiceUrl.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblServiceUrl.Location = new System.Drawing.Point(23, 60);
-            this.lblServiceUrl.Name = "lblServiceUrl";
-            this.lblServiceUrl.Size = new System.Drawing.Size(69, 16);
-            this.lblServiceUrl.TabIndex = 4;
-            this.lblServiceUrl.Text = "Service Url :";
             // 
             // label16
             // 
@@ -780,8 +675,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
@@ -818,9 +711,6 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.TextBox txtTerminalUrl;
-        private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.TextBox txtSshPass;
@@ -830,8 +720,6 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.TextBox txtExplorerServiceUrl;
-        private System.Windows.Forms.Label lblServiceUrl;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox txtProLocation;
         private System.Windows.Forms.ComboBox cmbServerType;
@@ -839,10 +727,6 @@
         private System.Windows.Forms.TextBox txtProName;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TabControl tbControl;
-        private System.Windows.Forms.TextBox txtHealthCheck;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox txtAirflow;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button btnDefault;

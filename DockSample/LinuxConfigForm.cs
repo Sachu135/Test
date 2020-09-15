@@ -1,4 +1,5 @@
-﻿using CefSharp.WinForms;
+﻿using CefSharp;
+using CefSharp.WinForms;
 using CustomControls;
 using DockSample.lib;
 using Renci.SshNet.Security;
@@ -35,8 +36,9 @@ namespace DockSample
             _projectInfo = projectInfo;
             InitializeComponent();
             loader = new UCLoaderForm();
-            Url = string.Format("http://{0}:5001/", _projectInfo.sSHClientInfo.IPAddress);
+            Url = string.Format("http://{0}:5002/", _projectInfo.sSHClientInfo.IPAddress);
             browser = new ChromiumWebBrowser(Url);
+            browser.ConsoleMessage += Browser_ConsoleMessage;
         }
 
         #region [Create Directory]
@@ -152,17 +154,10 @@ namespace DockSample
                     diCmds.Add(@"sudo echo -e '[program:KockpitLinuxInstallation]\ncommand=ttyd -p 5002 dotnet /etc/KockpitStudio/Packages/Installer/LinuxInstaller.dll\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/KockpitLinuxInstallation.conf;", "####Kockpit Signal Abort####");
                     diCmds.Add(@"sudo service supervisor stop;sudo service supervisor start;", "####Kockpit Signal Abort####");
 
-                    //List<string> strCmds = new List<string>();
-                    //strCmds.Add(@"sudo apt update;sudo apt install snapd;sudo snap install dotnet-runtime-31;sudo snap install dotnet-sdk --classic;sudo snap alias dotnet-sdk.dotnet dotnet;");
-                    //strCmds.Add(@"sudo apt-get install supervisor -y;");
-                    //strCmds.Add(@"sudo add-apt-repository main; sudo add-apt-repository universe; sudo add-apt-repository restricted; sudo add-apt-repository multiverse; mkdir /etc/ttyd; sudo apt-get install build-essential cmake git libjson-c-dev libwebsockets-dev -y; git clone https://github.com/tsl0922/ttyd.git; cd ttyd; mkdir build; cd build; cmake ..; sudo make; sudo make install;");
-                    //strCmds.Add(@"sudo echo -e '[program:ttyd]\ncommand=ttyd -p 5001 bash\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/ttyd.conf;");
-                    //strCmds.Add(@"sudo echo -e '[program:KockpitLinuxInstallation]\ncommand=ttyd -p 5002 dotnet /etc/KockpitStudio/Packages/Installer/LinuxInstaller.dll\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/KockpitLinuxInstallation.conf;");
-                    //strCmds.Add(@"sudo service supervisor stop;sudo service supervisor start;");
-
                     int nTaskIndex = 0;
 
                     lblTaskStatus.PerformSafely(() => {
+                        lblTaskStatus.Visible = true;
                         lblTaskStatus.Text = string.Format("Tasks completed: {0} (out of {1})", nTaskIndex, diCmds.Count());
                     });
                     foreach (var cmd in diCmds)
@@ -215,11 +210,11 @@ namespace DockSample
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //this.PerformSafely(() =>
-                //{
-                //    this.DialogResult = DialogResult.Cancel;
-                //    this.Close();
-                //});
+                this.PerformSafely(() =>
+                {
+                    this.DialogResult = DialogResult.Cancel;
+                    this.Close();
+                });
             }
         }
         #endregion
@@ -239,7 +234,7 @@ namespace DockSample
             {
                 this.PerformSafely(() =>
                 {
-                    progressBar1.Visible = false;
+                    //progressBar1.Visible = false;
                     label1.Visible = false;
                     lblTaskStatus.Visible = false;
                     richTextBox1.Visible = false;
@@ -254,6 +249,22 @@ namespace DockSample
                     pnlBrowse.Focus();
                 });
             }).Start();
+        }
+
+        private void Browser_ConsoleMessage(object sender, ConsoleMessageEventArgs e)
+        {
+            var data = e.Message;
+            if (data != null)
+            {
+                if (data.ToString().ToLower().Trim().Contains("websocket connection closed"))
+                {
+                    this.PerformSafely(() =>
+                    {
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    });
+                }
+            }
         }
 
         private async void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
@@ -291,9 +302,11 @@ namespace DockSample
                 {
                     if (CreateDirectory(strPackagesDir))
                     {
-                        //code to copy the KockpitWebServices Files
+                        ///code to copy the KockpitWebServices Files
                         CopyServices();
                         RunScript();
+
+                        //BrowseTerminal();
                     }
                 }
                 else

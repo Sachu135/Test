@@ -54,7 +54,7 @@ namespace DockSample.Controls
             dataGridView1.CellContentClick += DataGridView1_CellClick;
             dataGridView2.CellContentClick += DataGridView2_CellClick;
             config = new StudioConfig(AppDomain.CurrentDomain.BaseDirectory);
-            groupBox7.Enabled = groupBox8.Enabled = groupBox9.Enabled = false;
+            groupBox7.Enabled = groupBox8.Enabled = false;
             if (config.IsConfigExist())
             {
                 config = config.GetStudioConfigFromFile();
@@ -141,23 +141,6 @@ namespace DockSample.Controls
                                 {
                                     txtSshPass.Text = selectedConn.sSHClientInfo.Password;
                                 });
-                                txtExplorerServiceUrl.PerformSafely(() =>
-                                {
-                                    txtExplorerServiceUrl.Text = selectedConn.KockpitServiceUrl;
-                                });
-                                txtTerminalUrl.PerformSafely(() =>
-                                {
-                                    txtTerminalUrl.Text = selectedConn.terminalInfo.Url;
-                                });
-
-                                txtAirflow.PerformSafely(() =>
-                                {
-                                    txtAirflow.Text = selectedConn.otherServices.AirflowService;
-                                });
-                                txtHealthCheck.PerformSafely(() =>
-                                {
-                                    txtHealthCheck.Text = selectedConn.otherServices.HealthCheckService;
-                                });
                                 
                             }
                             dataGridView2.Enabled = false;
@@ -229,6 +212,13 @@ namespace DockSample.Controls
         {
             loader = new UCLoaderForm();
             ShowConnections();
+
+
+            txtProName.Text = "Linux Project";
+            txtProLocation.Text = "/home/";
+            txtSshIP.Text = "192.168.0.104";
+            txtSshUser.Text = "root";
+            txtSshPass.Text = "root";
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -546,13 +536,6 @@ namespace DockSample.Controls
                         proInfo.ProjectName = txtProName.Text.Trim();
                         if (serverType.Equals("Linux"))
                         {
-                            if (txtExplorerServiceUrl.Text.Trim().Length == 0)
-                            {
-                                MessageBox.Show("Service Url not filled");
-                                HideLoader();
-                                return;
-                            }
-
                             if (txtSshIP.Text.Trim().Length == 0)
                             {
                                 MessageBox.Show("IP Address not filled");
@@ -572,40 +555,12 @@ namespace DockSample.Controls
                                 return;
                             }
 
-
-                            if (txtTerminalUrl.Text.Trim().Length == 0)
+                            proInfo.sSHClientInfo = new SSHClientInfo()
                             {
-                                MessageBox.Show("Terminal url not filled");
-                                HideLoader();
-                                return;
-                            }
-
-                            string message = string.Format("Please ensure that all ports ('{0}','{1}','{2}') are accessible all server",
-                                txtTerminalUrl.Text.Trim(), txtAirflow.Text.Trim(), txtHealthCheck.Text.Trim());
-                            string title = "Confirmation";
-                            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
-                            DialogResult result = MessageBox.Show(message, title, buttons);
-                            if (result == DialogResult.OK)
-                            {
-                                proInfo.sSHClientInfo = new SSHClientInfo()
-                                {
-                                    IPAddress = txtSshIP.Text.Trim(),
-                                    UserName = txtSshUser.Text.Trim(),
-                                    Password = txtSshPass.Text.Trim()
-                                };
-                                proInfo.terminalInfo = new TerminalInfo()
-                                {
-                                    Url = txtTerminalUrl.Text.Trim()
-                                };
-
-                                proInfo.KockpitServiceUrl = txtExplorerServiceUrl.Text.Trim();
-                                proInfo.otherServices.AirflowService = txtAirflow.Text;
-                                proInfo.otherServices.HealthCheckService = txtHealthCheck.Text;
-                            }
-                            else
-                            {
-                                return;
-                            }
+                                IPAddress = txtSshIP.Text.Trim(),
+                                UserName = txtSshUser.Text.Trim(),
+                                Password = txtSshPass.Text.Trim()
+                            };
                         }
 
                         proInfo.ProjectPath = txtProLocation.Text.Trim();
@@ -632,20 +587,38 @@ namespace DockSample.Controls
                                 });
                             }
                         }
-                        if(!proInfo.IsWindows && editIndex == -1)
+                        if(!proInfo.IsWindows)
                         {
-                            //Mahesh test
-                            using (LinuxConfigForm form = new LinuxConfigForm(proInfo))
+                            string strServiceUrl = string.Format("http://{0}:5000/", proInfo.sSHClientInfo.IPAddress);
+                            string strTerminalUrl = string.Format("http://{0}:5001/", proInfo.sSHClientInfo.IPAddress);
+                            string strAirflowUrl = string.Format("http://{0}:5002/", proInfo.sSHClientInfo.IPAddress);
+                            string strHealthCheckUrl = string.Format("http://{0}:5003/", proInfo.sSHClientInfo.IPAddress);
+                            if (editIndex == -1)
                             {
-                                this.PerformSafely(() =>
+                                using (LinuxConfigForm form = new LinuxConfigForm(proInfo))
                                 {
-                                    DialogResult dresult = form.ShowDialog(this);
-                                    if (dresult == DialogResult.OK)
+                                    this.PerformSafely(() =>
                                     {
-                                        editIndex = -1;
-                                        config.projectInfoList.Add(proInfo);
-                                    }
-                                });
+                                        DialogResult dresult = form.ShowDialog(this);
+                                        if (dresult == DialogResult.OK)
+                                        {
+                                            editIndex = -1;
+                                            proInfo.KockpitServiceUrl = strServiceUrl;
+                                            proInfo.terminalInfo = new TerminalInfo() { Url = strTerminalUrl };
+                                            proInfo.otherServices.AirflowService = strAirflowUrl;
+                                            proInfo.otherServices.HealthCheckService = strHealthCheckUrl;
+                                            config.projectInfoList.Add(proInfo);
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                proInfo.KockpitServiceUrl = strServiceUrl;
+                                proInfo.terminalInfo = new TerminalInfo() { Url = strTerminalUrl };
+                                proInfo.otherServices.AirflowService = strAirflowUrl;
+                                proInfo.otherServices.HealthCheckService = strHealthCheckUrl;
+                                config.projectInfoList.Add(proInfo);
                             }
                         }
                         else
@@ -687,22 +660,6 @@ namespace DockSample.Controls
             txtSshPass.PerformSafely(() =>
             {
                 txtSshPass.Text = string.Empty;
-            });
-            txtExplorerServiceUrl.PerformSafely(() =>
-            {
-                txtExplorerServiceUrl.Text = string.Empty;
-            });
-            txtTerminalUrl.PerformSafely(() =>
-            {
-                txtTerminalUrl.Text = string.Empty;
-            });
-            txtAirflow.PerformSafely(() =>
-            {
-                txtAirflow.Text = string.Empty;
-            });
-            txtHealthCheck.PerformSafely(() =>
-            {
-                txtHealthCheck.Text = string.Empty;
             });
         }
         private async void button4_Click(object sender, EventArgs e)
@@ -768,21 +725,21 @@ namespace DockSample.Controls
         {
             if (cmbServerType.SelectedIndex == -1)
             {
-                groupBox7.Enabled = groupBox8.Enabled = groupBox9.Enabled = false;
+                groupBox7.Enabled = groupBox8.Enabled = false;
                 btnDefault.Enabled = false;
                 btnBrowse.Enabled = false;
             }
             else if (cmbServerType.SelectedIndex == 0)
             {
                 groupBox7.Enabled = true;
-                groupBox8.Enabled = groupBox9.Enabled = lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = false;
+                groupBox8.Enabled = false;
                 btnDefault.Enabled = true;
                 btnBrowse.Enabled = true;
             }
             else if (cmbServerType.SelectedIndex == 1)
             {
                 groupBox7.Enabled = true;
-                lblServiceUrl.Enabled = txtExplorerServiceUrl.Enabled = groupBox8.Enabled = groupBox9.Enabled = true;
+                groupBox8.Enabled = true;
                 btnDefault.Enabled = false;
                 btnBrowse.Enabled = false;
             }
@@ -803,7 +760,7 @@ namespace DockSample.Controls
             editIndex = -1;
             cmbServerType.PerformSafely(() => {
                 cmbServerType.SelectedIndex = -1;
-                groupBox7.Enabled = groupBox8.Enabled = groupBox9.Enabled = false;
+                groupBox7.Enabled = groupBox8.Enabled = false;
             });
             button3.PerformSafely(() =>
             {
