@@ -37,16 +37,22 @@ namespace DockSample
             // 
             // buttonOK
             // 
+            this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonOK.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonOK.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.buttonOK.Location = new System.Drawing.Point(240, 184);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 0;
             this.buttonOK.Text = "OK";
+            this.buttonOK.UseVisualStyleBackColor = false;
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(24, 59);
+            this.label1.Location = new System.Drawing.Point(24, 56);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(109, 16);
             this.label1.TabIndex = 1;
@@ -54,7 +60,7 @@ namespace DockSample
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(24, 119);
+            this.label2.Location = new System.Drawing.Point(24, 126);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(272, 32);
             this.label2.TabIndex = 2;
@@ -63,7 +69,7 @@ namespace DockSample
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(24, 81);
+            this.label3.Location = new System.Drawing.Point(24, 92);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(128, 13);
             this.label3.TabIndex = 3;
@@ -71,14 +77,14 @@ namespace DockSample
             // 
             // labelLibVersion
             // 
-            this.labelLibVersion.Location = new System.Drawing.Point(148, 81);
+            this.labelLibVersion.Location = new System.Drawing.Point(158, 92);
             this.labelLibVersion.Name = "labelLibVersion";
             this.labelLibVersion.Size = new System.Drawing.Size(97, 13);
             this.labelLibVersion.TabIndex = 4;
             // 
             // labelAppVersion
             // 
-            this.labelAppVersion.Location = new System.Drawing.Point(129, 59);
+            this.labelAppVersion.Location = new System.Drawing.Point(139, 56);
             this.labelAppVersion.Name = "labelAppVersion";
             this.labelAppVersion.Size = new System.Drawing.Size(97, 13);
             this.labelAppVersion.TabIndex = 5;

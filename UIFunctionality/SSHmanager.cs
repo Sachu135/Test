@@ -168,6 +168,26 @@ namespace UIFunctionality
                     sftp.BufferSize = (uint)ms.Length; // bypass Payload error large files
                     sftp.UploadFile(ms, filePath);
                 }
+               
+            }
+        }
+
+        public void WriteFileContent1(string url, string userName, string password,
+            string desfilePath, string sorfilePath)
+        {
+            using (SftpClient sftp = new SftpClient(url, userName, password))
+            {
+                sftp.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                sftp.Connect();
+                if (!sftp.IsConnected)
+                    throw new Exception("Failed to connect ssh");
+
+                using (FileStream fs = new FileStream(sorfilePath, FileMode.Open))
+                {
+                    sftp.BufferSize = 1024;
+                    sftp.UploadFile(fs, desfilePath);
+                }
+                sftp.Dispose();
             }
         }
 
@@ -246,7 +266,17 @@ namespace UIFunctionality
         {
             if (isWindows)
             {
-                File.WriteAllBytes(filePath, content);
+                if (content != null && content.Length > 0)
+                {
+                    File.WriteAllBytes(filePath, content);
+                }
+                else
+                {
+                    var app = new Microsoft.Office.Interop.Excel.Application();
+                    var wb = app.Workbooks.Add();
+                    wb.SaveAs(filePath);
+                    wb.Close();
+                }
             }
             else
             {
@@ -307,6 +337,11 @@ namespace UIFunctionality
         {
             if (isWindows)
             {
+                if(oldName.ToLower() == newName.ToLower()) //if old name is same as new name differ by case
+                {
+                    Directory.Move(oldName, oldName + "1");
+                    oldName = oldName + "1";
+                }
                 Directory.Move(oldName, newName);
             }
             else
@@ -377,7 +412,7 @@ namespace UIFunctionality
         {
             if (isWindows)
             {
-                Directory.Delete(filePath);
+                Directory.Delete(filePath, true);
             }
             else
             {
@@ -403,7 +438,7 @@ namespace UIFunctionality
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = "powershell.exe",
-                        Arguments = platform + " " + filePath,
+                        Arguments = string.Format(@"{0} '{1}'", platform, filePath),
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
@@ -630,7 +665,7 @@ namespace UIFunctionality
         }
 
 
-        public void ExecuteTeminalCommand(string url, string userName, string password, KeyValuePair<string,string> command,
+        public void ExecuteTeminalCommand(string url, string userName, string password, KeyValuePair<string,List<string>> command,
         RichTextBox txtConsoleLog, Action opCompleted)
         {
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -652,9 +687,10 @@ namespace UIFunctionality
                         System.Threading.Thread.Sleep(200);
 
                     txtConsoleLog.PerformSafely(() => {
-                        txtConsoleLog.AppendText(("Execution Started: " + command));
+                        txtConsoleLog.AppendText(("Execution Started: " + command.Key));
                     });
                     stKey.WriteLine(command.Key);
+                    //Thread.Sleep(20000);
                     stKey.WriteLine("echo \"####Kockpit Signal Abort####\";");
                     stKey.WriteLine("exit;");
                     stKey.Flush();
@@ -665,20 +701,14 @@ namespace UIFunctionality
                             txtConsoleLog.PerformSafely(() =>
                             {
                                 var ot = Encoding.UTF8.GetString(evt.Data, 0, evt.Data.Length);
-                                var otClean = ot.Replace(@"\r\n", string.Empty);
-
-                                string strComparevalue = command.Value;
-                                if(command.Value == "task2")
-                                    strComparevalue = "Processing triggers for systemd";
-
-                                if (command.Value == "task3")
-                                    strComparevalue = "-- Installing: /usr/local/share/man/man1/ttyd.1";
+                                //var otClean = ot.Replace(@"\r\n", string.Empty).Trim();
+                                var otClean = ot.Replace(System.Environment.NewLine, string.Empty);
 
                                 if (otClean.Equals("logout")
-                                || otClean.Contains(strComparevalue)
-                                )
+                                || command.Value.Contains(otClean.Trim())
+                                || otClean.Contains("Kockpit Signal Abort"))
                                 {
-                                    txtConsoleLog.AppendText(("Exit found for : " + command + " Statement: " + otClean));
+                                    txtConsoleLog.AppendText(("Exit found for : " + command.Key + " Statement: " + otClean));
                                     opCompleted();
                                     tokenSource.Cancel();
                                     isExit = true;
@@ -704,11 +734,11 @@ namespace UIFunctionality
 
                     while (!isExit)
                     {
-
+                        //Thread.Sleep(2000);
                     }
                     while (!tokenSource.IsCancellationRequested)
                     {
-                        //Thread.Sleep(1);
+                        Thread.Sleep(1000);
                     }
                     txtConsoleLog.PerformSafely(() => {
                         txtConsoleLog.AppendText(("Exit from function: " + command));

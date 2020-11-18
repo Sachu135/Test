@@ -33,6 +33,13 @@ namespace UIFunctionality.Common
         public TerminalInfo terminalInfo { get; set; }
         public OtherServices otherServices = new OtherServices();
         public SFTPEntities.DirectoryOrFile DirectoryInfo { get; set; }
+
+
+        //git properties
+        public string GitRepoURL { get; set; }
+        public string GitUsername { get; set; }
+        public string GitPassword { get; set; }
+        public string GitEmail { get; set; }
         public ProjectInfo()
         { }
     }
@@ -47,6 +54,7 @@ namespace UIFunctionality.Common
     {
         public string AirflowService { get; set; }
         public string HealthCheckService { get; set; }
+        public string ClusterSetupService { get; set; }
         public OtherServices()
         { }
     }
@@ -105,6 +113,12 @@ namespace UIFunctionality.Common
             var allDirs = dir.GetDirectories().OrderBy(c => c.Name).ToList();
             foreach (DirectoryInfo d in allDirs)
             {
+                if (d.FullName.Contains(".git"))
+                {
+                    if ((d.Attributes & FileAttributes.Hidden) != 0)
+                        continue;
+                }
+
                 DirectoryOrFile newDir = new DirectoryOrFile()
                 {
                     FullPath = d.FullName,

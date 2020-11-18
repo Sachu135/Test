@@ -4,6 +4,7 @@ using DockSample.lib;
 using SFTPEntities;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,9 @@ namespace DockSample
         AddFile addFileForm = new AddFile();
         MoveFile moveFileForm = new MoveFile();
         ProjectInfo CurrentProj;
+        GitCommit gitCommitForm;
+        GitPush gitPushForm;
+
         public SolutionExplorer()
         {
             InitializeComponent();
@@ -54,7 +58,13 @@ namespace DockSample
             studioConfig = sc;
             mainFrm = frm;
             this.CloseButton = false;
+            this.CloseButtonVisible = false;
+
+            UIFunctionality.Common.Utility.fitFormToScreen(this, 768, 1360);
+
             treeView2.BackColor = System.Drawing.Color.FromArgb(243, 243, 243);
+
+            mainFrm.OnOpenMenuChanged += MainFrm_OnOpenMenuChanged;
 
             //imageList2.Images.Add(Properties.Resources.f_pyico);
             //imageList2.Images.Add(Properties.Resources.f_sol);
@@ -66,9 +76,13 @@ namespace DockSample
             //imageList2.Images.Add(Properties.Resources.f_other);
             //imageList2.Images.Add(Properties.Resources.f_dir);
 
+            imageList2.Images.Add(Properties.Resources.git_commited1);
+            imageList2.Images.Add(Properties.Resources.git_pendingcommit1);
+            imageList2.Images.Add(Properties.Resources.git_new1);
+
             //treeView2.ImageIndex = 0;
 
-            addFileForm.SaveCliked = (string fileName) =>
+            addFileForm.SaveCliked = (string fileName, string copytoPath) =>
             {
                     new Task(()=> 
                     {
@@ -193,7 +207,7 @@ namespace DockSample
                             {
                                 var fileNameWithExt = fileName.Trim() + fileOrDirRenameInfo.Extension;
                                 var oldNameFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName + fileOrDirRenameInfo.Extension; 
-                                if (fileOrDirRenameInfo.OldName.ToLower().Equals(fileName.Trim().ToLower()))
+                                if (fileOrDirRenameInfo.OldName.Equals(fileName.Trim()))
                                 {
                                     this.PerformSafely(() =>
                                     {
@@ -238,7 +252,7 @@ namespace DockSample
                             {
                                 var fileNameWithExt = fileName.Trim() + fileOrDirRenameInfo.Extension;
                                 var oldNameFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName + fileOrDirRenameInfo.Extension;
-                                if (IsFileExists((CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath), fileNameWithExt))
+                                if (IsFileExists((CurrentProj.IsWindows ? copytoPath.Replace("/", "\\") : copytoPath), fileNameWithExt))
                                 {
                                     addFileForm.InfoMessage = "File already exists with this name";
 
@@ -252,7 +266,7 @@ namespace DockSample
                                 {
                                     addFileForm.PerformSafely(() => { addFileForm.Hide(); });
 
-                                    var newFileNameFullPath = (fileOrDirRenameInfo.RootPath + "/" + fileNameWithExt);
+                                    var newFileNameFullPath = (copytoPath + "/" + fileNameWithExt);
                                     //Create Copy file
                                     sshManager.CreateCopyFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldNameFullPath, newFileNameFullPath, CurrentProj.IsWindows);
                                     var selectedProj = CurrentProj.ProjectName;
@@ -268,6 +282,36 @@ namespace DockSample
                                     //    addFileForm.Hide();
                                     //});
                                 }
+                                //if (IsFileExists((CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath), fileNameWithExt))
+                                //{
+                                //    addFileForm.InfoMessage = "File already exists with this name";
+
+                                //    this.PerformSafely(() =>
+                                //    {
+                                //        loader.Hide();
+                                //    });
+                                //    addFileForm.SetPanelVisible(true);
+                                //}
+                                //else
+                                //{
+                                //    addFileForm.PerformSafely(() => { addFileForm.Hide(); });
+
+                                //    var newFileNameFullPath = (fileOrDirRenameInfo.RootPath + "/" + fileNameWithExt);
+                                //    //Create Copy file
+                                //    sshManager.CreateCopyFile(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName, CurrentProj.sSHClientInfo.Password, oldNameFullPath, newFileNameFullPath, CurrentProj.IsWindows);
+                                //    var selectedProj = CurrentProj.ProjectName;
+                                //    studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
+                                //    FillTreeView(selectedProj);
+
+                                //    this.PerformSafely(() =>
+                                //    {
+                                //        loader.Hide();
+                                //    });
+
+                                //    //addFileForm.PerformSafely(() => {
+                                //    //    addFileForm.Hide();
+                                //    //});
+                                //}
                             }
                             else if (op == eOperation.RenameDirectory)
                             {
@@ -275,7 +319,7 @@ namespace DockSample
 
                                 var oldDirFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + fileOrDirRenameInfo.OldName;
                                 var newDirFullPath = (CurrentProj.IsWindows ? fileOrDirRenameInfo.RootPath.Replace("/", "\\") : fileOrDirRenameInfo.RootPath) + (CurrentProj.IsWindows ? "\\" : "/") + newDirName;
-                                if (fileOrDirRenameInfo.OldName.ToLower().Equals(newDirName.ToLower()))
+                                if (fileOrDirRenameInfo.OldName.Equals(newDirName))
                                 {
                                     this.PerformSafely(() =>
                                     {
@@ -336,10 +380,13 @@ namespace DockSample
                                 }
                             }
 
+                            RefreshContent();
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message, "Error!");
+                            //MessageBox.Show(ex.Message, "Error!");
+                            this.Alert(ex.Message, Form_Alert.enmType.Error);
+
                             this.PerformSafely(() =>
                             {
                                 loader.Hide();
@@ -400,22 +447,41 @@ namespace DockSample
                                 moveFileForm.Hide();
                             });
                         }
-                        this.PerformSafely(() =>
-                        {
-                            loader.Hide();
-                        });
-
                     }
                     catch (Exception ex)
                     {
                         moveFileForm.ResetControl();
-                        MessageBox.Show(ex.Message, "Error!");
+                        //MessageBox.Show(ex.Message, "Error!");
+                        this.Alert(ex.Message, Form_Alert.enmType.Error);
                     }
                     finally
                     {
+                        this.PerformSafely(() =>
+                        {
+                            loader.Hide();
+                        });
                     }
                 }).Start();
             };
+
+        }
+
+        public void Alert(string msg, Form_Alert.enmType type)
+        {
+            Task t = new Task(() => {
+                this.PerformSafely(() => {
+                    Form_Alert frm = new Form_Alert();
+                    frm.BringToFront();
+                    frm.showAlert(msg, type, this);
+                });
+            });
+            t.Start();
+        }
+
+        private void MainFrm_OnOpenMenuChanged(object sender, EventArgs e)
+        {
+            comboBox1.SelectedIndex = comboBox1.FindStringExact(sender.ToString());
+            comboBox1_SelectedIndexChanged(sender, e);
         }
 
         private void ChangeDocumentheader(IDockContent tabDoc, string newFileNameFullPath, string fileNameWithExt)
@@ -459,7 +525,7 @@ namespace DockSample
         }
         protected override void OnRightToLeftLayoutChanged(EventArgs e)
         {
-            treeView1.RightToLeftLayout = RightToLeftLayout;
+            treeView2.RightToLeftLayout = RightToLeftLayout;
         }
 
         private async void SolutionExplorer_Load(object sender, EventArgs e)
@@ -478,9 +544,12 @@ namespace DockSample
             });
             t.Start();
             //await t;
+
+
         }
 
-        void AddNodes(TreeNode treeNode, List<SFTPEntities.DirectoryOrFile> files, bool showFiles = true)
+        void AddNodes(TreeNode treeNode, List<SFTPEntities.DirectoryOrFile> files, bool showFiles = true, 
+            Tuple<bool,bool,Dictionary<string, string>> tuple = null, string dirName = "")
         {
             if (files.Count > 0)
             {
@@ -516,7 +585,52 @@ namespace DockSample
                     {
                         if (showFiles)
                         {
-                            TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false };
+                            TreeNode tr = new TreeNode();
+                            if (tuple != null)
+                            {
+                                if (tuple.Item1 == false)
+                                {
+                                    treeView2.PerformSafely(() => {
+                                        treeView2.ImageList = null;
+                                    });
+                                    tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false };
+                                }
+                                else
+                                {
+                                    treeView2.PerformSafely(() => {
+                                        treeView2.ImageList = imageList2;
+                                    });
+                                    if (tuple.Item2 == true)
+                                    {
+                                        //code to check the file
+                                        if (tuple.Item3.Keys.Contains(dirName +"/"+ fl.Name))
+                                        {
+                                            string strValue = tuple.Item3[dirName + "/" + fl.Name];
+                                            switch (strValue)
+                                            {
+                                                case "NEW":
+                                                    tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false, ImageIndex = 2, SelectedImageIndex = 2 };
+                                                    break;
+                                                case "UPDATE":
+                                                    tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false, ImageIndex = 1, SelectedImageIndex = 1 };
+                                                    break;
+                                                case "DELETE":
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                            tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false, ImageIndex = 0, SelectedImageIndex = 0 };
+                                    }
+                                    else
+                                    {
+                                        tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false, ImageIndex = 0, SelectedImageIndex = 0 };
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = false };
+                            }
                             tr.ContextMenuStrip = cmsFile;
 
                             //treeNode.ImageIndex = imageIndex;
@@ -532,7 +646,7 @@ namespace DockSample
                         }
                         //treeNode.ImageIndex = 7;
                         treeNode.Nodes.Add(tr);
-                        AddNodes(tr, fl.files, showFiles);
+                        AddNodes(tr, fl.files, showFiles, tuple, fl.Name);
                     }
                 }
             }
@@ -542,7 +656,7 @@ namespace DockSample
         {
             if (dirRoot.FullPath.Equals(pathToMatch))
             {
-                if (dirRoot.files.Where(c => !c.IsDirectory).Count(c => c.Name.ToLower().Equals(fileNameToFound.ToLower())) > 0)
+                if (dirRoot.files.Where(c => !c.IsDirectory).Count(c => c.Name.Equals(fileNameToFound)) > 0)
                 {
                     isFileFound = true;
                 }
@@ -553,7 +667,7 @@ namespace DockSample
                 {
                     if (pathToMatch.Equals(dir.FullPath))
                     {
-                        if (dir.files.Where(c => !c.IsDirectory).Count(c => c.Name.ToLower().Equals(fileNameToFound.ToLower())) > 0)
+                        if (dir.files.Where(c => !c.IsDirectory).Count(c => c.Name.Equals(fileNameToFound)) > 0)
                         {
                             isFileFound = true;
                         }
@@ -606,23 +720,71 @@ namespace DockSample
         void FillTreeView(string proName)
         {
             CurrentProj = studioConfig.projectInfoList.First(c => c.ProjectName == proName);
-            var filesList = CurrentProj.DirectoryInfo.files;
 
+            GitRepositoryManager gitRepositoryManager = new GitRepositoryManager(CurrentProj.GitUsername,
+                            CurrentProj.GitPassword,
+                            CurrentProj.GitRepoURL,
+                            CurrentProj.ProjectPath);
+            var hasUnCommit = gitRepositoryManager.HasUncommittedChanges();
+
+            var filesList = CurrentProj.DirectoryInfo.files;
             var treeNodes = new List<TreeNode>();
             foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
             {
                 if (fileOrDir.IsDirectory)
                 {
-                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
+                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
                     treeNode.ContextMenuStrip = cmsDirectory;
+                    //treeNode.NodeFont = new Font(treeView2.Font.FontFamily, 9, FontStyle.Regular);
                     treeNodes.Add(treeNode);
                     //treeNode.ImageIndex = 7;
-                    AddNodes(treeNode, fileOrDir.files);
+                    AddNodes(treeNode, fileOrDir.files, true, hasUnCommit, fileOrDir.Name);
                 }
                 else
                 {
-                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
-                    treeNode.ContextMenuStrip = cmsFile;                   
+                    TreeNode treeNode = new TreeNode();
+                    if (hasUnCommit.Item1 == false)
+                    {
+                        treeView2.PerformSafely(() => {
+                            treeView2.ImageList = null;
+                        });
+                        treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
+                    }
+                    else
+                    {
+                        treeView2.PerformSafely(() => {
+                            treeView2.ImageList = imageList2;
+                        });
+                        if (hasUnCommit.Item2 == true)
+                        {
+                            //code to check the file
+                            if(hasUnCommit.Item3.Keys.Contains(fileOrDir.Name))
+                            {
+                                string strValue = hasUnCommit.Item3[fileOrDir.Name];
+                                switch (strValue)
+                                {
+                                    case "NEW":
+                                        treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false, ImageIndex = 2, SelectedImageIndex = 2 };
+                                        break;
+                                    case "UPDATE":
+                                        treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false, ImageIndex = 1, SelectedImageIndex = 1 };
+                                        break;
+                                    case "DELETE":
+                                        break;
+                                }
+                            }
+                            else
+                                treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false, ImageIndex = 0, SelectedImageIndex = 0 };
+                        }
+                        else
+                        {
+                            treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false, ImageIndex = 0, SelectedImageIndex = 0 };
+                        }
+                    }
+
+                    //var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
+                    treeNode.ContextMenuStrip = cmsFile;
+                    ////treeNode.NodeFont = new Font(treeView2.Font.FontFamily, 9, FontStyle.Regular);
                     treeNodes.Add(treeNode);
                 }
             }
@@ -635,6 +797,7 @@ namespace DockSample
                 rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
                 rootTreeNode.ExpandAll();
                 rootTreeNode.ContextMenuStrip = cmsRootPath;
+                //rootTreeNode.NodeFont = new Font(treeView2.Font.FontFamily, 10, FontStyle.Regular);
                 treeView2.Nodes.Add(rootTreeNode);
                 //treeView2.Dock = DockStyle.Fill;
                 treeView2.Visible = true;
@@ -646,24 +809,84 @@ namespace DockSample
 
         void FillTreeViewForMoveFile(string proName)
         {        
-            var proj = studioConfig.projectInfoList.First(c => c.ProjectName == proName).DirectoryInfo;
-            var filesList = proj.files;
-
-            var treeNodes = new List<TreeNode>();
-            foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
+            var listproj = studioConfig.projectInfoList;
+            if(listproj!=null && listproj.Count > 0)
             {
-                if (fileOrDir.IsDirectory)
+                //------------------------------------------------------------------------------------
+                System.Windows.Forms.TreeView rootTreeNode = new System.Windows.Forms.TreeView();
+                foreach (var proj in listproj)
                 {
-                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
-                    treeNodes.Add(treeNode);
-                    AddNodes(treeNode, fileOrDir.files, false);
+                    var filesList = proj.DirectoryInfo.files;
+                    var treeNodes = new List<TreeNode>();
+                    foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
+                    {
+                        if (fileOrDir.IsDirectory)
+                        {
+                            var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
+                            treeNodes.Add(treeNode);
+                            AddNodes(treeNode, fileOrDir.files, false);
+                        }
+                    }
+
+                    System.Windows.Forms.TreeNode subrootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.ProjectName + " (" + proj.DirectoryInfo.FullPath + ")", ToolTipText = proj.DirectoryInfo.FullPath };
+                    subrootTreeNode.Nodes.AddRange(treeNodes.ToArray());
+                    rootTreeNode.Nodes.Add(subrootTreeNode);
                 }
+
+                rootTreeNode.ExpandAll();
+                moveFileForm.ResetNode(rootTreeNode);
             }
 
-            System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.FullPath, ToolTipText = proj.FullPath };
-            rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
-            rootTreeNode.ExpandAll();
-            moveFileForm.ResetNode(rootTreeNode);
+
+            //var proj = studioConfig.projectInfoList.First(c => c.ProjectName == proName).DirectoryInfo;
+            //var filesList = proj.files;
+
+            //var treeNodes = new List<TreeNode>();
+            //foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
+            //{
+            //    if (fileOrDir.IsDirectory)
+            //    {
+            //        var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
+            //        treeNodes.Add(treeNode);
+            //        AddNodes(treeNode, fileOrDir.files, false);
+            //    }
+            //}
+
+            //System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.FullPath, ToolTipText = proj.FullPath };
+            //rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
+            //rootTreeNode.ExpandAll();
+            //moveFileForm.ResetNode(rootTreeNode);
+        }
+
+        void FillTreeViewForCopyFile()
+        {
+            var listproj = studioConfig.projectInfoList;
+            if (listproj != null && listproj.Count > 0)
+            {
+                //------------------------------------------------------------------------------------
+                System.Windows.Forms.TreeView rootTreeNode = new System.Windows.Forms.TreeView();
+                foreach (var proj in listproj)
+                {
+                    var filesList = proj.DirectoryInfo.files;
+                    var treeNodes = new List<TreeNode>();
+                    foreach (var fileOrDir in filesList.OrderBy(c => c.Name))
+                    {
+                        if (fileOrDir.IsDirectory)
+                        {
+                            var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = true };
+                            treeNodes.Add(treeNode);
+                            AddNodes(treeNode, fileOrDir.files, false);
+                        }
+                    }
+
+                    System.Windows.Forms.TreeNode subrootTreeNode = new System.Windows.Forms.TreeNode() { Text = proj.ProjectName + " (" + proj.DirectoryInfo.FullPath +")", ToolTipText = proj.DirectoryInfo.FullPath };
+                    subrootTreeNode.Nodes.AddRange(treeNodes.ToArray());
+                    rootTreeNode.Nodes.Add(subrootTreeNode);
+                }
+
+                rootTreeNode.ExpandAll();
+                addFileForm.ResetNode(rootTreeNode);
+            }
         }
 
         private SFTPEntities.eFileType GetFileType(string nodeText)
@@ -718,7 +941,8 @@ namespace DockSample
 
                             if (mainFrm.FindDocumentWithPath(info.Node.ToolTipText) != null)
                             {
-                                MessageBox.Show("The document: " + info.Node.ToolTipText + " has already opened!");
+                                //MessageBox.Show("The document: " + info.Node.ToolTipText + " has already opened!");
+                                this.Alert("The document: " + info.Node.ToolTipText + " is already opened!", Form_Alert.enmType.Info);
                             }
                             else if (nodeTag == true)
                             {
@@ -747,7 +971,8 @@ namespace DockSample
                                 }
                                 else
                                 {
-                                    MessageBox.Show("File format not supported!");
+                                    //MessageBox.Show("File format not supported!");
+                                    this.Alert("File format not supported!", Form_Alert.enmType.Info);
                                 }
                             }
                         }
@@ -762,7 +987,8 @@ namespace DockSample
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.Message);
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
                 }
                 
             }).Start();
@@ -771,6 +997,13 @@ namespace DockSample
 
         private async void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (CurrentProj.ProjectName.Trim() == comboBox1.SelectedItem.ToString().Trim())
+            {
+                //MessageBox.Show("The same workspace is already in use..", "Already Opened", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                this.Alert("The same workspace is already in use..", Form_Alert.enmType.Info);
+                return;
+            }
+
             if (mainFrm.HasDocuments())
             {
                 if (MessageBox.Show(this, "Operation will close all opened documents, Are you sure?",
@@ -794,6 +1027,31 @@ namespace DockSample
             currentSelectedIndex = comboBox1.SelectedIndex;
         }
 
+        public void RefreshContent()
+        {
+            Task t = new Task(() =>
+            {
+                var selectedProj = CurrentProj.ProjectName;
+                try
+                {
+                    //Thread.Sleep(2000);
+                    studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
+                    FillTreeView(selectedProj);
+                    this.PerformSafely(() =>
+                    {
+                        loader.Hide();
+                        //loader.Close();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.Message);
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
+                }
+
+            });
+            t.Start();
+        }
         private async void SolutionExplorer_Activated(object sender, EventArgs e)
         {
 
@@ -801,67 +1059,93 @@ namespace DockSample
 
         private async void cmsRootPath_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            switch (e.ClickedItem.Text)
+            Task mnTsk = new Task(() =>
             {
-                case "Refresh":
-                    Task t = new Task(() =>
+            try
+            {
+                var topNodePath = string.Empty;
+                treeView2.PerformSafely(() =>
+                {
+                    topNodePath = treeView2.TopNode.ToolTipText;
+                });
+
+                    switch (e.ClickedItem.Text)
                     {
-                        var selectedProj = CurrentProj.ProjectName;
-                        try
-                        {
-                            //Thread.Sleep(2000);
-                            studioConfig = studioConfig.OverrdieProjectInfo(selectedProj);
-                            FillTreeView(selectedProj);
+                        case "Refresh":
+                            RefreshContent();
                             this.PerformSafely(() =>
                             {
-                                loader.Hide();
-                                //loader.Close();
+                                loader.ShowDialog(this);
                             });
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-
-                    });
-                    t.Start();
-                    this.PerformSafely(() =>
-                    {
-                        loader.ShowDialog(this);
-                    });
-                    break;
-                case "Upload File":
-                    UploadFile();
-                    break;
-                case "New Directory":
-                    CreateDirectory();
-                    break;
-                case "Push to Git":
-                    Task t1 = new Task(() =>
-                    {
-                        try
-                        {
-                            Thread.Sleep(3000);
+                            break;
+                        case "Upload File":
+                            UploadFile();
+                            break;
+                        case "New Directory":
+                            CreateDirectory();
+                            break;
+                        case "Commit":
                             this.PerformSafely(() =>
                             {
-                                loader.Hide();
-                                //loader.Close();
+                                gitCommitForm = new GitCommit(this.CurrentProj, topNodePath);
+                                if (gitCommitForm.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    this.Alert("Workspace Committed successfull..", Form_Alert.enmType.Success);
+                                    FillTreeView(CurrentProj.ProjectName);
+                                }
                             });
-                            MessageBox.Show("Workspace pushed to Git Successfully!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-
-                    });
-                    t1.Start();
-                    this.PerformSafely(() =>
-                    {
-                        loader.ShowDialog(this);
-                    });
-                    break;
-            }
+                            break;
+                        case "Push to Git":
+                            this.PerformSafely(() =>
+                            {
+                                gitPushForm = new GitPush(this.CurrentProj, topNodePath, "push");
+                                if (gitPushForm.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    this.Alert("Workspace pushed to Git Successfully!", Form_Alert.enmType.Success);
+                                    FillTreeView(CurrentProj.ProjectName);
+                                }
+                            });
+                            break;
+                        case "Commit && Push":
+                            this.PerformSafely(() =>
+                            {
+                                gitCommitForm = new GitCommit(this.CurrentProj, topNodePath);
+                                if (gitCommitForm.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    gitPushForm = new GitPush(this.CurrentProj, topNodePath, "push");
+                                    if (gitPushForm.ShowDialog(this) == DialogResult.OK)
+                                    {
+                                        FillTreeView(CurrentProj.ProjectName);
+                                    }
+                                }
+                            });
+                            break;
+                        case "Create &Repository":
+                            this.PerformSafely(() =>
+                            {
+                                //GitRepositoryManager gitRepositoryManager = new GitRepositoryManager();
+                            });
+                            break;
+                        case "Pull from Git":
+                            this.PerformSafely(() =>
+                            {
+                                gitPushForm = new GitPush(this.CurrentProj, topNodePath, "pull");
+                                if (gitPushForm.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    this.Alert("Workspace pulled from Git Successfully!", Form_Alert.enmType.Success);
+                                    RefreshContent();
+                                }
+                            });
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.Message, "Error!");
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
+                }
+            });
+            mnTsk.Start();
         }
 
         private async void ToolStripMenuItem2_DropDownItemClicked(object sender, System.Windows.Forms.ToolStripItemClickedEventArgs e)
@@ -916,7 +1200,8 @@ namespace DockSample
                         loader.Hide();
                         //loader.Close();
                     });
-                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.Message);
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
                 }
             }).Start();
             this.PerformSafely(() =>
@@ -936,7 +1221,9 @@ namespace DockSample
                     {
                         addFileForm.Header = "Add New Directory";
                         addFileForm.ResetControl();
-
+                        addFileForm.Size = new Size(addFileForm.Width, addFileForm.Height - addFileForm.SplitContainerControl.Panel2.Height);
+                        addFileForm.SplitContainerControl.Panel2Collapsed = true;
+                        addFileForm.Mode = "Add New Directory";
                     });
                     this.PerformSafely(() =>
                     {
@@ -954,7 +1241,8 @@ namespace DockSample
                         loader.Hide();
                         //loader.Close();
                     });
-                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.Message);
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
                 }
             }).Start();
             this.PerformSafely(() =>
@@ -995,7 +1283,9 @@ namespace DockSample
                                 addFileForm.ResetControl();
                                 addFileForm.TextControl = System.IO.Path.GetFileName(selectedNodePath);
                                 addFileForm.TextControlSelectAll();
-
+                                addFileForm.Size = new Size(addFileForm.Width, addFileForm.Height - addFileForm.SplitContainerControl.Panel2.Height);
+                                addFileForm.SplitContainerControl.Panel2Collapsed = true;
+                                addFileForm.Mode = e.ClickedItem.Text;
                             });
                             this.PerformSafely(() =>
                             {
@@ -1013,7 +1303,9 @@ namespace DockSample
                                 loader.Hide();
                                 //loader.Close();
                             });
-                            MessageBox.Show(ex.Message);
+                            //MessageBox.Show(ex.Message);
+                            this.Alert(ex.Message, Form_Alert.enmType.Error);
+
                         }
                     });
                     t.Start();
@@ -1028,7 +1320,7 @@ namespace DockSample
                         System.Windows.Forms.DialogResult allowToDelete = DialogResult.Cancel;
                         this.PerformSafely(() =>
                         {
-                            allowToDelete = MessageBox.Show(this, "Directory will be removed from server, Are you sure?",
+                            allowToDelete = MessageBox.Show(this, "Directory included files if exists, will be removed from server, Are you sure?",
                                     string.Empty, MessageBoxButtons.OKCancel);
                         });
                         if (allowToDelete == System.Windows.Forms.DialogResult.OK)
@@ -1127,9 +1419,11 @@ namespace DockSample
                     break;
             }
             addFileForm.ResetControl();
+            addFileForm.Size = new Size(addFileForm.Width, addFileForm.Height - addFileForm.SplitContainerControl.Panel2.Height);
+            addFileForm.SplitContainerControl.Panel2Collapsed = true;
+            addFileForm.Mode = "New File";
             addFileForm.ShowDialog(this);
         }
-
 
                    
         private void DownloadFile(string selectedNodePath)
@@ -1183,7 +1477,9 @@ namespace DockSample
                         loader.Hide();
                         //loader.Close();
                     });
-                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.Message);
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
+
                 }
             }).Start();
             this.PerformSafely(() =>
@@ -1199,9 +1495,11 @@ namespace DockSample
                 {
                     var sshManager = new SSHManager();
                     var selectedNodePath = string.Empty;
+                    var topNodePath = string.Empty;
                     var selectedProj = string.Empty;
                     treeView2.PerformSafely(() => {
                         selectedNodePath = treeView2.SelectedNode.ToolTipText;
+                        topNodePath = treeView2.TopNode.ToolTipText;
                     });
                     switch (e.ClickedItem.Text)
                     {
@@ -1254,6 +1552,9 @@ namespace DockSample
                                 addFileForm.ResetControl();
                                 addFileForm.TextControl = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath);
                                 addFileForm.TextControlSelectAll();
+                                addFileForm.Size = new Size(addFileForm.Width, addFileForm.Height - addFileForm.SplitContainerControl.Panel2.Height);
+                                addFileForm.SplitContainerControl.Panel2Collapsed = true;
+                                addFileForm.Mode = e.ClickedItem.Text;
                             });
                             this.PerformSafely(() =>
                             {
@@ -1273,13 +1574,23 @@ namespace DockSample
                                 Extension = System.IO.Path.GetExtension(selectedNodePath),
                                 RootPath = System.IO.Path.GetDirectoryName(selectedNodePath).Replace("\\", "/")
                             };
-
+                            addFileForm.ResetControl();
                             addFileForm.PerformSafely(() =>
                             {
                                 addFileForm.Header = "Create Copy File (" + System.IO.Path.GetExtension(selectedNodePath) + ")";
                                 addFileForm.ResetControl();
                                 addFileForm.TextControl = System.IO.Path.GetFileNameWithoutExtension(selectedNodePath) + "_Copy";
                                 addFileForm.TextControlSelectAll();
+                                if(addFileForm.SplitContainerControl.Panel2Collapsed == true)
+                                {
+                                    addFileForm.SplitContainerControl.Panel2Collapsed = false;
+                                    addFileForm.Size = new Size(addFileForm.Width, addFileForm.Height + addFileForm.SplitContainerControl.Panel2.Height);
+                                }
+                                addFileForm.Mode = e.ClickedItem.Text;
+                            });
+                            addFileForm.PerformSafely(() =>
+                            {
+                                FillTreeViewForCopyFile();
                             });
                             this.PerformSafely(() =>
                             {
@@ -1307,7 +1618,7 @@ namespace DockSample
                                 moveFileForm.ShowDialog(this);
                             });
                             break;
-                        case "Download": //Mahesh
+                        case "Download":
                             //code to download the selected file into local
                             DownloadFile(selectedNodePath);
                             break;
@@ -1315,10 +1626,17 @@ namespace DockSample
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error!");
+                    //MessageBox.Show(ex.Message, "Error!");
+                    this.Alert(ex.Message, Form_Alert.enmType.Error);
+
                 }
             });
             mnTsk.Start();
+        }
+
+        private void treeView2_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            treeView2.SelectedNode = e.Node;
         }
     }
 }

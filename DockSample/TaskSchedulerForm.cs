@@ -43,6 +43,18 @@ namespace DockSample
             dateTimePickerTriggerTime.Value = DateTime.Now.AddMinutes(10); // Add 10 Minutes for testing
         }
 
+        public void Alert(string msg, Form_Alert.enmType type)
+        {
+            System.Threading.Tasks.Task t = new System.Threading.Tasks.Task(() => {
+                this.PerformSafely(() => {
+                    Form_Alert frm = new Form_Alert();
+                    frm.BringToFront();
+                    frm.showAlert(msg, type, this);
+                });
+            });
+            t.Start();
+        }
+
         void triggerItem_OnTrigger(object sender, TaskScheduler.OnTriggerEventArgs e)
         {
             UpdateTaskList();
@@ -61,7 +73,7 @@ namespace DockSample
                 if(editTriggerItem1 != null)
                 {
                     //code to show message for already exists..
-                    MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    this.Alert("Already a job with a same name is exists..", Form_Alert.enmType.Info);
                     EnableControls();
                     return;
                 }
@@ -82,7 +94,7 @@ namespace DockSample
                 if (existingObj != null)
                 {
                     //code to show message for already exists..
-                    MessageBox.Show("Already a job with a same name is exists..", "Information", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    this.Alert("Already a job with a same name is exists..", Form_Alert.enmType.Info);
                     EnableControls();
                     return;
                 }
@@ -228,7 +240,7 @@ namespace DockSample
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: generate XML: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Alert("Error: generate XML: " + ex.ToString(), Form_Alert.enmType.Error);
             }
             return xmlString;
         }
@@ -309,13 +321,13 @@ namespace DockSample
                 form.ShowDialog();
             }
             else
-                MessageBox.Show("Please select a trigger!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Alert("Please select a trigger!", Form_Alert.enmType.Info);
         }
         private void SaveAsServiceConfig()
         {
             //if (_taskScheduler.TriggerItems.Count == 0)
             //{
-            //    MessageBox.Show("Please create trigger items!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    this.Alert("Please create trigger items!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             //    return;
             //}
 
@@ -330,11 +342,11 @@ namespace DockSample
                 try
                 {
                     outfile.Write(xmlString);
-                    MessageBox.Show("Configuration saved successfully!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Alert("Configuration saved successfully!", Form_Alert.enmType.Success);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error: write XML: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Alert("Error: write XML: " + ex.ToString(), Form_Alert.enmType.Error);
                 }
             }
         }
@@ -368,7 +380,7 @@ namespace DockSample
                 SaveAsServiceConfig();
             }
         }
-        private static bool InstallService()
+        private bool InstallService()
         {
             bool lretval = true;
             try
@@ -376,17 +388,17 @@ namespace DockSample
                 Cursor.Current = Cursors.WaitCursor;
                 var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WindowsService.exe");
                 KockpitStudioServiceAssistant.Install(Assembly.LoadFrom(asmPath));
-                MessageBox.Show("Service installation successful", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Alert("Service installation successful", Form_Alert.enmType.Success);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: install service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Alert("Error: install service: " + ex.ToString(), Form_Alert.enmType.Error);
                 lretval = false;
             }
             Cursor.Current = Cursors.Default;
             return lretval;
         }
-        private static bool UninstallService()
+        private bool UninstallService()
         {
             bool lretval = true;
             try
@@ -394,41 +406,41 @@ namespace DockSample
                 Cursor.Current = Cursors.WaitCursor;
                 var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WindowsService.exe");
                 KockpitStudioServiceAssistant.Uninstall(Assembly.LoadFrom(asmPath));
-                MessageBox.Show("Service removed successfuly", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Alert("Service removed successfuly", Form_Alert.enmType.Info);
                 lretval = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: uninstall service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Alert("Error: uninstall service: " + ex.ToString(), Form_Alert.enmType.Error);
             }
             Cursor.Current = Cursors.Default;
             return lretval;
         }
-        private static void StartService()
+        private void StartService()
         {
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
                 KockpitStudioServiceAssistant.StartService();
-                MessageBox.Show("Service start successful", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Alert("Service started successfully", Form_Alert.enmType.Success);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: start service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Alert("Error: start service: " + ex.ToString(), Form_Alert.enmType.Error);
             }
             Cursor.Current = Cursors.Default;
         }
-        private static void StopService()
+        private void StopService()
         {
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
                 KockpitStudioServiceAssistant.StopService();
-                MessageBox.Show("Service stop successful", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Alert("Service stopped successfully", Form_Alert.enmType.Info);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: stop service: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Alert("Error: stop service: " + ex.ToString(), Form_Alert.enmType.Error);
             }
             Cursor.Current = Cursors.Default;
         }
@@ -438,21 +450,40 @@ namespace DockSample
             DateTime tEnd = Convert.ToDateTime(dateTimePickerEndDate.Text.Trim());
             if(tEnd < tStart)
             {
-                MessageBox.Show("End date should be greater or equal to start date.");
+                this.Alert("End date should be greater or equal to start date.", Form_Alert.enmType.Info);
                 return false;
             }
 
             if (string.IsNullOrEmpty(txtTagName.Text.Trim()))
             {
-                MessageBox.Show("Please mention ETL Job name.");
+                this.Alert("Please mention ETL Job name.", Form_Alert.enmType.Info);
                 return false;
             }
 
             if (string.IsNullOrEmpty(textBoxlabelOneTimeOnlyTag.Text.Trim()) ||
                 textBoxlabelOneTimeOnlyTag.Text == @"spark-submit D:\Workspace\Stage1\DataIngestion.py " + Environment.NewLine + @"spark - submit D:\Workspace\Stage2\AR.py" + Environment.NewLine + @"spark - submit D:\Workspace\Stage3\AP.py" + Environment.NewLine + "...")
             {
-                MessageBox.Show("Please mention the ETL job references.");
+                this.Alert("Please mention the ETL job references.", Form_Alert.enmType.Info);
                 return false;
+            }
+            else
+            {
+                //code to check the file exists or not
+                string[] liTags = textBoxlabelOneTimeOnlyTag.Text.ToString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach(string s in liTags)
+                {
+                    string strETLJobFile = s;
+                    if (strETLJobFile.Contains("spark-submit"))
+                    {
+                        strETLJobFile = strETLJobFile.Replace("spark-submit", string.Empty).Trim();
+                    }
+
+                    if (!File.Exists(strETLJobFile.Trim()))
+                    {
+                        this.Alert(string.Format("ETL Job reference file {0} doesn't exists.", strETLJobFile), Form_Alert.enmType.Info);
+                        return false;
+                    }
+                }
             }
 
             return true;
@@ -1121,5 +1152,9 @@ namespace DockSample
             EnableGroupBox(2);
         }
         #endregion
+
+        private void TaskSchedulerForm_Load(object sender, EventArgs e)
+        {
+        }
     }
 }

@@ -30,53 +30,24 @@ namespace DockSample
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserDoc));
             this.mainMenu = new System.Windows.Forms.MenuStrip();
-            this.menuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemCheckTest = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuTabPage = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.mainMenu.SuspendLayout();
+            this.btnAmbariInfo = new System.Windows.Forms.Button();
             this.contextMenuTabPage.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
             // 
-            this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem1});
             this.mainMenu.Location = new System.Drawing.Point(0, 4);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(448, 24);
+            this.mainMenu.Size = new System.Drawing.Size(255, 24);
             this.mainMenu.TabIndex = 1;
             this.mainMenu.Visible = false;
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem2,
-            this.menuItemCheckTest});
-            this.menuItem1.MergeAction = System.Windows.Forms.MergeAction.Insert;
-            this.menuItem1.MergeIndex = 1;
-            this.menuItem1.Name = "menuItem1";
-            this.menuItem1.Size = new System.Drawing.Size(100, 20);
-            this.menuItem1.Text = "&MDI Document";
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Name = "menuItem2";
-            this.menuItem2.Size = new System.Drawing.Size(131, 22);
-            this.menuItem2.Text = "Test";
-            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
-            // 
-            // menuItemCheckTest
-            // 
-            this.menuItemCheckTest.Name = "menuItemCheckTest";
-            this.menuItemCheckTest.Size = new System.Drawing.Size(131, 22);
-            this.menuItemCheckTest.Text = "Check Test";
-            this.menuItemCheckTest.Click += new System.EventHandler(this.menuItemCheckTest_Click);
             // 
             // contextMenuTabPage
             // 
@@ -107,35 +78,51 @@ namespace DockSample
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnAmbariInfo);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(448, 389);
+            this.panel1.Size = new System.Drawing.Size(255, 361);
             this.panel1.TabIndex = 2;
+            // 
+            // btnAmbariInfo
+            // 
+            this.btnAmbariInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAmbariInfo.BackColor = System.Drawing.Color.White;
+            this.btnAmbariInfo.BackgroundImage = global::DockSample.Properties.Resources.info;
+            this.btnAmbariInfo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnAmbariInfo.FlatAppearance.BorderSize = 0;
+            this.btnAmbariInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAmbariInfo.Location = new System.Drawing.Point(226, 0);
+            this.btnAmbariInfo.Name = "btnAmbariInfo";
+            this.btnAmbariInfo.Size = new System.Drawing.Size(29, 23);
+            this.btnAmbariInfo.TabIndex = 3;
+            this.btnAmbariInfo.UseVisualStyleBackColor = false;
+            this.btnAmbariInfo.Visible = false;
+            this.btnAmbariInfo.Click += new System.EventHandler(this.btnAmbariInfo_Click);
+            this.btnAmbariInfo.MouseHover += new System.EventHandler(this.btnAmbariInfo_MouseHover);
             // 
             // BrowserDoc
             // 
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(448, 393);
+            this.ClientSize = new System.Drawing.Size(255, 365);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.mainMenu);
+            this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+            this.HideOnClose = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenu;
             this.Name = "BrowserDoc";
-            this.ClientSize = new System.Drawing.Size(255, 365);
-            this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
-                        | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
-                        | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
-                        | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
-            this.HideOnClose = true;
+            this.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottomAutoHide;
             this.TabText = "Output";
             this.Text = "Output";
-            this.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.Load += new System.EventHandler(this.DummyDoc_Load);
-            this.mainMenu.ResumeLayout(false);
-            this.mainMenu.PerformLayout();
             this.contextMenuTabPage.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,14 +130,12 @@ namespace DockSample
         #endregion
 
         private System.Windows.Forms.MenuStrip mainMenu;
-        private System.Windows.Forms.ToolStripMenuItem menuItem1;
-        private System.Windows.Forms.ToolStripMenuItem menuItem2;
         private System.Windows.Forms.ContextMenuStrip contextMenuTabPage;
         private System.Windows.Forms.ToolStripMenuItem menuItem3;
         private System.Windows.Forms.ToolStripMenuItem menuItem4;
         private System.Windows.Forms.ToolStripMenuItem menuItem5;
-        private System.Windows.Forms.ToolStripMenuItem menuItemCheckTest;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnAmbariInfo;
     }
 }

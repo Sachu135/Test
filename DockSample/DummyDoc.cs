@@ -55,6 +55,8 @@ namespace DockSample
             toolStripComboBox1.SelectedIndex = 0;
             studioConfig = new StudioConfig(AppDomain.CurrentDomain.BaseDirectory).GetStudioConfigFromFile();
             ctrlFindReplace = new FindReplace(txtCodeEditor);
+
+            
         }
 
         public MainForm mainFrm { get; set; }
@@ -175,6 +177,114 @@ namespace DockSample
             }
         }
 
+        private void MainFrm_OnSaveMenuChanged(object sender, EventArgs e)
+        {
+            //toolStripButton1_Click(null, null);
+
+            Task.Run(() =>
+            {
+                toolStrip1.PerformSafely(() =>
+                {
+                    toolStripButton1.Enabled = false;
+                    ///toolStripComboBox1.Enabled = false;
+                    toolStripButton2.Enabled = false;
+                    toolStripButton3.Enabled = false;
+                });
+                pnlMsg.PerformSafely(() =>
+                {
+                    pnlMsg.Visible = true;
+                });
+                lblMsg.PerformSafely(() =>
+                {
+                    lblMsg.Text = "Saving file...";
+                });
+
+                try
+                {
+                    if (outputWindow != null)
+                    {
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "saving file..");
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+
+                    SSHManager sshManager1 = new SSHManager();
+                    string _strText = string.Empty;
+                    txtCodeEditor.PerformSafely(() =>
+                    {
+                        try
+                        {
+                            _strText = txtCodeEditor.Text;
+                        }
+                        catch (Exception){}
+                    });
+                    
+                    sshManager1.WriteFileContentMethod(mainFrm.CurrentProj.sSHClientInfo.IPAddress,
+                        mainFrm.CurrentProj.sSHClientInfo.UserName,
+                        mainFrm.CurrentProj.sSHClientInfo.Password,
+                        ToolTipText, _strText, IsWindows);
+
+                    this.PerformSafely(() => {
+                        if (this.TabText.Contains("*"))
+                            this.TabText = this.TabText.Replace("*", string.Empty);
+                    });
+
+                    if (outputWindow != null)
+                    {
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "File saved..");
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+
+                    var solExpl = mainFrm.GetSolutionExplorerDocument();
+                    if (solExpl != null)
+                    {
+                        solExpl.RefreshContent();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (outputWindow != null)
+                    {
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", "Error found", ex.Message);
+                        });
+                    }
+                }
+                finally
+                {
+                    if (outputWindow != null)
+                    {
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += "---------------------------------------------------------------------";
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+                    toolStrip1.PerformSafely(() =>
+                    {
+                        toolStripButton1.Enabled = true;
+                        //toolStripComboBox1.Enabled = true;
+                        toolStripButton2.Enabled = true;
+                        toolStripButton3.Enabled = false;
+                    });
+                    txtCodeEditor.PerformSafely(() =>
+                    {
+                        txtCodeEditor.Enabled = true;
+                    });
+                    pnlMsg.PerformSafely(() =>
+                    {
+                        pnlMsg.Visible = false;
+                    });
+                }
+            });
+        }
+
         private async void txtCodeEditor_CharAdded(object sender, CharAddedEventArgs e)
         {
             Task t = new Task(() =>
@@ -242,11 +352,15 @@ namespace DockSample
 
                 try
                 {
-                    outputWindow.OutputTextControl.PerformSafely(() =>
+                    if (outputWindow != null)
                     {
-                        outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "saving file..");
-                        outputWindow.OutputTextControl.Text += Environment.NewLine;
-                    });
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "saving file..");
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+                    
                     string fileText = string.Empty;
                     txtCodeEditor.PerformSafely(() =>
                     {
@@ -260,28 +374,49 @@ namespace DockSample
                     //    TabText = TabText.Substring(0, TabText.Length-1);
                     //    isDocDirty = false;
                     //}
-                    
-                    outputWindow.OutputTextControl.PerformSafely(() =>
-                    {
-                        outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "File saved..");
-                        outputWindow.OutputTextControl.Text += Environment.NewLine;
+                    this.PerformSafely(() => {
+                        if (this.TabText.Contains("*"))
+                            this.TabText = this.TabText.Replace("*", string.Empty);
                     });
+                    
+
+                    if (outputWindow != null)
+                    {
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "File saved..");
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+
+                    var solExpl = mainFrm.GetSolutionExplorerDocument();
+                    if (solExpl != null)
+                    {
+                        solExpl.RefreshContent();
+                    }
 
                 }
                 catch (Exception ex)
                 {
-                    outputWindow.OutputTextControl.PerformSafely(() =>
+                    if (outputWindow != null)
                     {
-                        outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", "Error found", ex.Message);
-                    });
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", "Error found", ex.Message);
+                        });
+                    }
                 }
                 finally
                 {
-                    outputWindow.OutputTextControl.PerformSafely(() =>
+                    if (outputWindow != null)
                     {
-                        outputWindow.OutputTextControl.Text += "---------------------------------------------------------------------";
-                        outputWindow.OutputTextControl.Text += Environment.NewLine;
-                    });
+                        outputWindow.OutputTextControl.PerformSafely(() =>
+                        {
+                            outputWindow.OutputTextControl.Text += "---------------------------------------------------------------------";
+                            outputWindow.OutputTextControl.Text += Environment.NewLine;
+                        });
+                    }
+                    
                     toolStrip1.PerformSafely(() =>
                     {
                         toolStripButton1.Enabled = true;
@@ -322,6 +457,26 @@ namespace DockSample
                     txtCodeEditor.PerformSafely(() => {
                         txtCodeEditor.Enabled = false;
                     });
+
+                    if (!outputWindow.Visible)
+                    {
+                        outputWindow.PerformSafely(() =>
+                        {
+                            outputWindow.mainFrm = mainFrm;
+                            outputWindow.TabText = (Path.GetFileName(ToolTipText) + " " + "Output");
+                            outputWindow.CloseButton = true;
+                            outputWindow.CloseButtonVisible = true;
+                            outputWindow.ShowHint = DockState.DockBottom;
+                            mainFrm.ShowOutputWindow(outputWindow);
+                        });
+                    }
+
+                    if(outputWindow.DockState == DockState.DockBottomAutoHide)
+                    {
+                        outputWindow.PerformSafely(() => {
+                            outputWindow.DockState = DockState.DockBottom;
+                        });
+                    }
                     
                     outputWindow.OutputTextControl.PerformSafely(() =>
                     {
@@ -352,6 +507,11 @@ namespace DockSample
                     {
                         outputWindow.OutputTextControl.Text += string.Format("{0}: {1}", DateTime.Now.ToString(), "executing script file..");
                         outputWindow.OutputTextControl.Text += Environment.NewLine;
+                    });
+
+                    this.PerformSafely(() => {
+                        if (this.TabText.Contains("*"))
+                            this.TabText = this.TabText.Replace("*", string.Empty);
                     });
 
                     outputWindow.OutputTextControl.PerformSafely(() =>
@@ -395,6 +555,12 @@ namespace DockSample
                                 pnlMsg.Visible = false;
                             });
                         });
+
+                    var solExpl = mainFrm.GetSolutionExplorerDocument();
+                    if (solExpl != null)
+                    {
+                        solExpl.RefreshContent();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -421,7 +587,6 @@ namespace DockSample
 
                 }
             });
-           
         }
 
         private async void toolStripButton3_Click(object sender, EventArgs e)
@@ -518,6 +683,9 @@ namespace DockSample
             }
             else if (e.KeyCode == Keys.S && e.Control)
             {
+                //code to remove the asterix sign
+                
+
                 toolStripButton1_Click(null, null);
             }
             else
@@ -530,6 +698,48 @@ namespace DockSample
             {
                 e.Handled = true;
                 return;
+            }
+        }
+
+        private void contextMenuTabPage_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            ToolStripItem item = e.ClickedItem;
+            if (item != null)
+            {
+                if(item.Name.ToLower().Trim() == "contextmenuclose")
+                {
+                    //close the form
+                    this.Close();
+                    if (this.outputWindow != null)
+                    {
+                        this.outputWindow.Close();
+                    }
+                }
+                if (item.Name.ToLower().Trim() == "contextmenusave")
+                {
+                    toolStripButton1_Click(null, null);
+                }
+            }
+        }
+
+        private void DummyDoc_Shown(object sender, EventArgs e)
+        {
+            mainFrm.PerformSafely(() => {
+                mainFrm.OnSaveMenuChanged += MainFrm_OnSaveMenuChanged;
+            });
+        }
+
+        private void txtCodeEditor_TextChanged(object sender, EventArgs e)
+        {
+            //code to add the asterix sign
+            if (this.TabText != null)
+            {
+                if (!this.TabText.Contains("*"))
+                {
+                    this.TabText = this.TabText + "*";
+                    
+                }
+                    
             }
         }
     }

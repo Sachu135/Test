@@ -232,7 +232,7 @@
     <value>Sample</value>
   </data>
   <data name="Menu_Cells" xml:space="preserve">
-    <value>Data : &amp;Cells</value>
+    <value>&amp;Data : Cells</value>
   </data>
   <data name="Menu_Change_Cells_Type" xml:space="preserve">
     <value>Change Cells &amp;Type</value>
@@ -244,7 +244,7 @@
     <value>&amp;Unmerge Cells</value>
   </data>
   <data name="Menu_Edit" xml:space="preserve">
-    <value>&amp;Data : Edit</value>
+    <value>Data : &amp;Edit</value>
   </data>
   <data name="Menu_Edit_Clear" xml:space="preserve">
     <value>Clear</value>
@@ -397,7 +397,7 @@
     <value>Trace &amp;Precedents</value>
   </data>
   <data name="Menu_Help" xml:space="preserve">
-    <value>&amp;Data : Help</value>
+    <value>&amp;Help</value>
   </data>
   <data name="Menu_Help_About" xml:space="preserve">
     <value>&amp;About...</value>
@@ -409,7 +409,7 @@
     <value>&amp;Homepage...</value>
   </data>
   <data name="Menu_Script" xml:space="preserve">
-    <value>Data : Sc&amp;ript</value>
+    <value>Sc&amp;ript</value>
   </data>
   <data name="Menu_Script_Run_Function" xml:space="preserve">
     <value>Run &amp;Function...</value>
@@ -442,7 +442,7 @@
     <value>&amp;Settings</value>
   </data>
   <data name="Menu_Tools" xml:space="preserve">
-    <value>Data : &amp;Tools</value>
+    <value>&amp;Tools</value>
   </data>
   <data name="Menu_Tools_Control_Appearance" xml:space="preserve">
     <value>Control &amp;Appearance...</value>

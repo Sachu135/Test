@@ -6,7 +6,10 @@
 	<Product Id="*" Name="Kockpit Studio" Language="1033" Version="1.0.0.0" Manufacturer="Kockpit Analytics" UpgradeCode="a7679301-2dfd-42cc-b198-aa173b8d724d">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" AdminImage="yes" />
 
-		<UIRef Id="WixUI_Minimal" />
+		<!--<UIRef Id="WixUI_Minimal" />-->
+
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+		<UIRef Id="WixUI_InstallDir" />
 		
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
@@ -28,9 +31,27 @@
 			<ComponentGroupRef Id="zh_CN_files" />
 			<ComponentGroupRef Id="ja_JP_files" />
 			<ComponentGroupRef Id="ru_RU_files" />
+			<ComponentGroupRef Id="swiftshader_files" />
+			<!--<ComponentGroupRef Id="amd64_files" />
+			<ComponentGroupRef Id="x86_files" />-->
+			<ComponentGroupRef Id="WebResourceComponents" />
+			<ComponentGroupRef Id="LinResourceComponents" />
 			<ComponentRef Id="ApplicationShortcut" />
-			<ComponentRef Id="ApplicationShortcutDesktop" />
-			<ComponentRef Id="ApplicationResource" />
+			<!--<ComponentRef Id="ApplicationShortcutDesktop" />-->
+			<!--<ComponentRef Id="ApplicationResource" />-->
+			<ComponentGroupRef Id="ComponentGroupDesktopShortcut" />
+			<ComponentGroupRef Id="lib_win32_x86_files" />
+			<ComponentGroupRef Id="lib_win32_x64_files" />
+			<ComponentGroupRef Id="lib_alpine_x64_files" />
+			<ComponentGroupRef Id="lib_alpine.3.9_x64_files" />
+			<ComponentGroupRef Id="lib_debian_arm64_files" />
+			<ComponentGroupRef Id="lib_debian.9_x64_files" />
+			<ComponentGroupRef Id="lib_fedora_x64_files" />
+			<ComponentGroupRef Id="lib_linux_x64_files" />
+			<ComponentGroupRef Id="lib_osx_files" />
+			<ComponentGroupRef Id="lib_rhel_x64_files" />
+			<ComponentGroupRef Id="lib_ubuntu.16.04_arm64_files" />
+			<ComponentGroupRef Id="lib_ubuntu.18.04_x64_files" />
 		</Feature>
 
 		<DirectoryRef Id="ApplicationProgramsFolder">
@@ -41,35 +62,38 @@
 			</Component>
 		</DirectoryRef>
 
-		<DirectoryRef Id="DesktopFolder">
+		<!--<DirectoryRef Id="DesktopFolder">
 			<Component Id="ApplicationShortcutDesktop" Guid="6d7976ce-e5ed-11ea-adc1-0242ac120002">
 				<Shortcut Id="ApplicationDesktopShortcut" Name="Kockpit Studio" Directory="DesktopFolder" Description="Description of project" Target="[INSTALLFOLDER]DockSample.exe" WorkingDirectory="INSTALLFOLDER" Icon="ShortCutIcon" />
 				<RemoveFile Id="remove_shortcut" Name="Kockpit Studio" On="uninstall" />
 				<RemoveFolder Id="DesktopFolder" Directory="DesktopFolder" On="uninstall" />
 				<RegistryValue Root="HKCU" Key="Software\Kockpit Analytics\Kockpit Studio\DesktopShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
-		</DirectoryRef>
+		</DirectoryRef>-->
 
-		<DirectoryRef Id="LINUX">
+		<!--<DirectoryRef Id="LINUX">
 			<Component Id="ApplicationResource" Guid="A7C42303-1D77-4C70-8D5C-0FD0F9158EB4">
 				<RemoveFile Id="remove_resources_files" Name="LINUX" Directory="LINUX" On="uninstall" />
 				<RemoveFolder Id="remove_resources" Directory="RESOURCEFOLDER" On="uninstall" />
 				<CopyFile Id="SomeId" SourceProperty="SOURCEDIRECTORY" DestinationDirectory="WEBSERVICE" SourceName="*" />
 				<CopyFile Id="NewSomeId" SourceProperty="LINUXSOURCEDIRECTORY" DestinationDirectory="LIINSTALLER" SourceName="*" />
 			</Component>
-		</DirectoryRef>
+		</DirectoryRef>-->
 
 		<InstallExecuteSequence>
-			<Custom Action="RunPreviledgeCustomAction" Before="InstallFiles">NOT Installed</Custom>
 			<Custom Action="PackageInstallCustomAction" Before="InstallFinalize">NOT Installed</Custom>
+			<!--<Custom Action="GetMachineCustomAction" Before="InstallFinalize">NOT Installed</Custom>-->
 		</InstallExecuteSequence>
+		<InstallUISequence>
+			<Custom Action="RunPreviledgeCustomAction" Before="PrepareDlg">NOT Installed</Custom>
+		</InstallUISequence>
 		
 		<!--Run as administrator-->
 		<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 		<!--<Condition Message="Installation requires Administrator privileges">
 			<![CDATA[Privileged]]>
 		</Condition>-->
-		
+
 	</Product>
 
 	<Fragment>
@@ -80,22 +104,54 @@
 				  <Directory Id="ja_JP" Name="ja-JP" />
 				  <Directory Id="ru_RU" Name="ru-RU" />
 				  <Directory Id="zh_CN" Name="zh-CN" />
+				  <Directory Id="swiftshader" Name="swiftshader" />
+				  <Directory Id="NativeBinaries" Name="NativeBinaries">
+					  <Directory Id="amd64" Name="amd64" />
+					  <Directory Id="x86" Name="x86" />
+				  </Directory>
 				  <Directory Id="RESOURCEFOLDER" Name="Resources">
-					  <Directory Id="LINUX" Name="Linux" >
+					  <Directory Id="LINUX" Name="Linux">
 							<Directory Id="WEBSERVICE" Name="WebService" />
 							<Directory Id="LIINSTALLER" Name="Installer" />
 					  </Directory>
+				  </Directory>
+				  <Directory Id="lib" Name="lib">
+				    <Directory Id="lib_alpine.3.9_x64" Name="alpine.3.9-x64">
+				    </Directory>
+				    <Directory Id="lib_alpine_x64" Name="alpine-x64">
+				    </Directory>
+				    <Directory Id="lib_debian.9_x64" Name="debian.9-x64">
+				    </Directory>
+				    <Directory Id="lib_debian_arm64" Name="debian-arm64">
+				    </Directory>
+				    <Directory Id="lib_fedora_x64" Name="fedora-x64">
+				    </Directory>
+				    <Directory Id="lib_linux_x64" Name="linux-x64">
+				    </Directory>
+				    <Directory Id="lib_osx" Name="osx">
+				    </Directory>
+				    <Directory Id="lib_rhel_x64" Name="rhel-x64">
+				    </Directory>
+				    <Directory Id="lib_ubuntu.16.04_arm64" Name="ubuntu.16.04-arm64">
+				    </Directory>
+				    <Directory Id="lib_ubuntu.18.04_x64" Name="ubuntu.18.04-x64">
+				    </Directory>
+				    <Directory Id="lib_win32" Name="win32">
+				      <Directory Id="lib_win32_x64" Name="x64" />
+				      <Directory Id="lib_win32_x86" Name="x86" />
+				    </Directory>
 				  </Directory>
 				</Directory>
 			</Directory>
 			<Directory Id="ProgramMenuFolder">
 				<Directory Id="ApplicationProgramsFolder" Name="!(bind.property.Manufacturer)" />
 			</Directory>
-			<Directory Id="DesktopFolder" Name="Desktop">
-			</Directory>
+			<!--<Directory Id="DesktopFolder" Name="Desktop">
+			</Directory>-->
+			<Directory Id="DesktopFolder" Name="DesktopFolder" />
 		</Directory>
 	</Fragment>
-
+	
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
 			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
@@ -280,15 +336,26 @@
 			<Component Id="d3dcompiler_47.dll" Guid="ef5a9aaa-e86e-11ea-adc1-0242ac120002">
 				<File Id="d3dcompiler_47.dll" Name="d3dcompiler_47.dll" Source="$(var.DockSample_TargetDir)d3dcompiler_47.dll" />
 			</Component>
-			<Component Id="libEGL.dll" Guid="f5b03e0a-e86e-11ea-adc1-0242ac120002">
-				<File Id="libEGL.dll" Name="libEGL.dll" Source="$(var.DockSample_TargetDir)libEGL.dll" />
-			</Component>
+			
 			<Component Id="libGLESv2.dll" Guid="fbf0bba0-e86e-11ea-adc1-0242ac120002">
 				<File Id="libGLESv2.dll" Name="libGLESv2.dll" Source="$(var.DockSample_TargetDir)libGLESv2.dll" />
+			</Component>
+			<Component Id="LibGit2Sharp.dll" Guid="2011894b-3033-48fc-9e75-6bc5ba4301a7">
+			  <File Id="LibGit2Sharp.dll" Name="LibGit2Sharp.dll" Source="$(var.DockSample_TargetDir)LibGit2Sharp.dll" />
+			</Component>
+			<Component Id="System.Management.dll" Guid="8d11426c-c67e-4672-b8c5-c68377400fcd">
+			  <File Id="System.Management.dll" Name="System.Management.dll" Source="$(var.DockSample_TargetDir)System.Management.dll" />
+			</Component>
+			<Component Id="System.Transactions.dll" Guid="7bc45aa3-65da-493f-9906-cf9772921d13">
+			  <File Id="System.Transactions.dll" Name="System.Transactions.dll" Source="$(var.DockSample_TargetDir)System.Transactions.dll" />
+			</Component>
+			<Component Id="LibGit2Sharp.dll.config" Guid="c3416346-4778-42a5-87a2-1a35e5021f55">
+			  <File Id="LibGit2Sharp.dll.config" Name="LibGit2Sharp.dll.config" Source="$(var.DockSample_TargetDir)LibGit2Sharp.dll.config" />
 			</Component>
 
 		</ComponentGroup>
 	</Fragment>
+	
 	<Fragment>
 	  <ComponentGroup Id="Images_files" Directory="Images">
 	    <Component Id="Images_Logo.ico" Guid="dfd72d97-ebc7-4450-a634-a042ad1754af">
@@ -300,7 +367,7 @@
 	  </ComponentGroup>
 	</Fragment>
 
-  <Fragment>
+	<Fragment>
     <ComponentGroup Id="zh_CN_files" Directory="zh_CN">
       <Component Id="zh_CN_unvell.ReoGridEditor.resources.dll" Guid="ae60d1b4-b140-472e-8154-b3dbedd63b62">
         <File Id="zh_CN_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)zh-CN\unvell.ReoGridEditor.resources.dll" />
@@ -308,7 +375,7 @@
     </ComponentGroup>
   </Fragment>
 
-  <Fragment>
+	<Fragment>
     <ComponentGroup Id="ja_JP_files" Directory="ja_JP">
       <Component Id="ja_JP_unvell.ReoGridEditor.resources.dll" Guid="ef3cd580-51b9-4783-8e83-7ce57f69b1c2">
         <File Id="ja_JP_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)ja-JP\unvell.ReoGridEditor.resources.dll" />
@@ -316,17 +383,193 @@
     </ComponentGroup>
   </Fragment>
 
-  <Fragment>
+	<Fragment>
     <ComponentGroup Id="ru_RU_files" Directory="ru_RU">
       <Component Id="ru_RU_unvell.ReoGridEditor.resources.dll" Guid="dac7ca19-9398-4460-b5f7-e4a4ae9f70a3">
         <File Id="ru_RU_unvell.ReoGridEditor.resources.dll" Name="unvell.ReoGridEditor.resources.dll" Source="$(var.DockSample_TargetDir)ru-RU\unvell.ReoGridEditor.resources.dll" />
       </Component>
     </ComponentGroup>
   </Fragment>
+	
+	<Fragment>
+    <ComponentGroup Id="swiftshader_files" Directory="swiftshader">
+      <Component Id="swiftshader_libEGL.dll" Guid="ac58f2fa-19c0-11eb-adc1-0242ac120002">
+        <File Id="swiftshader_libEGL.dll" Name="libEGL.dll" Source="$(var.DockSample_TargetDir)swiftshader\libEGL.dll" />
+      </Component>
+	  <Component Id="swiftshader_libGLESv2.dll" Guid="b2842852-19c0-11eb-adc1-0242ac120002">
+        <File Id="swiftshader_libGLESv2.dll" Name="libGLESv2.dll" Source="$(var.DockSample_TargetDir)swiftshader\libGLESv2.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+	
+  <!--<Fragment>
+    <ComponentGroup Id="amd64_files" Directory="amd64">
+		<Component Id="amd_git_comp.dll" Guid="a041761c-19c1-11eb-adc1-0242ac120002">
+			<File Id="amd_git.dll" Name="git2-e0902fb.dll" Source="$(var.DockSample_TargetDir)NativeBinaries\amd64\git2-e0902fb.dll" />
+		</Component>
+    </ComponentGroup>
+   </Fragment>
+	<Fragment>
+		<ComponentGroup Id="x86_files" Directory="x86">
+			<Component Id="x_git_com.dll" Guid="a5bbdb8c-19c1-11eb-adc1-0242ac120002">
+				<File Id="x_git.dll" Name="git2-e0902fb.dll" Source="$(var.DockSample_TargetDir)NativeBinaries\x86\git2-e0902fb.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>-->
 
-<Fragment>
-	<Binary Id="CustomActionBinary" SourceFile="$(var.KockpitStudioCustomAction.TargetDir)$(var.KockpitStudioCustomAction.TargetName).CA.dll" />
-	<CustomAction Id="RunPreviledgeCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction1" Execute="immediate" Return="check" />
-	<CustomAction Id="PackageInstallCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction2" Execute="immediate" Return="check" />
+	<Fragment>
+		<Binary Id="CustomActionBinary" SourceFile="$(var.KockpitStudioCustomAction.TargetDir)$(var.KockpitStudioCustomAction.TargetName).CA.dll" />
+		<CustomAction Id="RunPreviledgeCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction1" Execute="immediate" Return="check" />
+		<CustomAction Id="PackageInstallCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction2" Execute="immediate" Return="check" />
+		<!--<CustomAction Id="GetMachineCustomAction" BinaryKey="CustomActionBinary" DllEntry="CustomAction3" Execute="immediate" Return="check" />-->
+	</Fragment>
+
+	<Fragment>
+    <!--Desktop Shortcut-->
+    <ComponentGroup Id="ComponentGroupDesktopShortcut">
+      <Component Id="ComponentDesktopShortcut" Guid="*" Directory="DesktopFolder">
+        <Shortcut Id="AppDesktopShortcut" Name="Kockpit Studio" Description="Kockpit Studio Application" Directory="DesktopFolder" Target="[INSTALLFOLDER]DockSample.exe" WorkingDirectory="INSTALLFOLDER" Icon="ShortCutIcon" />
+        <!--Remove desktop shortcut on uninstall-->
+        <RemoveFolder Id="DesktopFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Kockpit Analytics\Kockpit Studio" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
 </Fragment>
+	
+	<Fragment>
+		<ComponentGroup Id="WebResourceComponents" Directory="WEBSERVICE">
+			<Component Id="webappsettings.Development.json" Guid="ca4e3a2c-2869-4849-a8d7-00c70d5e416b"><File Id="appsettings.Development.json" Name="appsettings.Development.json" Source="$(var.KockpitWebService_TargetDir)appsettings.Development.json" /></Component>
+			<Component Id="webappsettings.json" Guid="cfa94f53-a350-4cb0-b295-e74b751fdf68"><File Id="webappsettings.json" Name="appsettings.json" Source="$(var.KockpitWebService_TargetDir)appsettings.json" /></Component>
+			<Component Id="webKockpitWebService.deps.json" Guid="6a914078-ab4d-4e3d-804d-3008aff090f4"><File Id="KockpitWebService.deps.json" Name="KockpitWebService.deps.json" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.deps.json" /></Component>
+			<Component Id="webKockpitWebService.dll" Guid="65df20e3-fe88-405f-ad7b-200e3fccc3cd"><File Id="KockpitWebService.dll" Name="KockpitWebService.dll" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.dll" /></Component>
+			<Component Id="webKockpitWebService.exe" Guid="bd3dd279-4a92-4f34-9e72-08cbd273ad24"><File Id="KockpitWebService.exe" Name="KockpitWebService.exe" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.exe" /></Component>
+			<Component Id="webKockpitWebService.pdb" Guid="1ed796a1-3352-483d-97a4-7487f66af002"><File Id="KockpitWebService.pdb" Name="KockpitWebService.pdb" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.pdb" /></Component>
+			<Component Id="webKockpitWebService.runtimeconfig.dev.json" Guid="c70a9b12-7031-4343-bbec-2d9fbdbf51d6"><File Id="KockpitWebService.runtimeconfig.dev.json" Name="KockpitWebService.runtimeconfig.dev.json" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.runtimeconfig.dev.json" /></Component>
+			<Component Id="webKockpitWebService.runtimeconfig.json" Guid="1e4c3188-9b1b-4b89-9228-86ac90438c35"><File Id="KockpitWebService.runtimeconfig.json" Name="KockpitWebService.runtimeconfig.json" Source="$(var.KockpitWebService_TargetDir)KockpitWebService.runtimeconfig.json" /></Component>
+			<Component Id="webNewtonsoft.Json.Bson.dll" Guid="1d69d23b-b3ee-4052-b5dc-b768b7add9ca"><File Id="Newtonsoft.Json.Bson.dll" Name="Newtonsoft.Json.Bson.dll" Source="$(var.KockpitWebService_TargetDir)Newtonsoft.Json.Bson.dll" /></Component>
+			<Component Id="webNewtonsoft.Json.dll" Guid="d4566fcc-bcf4-4752-8ae2-92e6e0e5d256"><File Id="webNewtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.KockpitWebService_TargetDir)Newtonsoft.Json.dll" /></Component>
+			<Component Id="webSFTPBusinessLayer.dll" Guid="090a2036-1d7c-40f1-bef4-ab83f594a6b5"><File Id="SFTPBusinessLayer.dll" Name="SFTPBusinessLayer.dll" Source="$(var.KockpitWebService_TargetDir)SFTPBusinessLayer.dll" /></Component>
+			<Component Id="webSFTPBusinessLayer.pdb" Guid="1f277b9d-2705-405a-bb2a-c5598caa005f"><File Id="SFTPBusinessLayer.pdb" Name="SFTPBusinessLayer.pdb" Source="$(var.KockpitWebService_TargetDir)SFTPBusinessLayer.pdb" /></Component>
+			<Component Id="webSFTPEntities.dll" Guid="f2587f2b-0dc8-486e-825a-a7f5dd30f6ec"><File Id="webSFTPEntities.dll" Name="SFTPEntities.dll" Source="$(var.KockpitWebService_TargetDir)SFTPEntities.dll" /></Component>
+			<Component Id="webSFTPEntities.pdb" Guid="aa0b095e-f519-4e97-bdff-33f5f7f64340"><File Id="SFTPEntities.pdb" Name="SFTPEntities.pdb" Source="$(var.KockpitWebService_TargetDir)SFTPEntities.pdb" /></Component>
+			<Component Id="webSystem.Net.Http.Formatting.dll" Guid="a9f8e1f3-e3b6-4381-be78-441c6f7dbfd1"><File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.KockpitWebService_TargetDir)System.Net.Http.Formatting.dll" /></Component>
+			<Component Id="webSystem.Web.Http.dll" Guid="7335c096-ccb2-4719-9f24-c40e49e1377f"><File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.KockpitWebService_TargetDir)System.Web.Http.dll" /></Component>
+		</ComponentGroup>
+	</Fragment>
+	
+	<Fragment>
+		<ComponentGroup Id="LinResourceComponents" Directory="LIINSTALLER">
+			<Component Id="linappsettings.json" Guid="bcd2f2f2-066a-4437-87da-38ec05514f0c"><File Id="appsettings.json" Name="appsettings.json" Source="$(var.LinuxInstaller_TargetDir)appsettings.json" /></Component>
+			<Component Id="linLinuxInstaller.deps.json" Guid="675f701e-1134-4447-9ae7-5376f853b5ca"><File Id="LinuxInstaller.deps.json" Name="LinuxInstaller.deps.json" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.deps.json" /></Component>
+			<Component Id="linLinuxInstaller.dll" Guid="653105a8-2ba8-4272-9b7c-373edd6ca631"><File Id="LinuxInstaller.dll" Name="LinuxInstaller.dll" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.dll" /></Component>
+			<Component Id="linLinuxInstaller.exe" Guid="f52c75ed-3c7d-4bd0-8920-5fbfe55412e7"><File Id="LinuxInstaller.exe" Name="LinuxInstaller.exe" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.exe" /></Component>
+			<Component Id="linLinuxInstaller.pdb" Guid="ffc456ae-79cb-49e7-bd07-d5cf164fe21b"><File Id="LinuxInstaller.pdb" Name="LinuxInstaller.pdb" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.pdb" /></Component>
+			<Component Id="linLinuxInstaller.runtimeconfig.dev.json" Guid="66cf20e1-8f77-43a6-b519-19e4679cf783"><File Id="LinuxInstaller.runtimeconfig.dev.json" Name="LinuxInstaller.runtimeconfig.dev.json" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.runtimeconfig.dev.json" /></Component>
+			<Component Id="linLinuxInstaller.runtimeconfig.json" Guid="d785a379-db6f-4940-80ba-af63af8cef73"><File Id="LinuxInstaller.runtimeconfig.json" Name="LinuxInstaller.runtimeconfig.json" Source="$(var.LinuxInstaller_TargetDir)LinuxInstaller.runtimeconfig.json" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.Abstractions.dll" Guid="c046c3e5-8a8f-484a-8a45-273d13b2ccdd"><File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Name="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.Binder.dll" Guid="f3e6eba6-4061-4dd2-a118-1ab862175b4f"><File Id="Microsoft.Extensions.Configuration.Binder.dll" Name="Microsoft.Extensions.Configuration.Binder.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.Binder.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.CommandLine.dll" Guid="cea8294e-2a2d-4f4c-b642-e1e7fa9414f2"><File Id="Microsoft.Extensions.Configuration.CommandLine.dll" Name="Microsoft.Extensions.Configuration.CommandLine.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.CommandLine.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.dll" Guid="5f4692e3-198e-4872-923e-986792edd0d1"><File Id="Microsoft.Extensions.Configuration.dll" Name="Microsoft.Extensions.Configuration.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.EnvironmentVariables.dll" Guid="cc40fb87-4fc8-424e-82b8-6ba7adf0fdc8"><File Id="Microsoft.Extensions.Configuration.EnvironmentVariables.dll" Name="Microsoft.Extensions.Configuration.EnvironmentVariables.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.EnvironmentVariables.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.FileExtensions.dll" Guid="6357878f-2894-4941-95d7-f03a23999698"><File Id="Microsoft.Extensions.Configuration.FileExtensions.dll" Name="Microsoft.Extensions.Configuration.FileExtensions.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.FileExtensions.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Configuration.Json.dll" Guid="fe3ba10e-a198-46c0-b522-6115b0431443"><File Id="Microsoft.Extensions.Configuration.Json.dll" Name="Microsoft.Extensions.Configuration.Json.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Configuration.Json.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.FileProviders.Abstractions.dll" Guid="03eb3541-c79d-4635-bdf4-75d6e38d5b69"><File Id="Microsoft.Extensions.FileProviders.Abstractions.dll" Name="Microsoft.Extensions.FileProviders.Abstractions.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.FileProviders.Abstractions.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.FileProviders.Physical.dll" Guid="68809d83-d251-4c5f-973e-df28713cfa09"><File Id="Microsoft.Extensions.FileProviders.Physical.dll" Name="Microsoft.Extensions.FileProviders.Physical.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.FileProviders.Physical.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.FileSystemGlobbing.dll" Guid="fe74e4ba-a6d8-49ae-a3ba-853464309ded"><File Id="Microsoft.Extensions.FileSystemGlobbing.dll" Name="Microsoft.Extensions.FileSystemGlobbing.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.FileSystemGlobbing.dll" /></Component>
+			<Component Id="linMicrosoft.Extensions.Primitives.dll" Guid="beff3241-d00c-4e69-928a-eb044bdc1bdf"><File Id="Microsoft.Extensions.Primitives.dll" Name="Microsoft.Extensions.Primitives.dll" Source="$(var.LinuxInstaller_TargetDir)Microsoft.Extensions.Primitives.dll" /></Component>
+			<Component Id="linNewtonsoft.Json.dll" Guid="0c0313f1-88a9-4ae6-be9a-0fa5c9b7142b"><File Id="linNewtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.LinuxInstaller_TargetDir)Newtonsoft.Json.dll" /></Component>
+			<Component Id="linupdatePath.sh" Guid="3b50f408-b428-4cfe-a4a5-9e26b4403885"><File Id="linupdatePath.sh" Name="updatePath.sh" Source="$(var.LinuxInstaller_TargetDir)updatePath.sh" /></Component>
+		</ComponentGroup>
+	</Fragment>
+	
+	<Fragment>
+	  <ComponentGroup Id="lib_win32_x86_files" Directory="lib_win32_x86">
+	    <Component Id="lib_win32_x86_git2_106a5f2.dll" Guid="d21dc829-10a6-4181-bb55-d157581150ff">
+	      <File Id="lib_win32_x86_git2_106a5f2.dll" Name="git2-106a5f2.dll" Source="$(var.DockSample_TargetDir)lib\win32\x86\git2-106a5f2.dll" />
+	    </Component>
+	    <Component Id="lib_win32_x86_git2_106a5f2.pdb" Guid="9ad97d2a-6d14-4199-b9b2-6bee1a02d991">
+	      <File Id="lib_win32_x86_git2_106a5f2.pdb" Name="git2-106a5f2.pdb" Source="$(var.DockSample_TargetDir)lib\win32\x86\git2-106a5f2.pdb" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_win32_x64_files" Directory="lib_win32_x64">
+	    <Component Id="lib_win32_x64_git2_106a5f2.dll" Guid="73d88644-4016-4724-9920-bc492329c5bd">
+	      <File Id="lib_win32_x64_git2_106a5f2.dll" Name="git2-106a5f2.dll" Source="$(var.DockSample_TargetDir)lib\win32\x64\git2-106a5f2.dll" />
+	    </Component>
+	    <Component Id="lib_win32_x64_git2_106a5f2.pdb" Guid="f65a4a8c-913d-4315-a7bd-299efcec42c8">
+	      <File Id="lib_win32_x64_git2_106a5f2.pdb" Name="git2-106a5f2.pdb" Source="$(var.DockSample_TargetDir)lib\win32\x64\git2-106a5f2.pdb" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_alpine_x64_files" Directory="lib_alpine_x64">
+	    <Component Id="lib_alpine_x64_libgit2_106a5f2.so" Guid="81dde05e-7552-47c1-a5a7-76c469ed71e2">
+	      <File Id="lib_alpine_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\alpine-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_alpine.3.9_x64_files" Directory="lib_alpine.3.9_x64">
+	    <Component Id="lib_alpine.3.9_x64_libgit2_106a5f2.so" Guid="fc994dae-3fc7-46af-addd-015875413945">
+	      <File Id="lib_alpine.3.9_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\alpine.3.9-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_debian_arm64_files" Directory="lib_debian_arm64">
+	    <Component Id="lib_debian_arm64_libgit2_106a5f2.so" Guid="6fa4d801-d59b-4411-ba2c-a2b54520c03f">
+	      <File Id="lib_debian_arm64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\debian-arm64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_debian.9_x64_files" Directory="lib_debian.9_x64">
+	    <Component Id="lib_debian.9_x64_libgit2_106a5f2.so" Guid="6f7d9c39-400c-49c2-bfca-0d6eb7beeb2e">
+	      <File Id="lib_debian.9_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\debian.9-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_fedora_x64_files" Directory="lib_fedora_x64">
+	    <Component Id="lib_fedora_x64_libgit2_106a5f2.so" Guid="338438ee-65c9-43de-9857-b3df44352108">
+	      <File Id="lib_fedora_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\fedora-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_linux_x64_files" Directory="lib_linux_x64">
+	    <Component Id="lib_linux_x64_libgit2_106a5f2.so" Guid="7819db54-43b0-4e93-9421-ff0839871692">
+	      <File Id="lib_linux_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\linux-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_osx_files" Directory="lib_osx">
+	    <Component Id="lib_osx_libgit2_106a5f2.dylib" Guid="d0e32bb4-f6ed-4504-a8bd-e81525e4810d">
+	      <File Id="lib_osx_libgit2_106a5f2.dylib" Name="libgit2-106a5f2.dylib" Source="$(var.DockSample_TargetDir)lib\osx\libgit2-106a5f2.dylib" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_rhel_x64_files" Directory="lib_rhel_x64">
+	    <Component Id="lib_rhel_x64_libgit2_106a5f2.so" Guid="26d15b6c-4efa-41b4-b7d1-f92c6aaaaa33">
+	      <File Id="lib_rhel_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\rhel-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_ubuntu.16.04_arm64_files" Directory="lib_ubuntu.16.04_arm64">
+	    <Component Id="lib_ubuntu.16.04_arm64_libgit2_106a5f2.so" Guid="bbf6b44b-4ff6-4198-b409-d9b707b4bf30">
+	      <File Id="lib_ubuntu.16.04_arm64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\ubuntu.16.04-arm64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
+	<Fragment>
+	  <ComponentGroup Id="lib_ubuntu.18.04_x64_files" Directory="lib_ubuntu.18.04_x64">
+	    <Component Id="lib_ubuntu.18.04_x64_libgit2_106a5f2.so" Guid="20095579-cb3b-4d28-8c79-20a389b5f720">
+	      <File Id="lib_ubuntu.18.04_x64_libgit2_106a5f2.so" Name="libgit2-106a5f2.so" Source="$(var.DockSample_TargetDir)lib\ubuntu.18.04-x64\libgit2-106a5f2.so" />
+	    </Component>
+	  </ComponentGroup>
+	</Fragment>
 </Wix>

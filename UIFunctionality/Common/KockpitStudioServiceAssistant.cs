@@ -70,7 +70,7 @@ namespace UIFunctionality.Common
         public static void StartService()
         {
             ServiceController service = new ServiceController("KockpitStudioService");
-            TimeSpan timeout = TimeSpan.FromMilliseconds(5000);
+            TimeSpan timeout = TimeSpan.FromMilliseconds(15000);
 
             service.Start();
             service.WaitForStatus(ServiceControllerStatus.Running, timeout);
@@ -82,7 +82,7 @@ namespace UIFunctionality.Common
         public static void StopService()
         {
             ServiceController service = new ServiceController("KockpitStudioService");
-            TimeSpan timeout = TimeSpan.FromMilliseconds(5000);
+            TimeSpan timeout = TimeSpan.FromMilliseconds(15000);
 
             service.Stop();
             service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);

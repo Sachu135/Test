@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.ServiceProcess;
 using UIFunctionality.Common;
 
@@ -11,6 +13,8 @@ namespace WindowsService
     {
         TaskScheduler _taskScheduler;
         private Boolean _shutdownFlag;
+
+        string strAppPath = AppDomain.CurrentDomain.BaseDirectory;
 
         public KockpitStudioService()
         {
@@ -62,24 +66,62 @@ namespace WindowsService
 
         private void writeInfoLogEntry(String Message)
         {
-            EventLog.WriteEntry(Message, EventLogEntryType.Information);
+            //EventLog.WriteEntry(Message, EventLogEntryType.Information);
             //Code to write log
-            CreateLog.EventLog(Message);
+            //System.Threading.Tasks.Task t = new System.Threading.Tasks.Task(() =>
+            //{
+            try
+            {
+                string sPathName = Path.Combine(strAppPath, @"Logs\Windows\TaskScheduler\");
+                if (!Directory.Exists(sPathName))
+                {
+                    DirectoryInfo dInfo = new DirectoryInfo(strAppPath);
+                    DirectorySecurity dSecurity = dInfo.GetAccessControl();
+                    dSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
+                    dInfo.SetAccessControl(dSecurity);
+
+                    Directory.CreateDirectory(sPathName);
+                }
+
+                string sLogFormat = DateTime.Now.ToShortDateString().ToString() + " " + DateTime.Now.ToLongTimeString().ToString() + " ==> ";
+                string sTime = DateTime.Now.Day.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Year.ToString();
+
+                if (Directory.Exists(sPathName))
+                {
+                    StreamWriter sw = new StreamWriter(sPathName + sTime, true);
+                    sw.WriteLine(sLogFormat + Message);
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry(ex.Message, EventLogEntryType.Error);
+            }
+                
+            //});
+            //t.Start();
         }
 
-        private void writeErrorLogEntry(String Message)
-        {
-            EventLog.WriteEntry(Message, EventLogEntryType.Error);
-            //Code to write log
-            CreateLog.ErrorLog(Message);
-        }
+        //private void writeErrorLogEntry(String Message)
+        //{
+        //    Message = "Error:" + Message;
+        //    EventLog.WriteEntry(Message, EventLogEntryType.Error);
+        //    //Code to write log
+        //    //createLog.EventLog(strAppPath, Message);
+        //    //CreateLog(Message);
+        //}
+
+        //private void CreateLog(string strDescriptions)
+        //{
+        //}
 
         private void loadItems()
         {
             String configFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"KockpitStudioTaskSchedulerServices.xml");
             if (!File.Exists(configFile))
             {
-                writeErrorLogEntry("Config file not found: "+ configFile);
+                writeInfoLogEntry("Error: Config file not found: "+ configFile);
                 return;
             }
 
@@ -90,7 +132,7 @@ namespace WindowsService
             }
             catch (Exception ex)
             {
-                writeErrorLogEntry("Can't read config file: " + configFile + ": " + ex.Message);
+                writeInfoLogEntry("Error: Can't read config file: " + configFile + ": " + ex.Message);
                 return;
             }
 
@@ -102,7 +144,7 @@ namespace WindowsService
             }
             catch (Exception ex)
             {
-                writeErrorLogEntry("Can't parse config file: " + configFile + ": " + ex.Message);
+                writeInfoLogEntry("Error: Can't parse config file: " + configFile + ": " + ex.Message);
                 return;
             }
         }
@@ -162,7 +204,7 @@ namespace WindowsService
                             if (Mail.Send(sMailSubject, sMailBody, out sMailOutput))
                                 writeInfoLogEntry("OnMailSent: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Status: Mail sent successfully..");
                             else
-                                writeErrorLogEntry("OnMailSent: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Status: " + sMailOutput);
+                                writeInfoLogEntry("Error OnMailSent: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Status: " + sMailOutput);
                         }
                         //});
                         //t.Start();
@@ -171,7 +213,7 @@ namespace WindowsService
             }
             catch (Exception ex)
             {
-                writeErrorLogEntry("OnTrigger: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Error: " + ex.Message);
+                writeInfoLogEntry("Error OnTrigger: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Error: " + ex.Message);
             }
             if (e.Item.GetNextTriggerDateTime() != DateTime.MaxValue)
                 writeInfoLogEntry("OnTrigger: Tag: " + e.Item.Tag.ToString() + Environment.NewLine + "Next trigger: " + e.Item.GetNextTriggerDateTime().ToString());
@@ -181,28 +223,28 @@ namespace WindowsService
 
         protected override void OnStart(string[] args)
         {
-            writeInfoLogEntry("OnStart");
+            //writeInfoLogEntry("OnStart");
             RunService();
             base.OnStart(args);
         }
 
         protected override void OnStop()
         {
-            writeInfoLogEntry("OnStop");
+            //writeInfoLogEntry("OnStop");
             ShutdownService();
             base.OnStop();
         }
 
         protected override void OnPause()
         {
-            writeInfoLogEntry("OnPause");
+            //writeInfoLogEntry("OnPause");
             _taskScheduler.Enabled = false;
             base.OnPause();
         }
 
         protected override void OnContinue()
         {
-            writeInfoLogEntry("OnContinue");
+            //writeInfoLogEntry("OnContinue");
             loadItems(); // refresh config on continue
             _taskScheduler.Enabled = true;
             base.OnContinue();

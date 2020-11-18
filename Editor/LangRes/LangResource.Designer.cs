@@ -853,7 +853,7 @@ namespace unvell.ReoGrid.Editor.LangRes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data : &amp;Cells.
+        ///   Looks up a localized string similar to &amp;Data : Cells.
         /// </summary>
         internal static string Menu_Cells {
             get {
@@ -907,7 +907,7 @@ namespace unvell.ReoGrid.Editor.LangRes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Data : Edit.
+        ///   Looks up a localized string similar to Data : &amp;Edit.
         /// </summary>
         internal static string Menu_Edit {
             get {
@@ -1366,7 +1366,7 @@ namespace unvell.ReoGrid.Editor.LangRes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Data : Help.
+        ///   Looks up a localized string similar to &amp;Help.
         /// </summary>
         internal static string Menu_Help {
             get {
@@ -1474,7 +1474,7 @@ namespace unvell.ReoGrid.Editor.LangRes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data : Sc&amp;ript.
+        ///   Looks up a localized string similar to Sc&amp;ript.
         /// </summary>
         internal static string Menu_Script {
             get {
@@ -1627,7 +1627,7 @@ namespace unvell.ReoGrid.Editor.LangRes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data : &amp;Tools.
+        ///   Looks up a localized string similar to &amp;Tools.
         /// </summary>
         internal static string Menu_Tools {
             get {

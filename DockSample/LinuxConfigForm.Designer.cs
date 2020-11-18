@@ -57,6 +57,7 @@
             this.richTextBox1.Size = new System.Drawing.Size(589, 334);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // progressBar1
             // 
@@ -109,12 +110,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(593, 404);
             this.Controls.Add(this.pnlParent);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "LinuxConfigForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "LinuxConfigForm";
+            this.Text = "Linux Config";
             this.Shown += new System.EventHandler(this.LinuxConfigForm_Shown);
             this.pnlParent.ResumeLayout(false);
             this.pnlParent.PerformLayout();

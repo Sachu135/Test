@@ -10,6 +10,19 @@ namespace DockSample
             InitializeComponent();
             AutoScaleMode = AutoScaleMode.Dpi;
         }
+
+        private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            ToolStripItem item = e.ClickedItem;
+            if (item != null)
+            {
+                if (item.Name.ToLower().Trim() == "contextmenuclose")
+                {
+                    //close the form
+                    this.Hide();
+                }
+            }
+        }
     }
 
     public partial class ToolWindowDesign : ToolWindow

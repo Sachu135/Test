@@ -83,14 +83,13 @@
             // 
             // textBoxlabelOneTimeOnlyTag
             // 
-            this.textBoxlabelOneTimeOnlyTag.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxlabelOneTimeOnlyTag.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxlabelOneTimeOnlyTag.Location = new System.Drawing.Point(10, 323);
+            this.textBoxlabelOneTimeOnlyTag.Location = new System.Drawing.Point(9, 334);
             this.textBoxlabelOneTimeOnlyTag.Multiline = true;
             this.textBoxlabelOneTimeOnlyTag.Name = "textBoxlabelOneTimeOnlyTag";
             this.textBoxlabelOneTimeOnlyTag.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxlabelOneTimeOnlyTag.Size = new System.Drawing.Size(628, 78);
+            this.textBoxlabelOneTimeOnlyTag.Size = new System.Drawing.Size(600, 52);
             this.textBoxlabelOneTimeOnlyTag.TabIndex = 8;
             this.textBoxlabelOneTimeOnlyTag.Enter += new System.EventHandler(this.textBoxlabelOneTimeOnlyTag_Enter);
             this.textBoxlabelOneTimeOnlyTag.Leave += new System.EventHandler(this.textBoxlabelOneTimeOnlyTag_Leave);
@@ -98,7 +97,7 @@
             // labelOneTimeOnlyTag
             // 
             this.labelOneTimeOnlyTag.AutoSize = true;
-            this.labelOneTimeOnlyTag.Location = new System.Drawing.Point(7, 307);
+            this.labelOneTimeOnlyTag.Location = new System.Drawing.Point(8, 318);
             this.labelOneTimeOnlyTag.Name = "labelOneTimeOnlyTag";
             this.labelOneTimeOnlyTag.Size = new System.Drawing.Size(102, 13);
             this.labelOneTimeOnlyTag.TabIndex = 7;
@@ -107,7 +106,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 58);
+            this.label1.Location = new System.Drawing.Point(8, 46);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 4;
@@ -134,7 +133,7 @@
             // labelEndDate
             // 
             this.labelEndDate.AutoSize = true;
-            this.labelEndDate.Location = new System.Drawing.Point(10, 33);
+            this.labelEndDate.Location = new System.Drawing.Point(8, 26);
             this.labelEndDate.Name = "labelEndDate";
             this.labelEndDate.Size = new System.Drawing.Size(29, 13);
             this.labelEndDate.TabIndex = 2;
@@ -150,7 +149,7 @@
             // labelStartDate
             // 
             this.labelStartDate.AutoSize = true;
-            this.labelStartDate.Location = new System.Drawing.Point(11, 7);
+            this.labelStartDate.Location = new System.Drawing.Point(9, 6);
             this.labelStartDate.Name = "labelStartDate";
             this.labelStartDate.Size = new System.Drawing.Size(32, 13);
             this.labelStartDate.TabIndex = 0;
@@ -159,12 +158,14 @@
             // buttonCreateTrigger
             // 
             this.buttonCreateTrigger.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCreateTrigger.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.buttonCreateTrigger.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.buttonCreateTrigger.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.buttonCreateTrigger.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonCreateTrigger.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonCreateTrigger.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonCreateTrigger.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.buttonCreateTrigger.Location = new System.Drawing.Point(644, 355);
+            this.buttonCreateTrigger.Location = new System.Drawing.Point(619, 359);
             this.buttonCreateTrigger.Name = "buttonCreateTrigger";
-            this.buttonCreateTrigger.Size = new System.Drawing.Size(130, 32);
+            this.buttonCreateTrigger.Size = new System.Drawing.Size(104, 26);
             this.buttonCreateTrigger.TabIndex = 9;
             this.buttonCreateTrigger.Text = "Create Task";
             this.buttonCreateTrigger.UseVisualStyleBackColor = false;
@@ -173,12 +174,14 @@
             // buttonReset
             // 
             this.buttonReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.buttonReset.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.buttonReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.buttonReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonReset.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonReset.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.buttonReset.Location = new System.Drawing.Point(780, 323);
+            this.buttonReset.Location = new System.Drawing.Point(728, 333);
             this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(130, 32);
+            this.buttonReset.Size = new System.Drawing.Size(104, 26);
             this.buttonReset.TabIndex = 10;
             this.buttonReset.Text = "Reset Jobs";
             this.buttonReset.UseVisualStyleBackColor = false;
@@ -186,13 +189,15 @@
             // 
             // buttonStopService
             // 
-            this.buttonStopService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStopService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.buttonStopService.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.buttonStopService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonStopService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.buttonStopService.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonStopService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonStopService.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonStopService.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.buttonStopService.Location = new System.Drawing.Point(780, 440);
+            this.buttonStopService.Location = new System.Drawing.Point(728, 419);
             this.buttonStopService.Name = "buttonStopService";
-            this.buttonStopService.Size = new System.Drawing.Size(130, 32);
+            this.buttonStopService.Size = new System.Drawing.Size(104, 26);
             this.buttonStopService.TabIndex = 16;
             this.buttonStopService.Text = "Stop service";
             this.buttonStopService.UseVisualStyleBackColor = false;
@@ -200,13 +205,15 @@
             // 
             // buttonStartService
             // 
-            this.buttonStartService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStartService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.buttonStartService.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.buttonStartService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonStartService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.buttonStartService.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonStartService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonStartService.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonStartService.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.buttonStartService.Location = new System.Drawing.Point(644, 440);
+            this.buttonStartService.Location = new System.Drawing.Point(619, 419);
             this.buttonStartService.Name = "buttonStartService";
-            this.buttonStartService.Size = new System.Drawing.Size(130, 32);
+            this.buttonStartService.Size = new System.Drawing.Size(104, 26);
             this.buttonStartService.TabIndex = 15;
             this.buttonStartService.Text = "Start service";
             this.buttonStartService.UseVisualStyleBackColor = false;
@@ -214,11 +221,11 @@
             // 
             // checkBoxEnabled
             // 
-            this.checkBoxEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxEnabled.AutoSize = true;
             this.checkBoxEnabled.Checked = true;
             this.checkBoxEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnabled.Location = new System.Drawing.Point(644, 504);
+            this.checkBoxEnabled.Location = new System.Drawing.Point(619, 451);
             this.checkBoxEnabled.Name = "checkBoxEnabled";
             this.checkBoxEnabled.Size = new System.Drawing.Size(115, 17);
             this.checkBoxEnabled.TabIndex = 17;
@@ -227,13 +234,15 @@
             // 
             // buttonInstallService
             // 
-            this.buttonInstallService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonInstallService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.buttonInstallService.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.buttonInstallService.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonInstallService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.buttonInstallService.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.buttonInstallService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonInstallService.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonInstallService.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.buttonInstallService.Location = new System.Drawing.Point(644, 407);
+            this.buttonInstallService.Location = new System.Drawing.Point(619, 392);
             this.buttonInstallService.Name = "buttonInstallService";
-            this.buttonInstallService.Size = new System.Drawing.Size(130, 32);
+            this.buttonInstallService.Size = new System.Drawing.Size(104, 26);
             this.buttonInstallService.TabIndex = 13;
             this.buttonInstallService.Text = "Install service";
             this.buttonInstallService.UseVisualStyleBackColor = false;
@@ -242,11 +251,12 @@
             // statusStrip1
             // 
             this.statusStrip1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblServiceStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 536);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 508);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(919, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(851, 22);
             this.statusStrip1.TabIndex = 18;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -260,7 +270,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 277);
+            this.label2.Location = new System.Drawing.Point(10, 278);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 19;
@@ -268,25 +278,24 @@
             // 
             // txtTagName
             // 
-            this.txtTagName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTagName.Location = new System.Drawing.Point(71, 274);
+            this.txtTagName.Location = new System.Drawing.Point(11, 294);
             this.txtTagName.Name = "txtTagName";
-            this.txtTagName.Size = new System.Drawing.Size(321, 20);
+            this.txtTagName.Size = new System.Drawing.Size(336, 20);
             this.txtTagName.TabIndex = 20;
             // 
             // dgvItems
             // 
             this.dgvItems.AllowUserToAddRows = false;
             this.dgvItems.AllowUserToDeleteRows = false;
-            this.dgvItems.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgvItems.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvItems.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvItems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvItems.Location = new System.Drawing.Point(10, 407);
+            this.dgvItems.Location = new System.Drawing.Point(9, 392);
             this.dgvItems.Name = "dgvItems";
             this.dgvItems.ReadOnly = true;
-            this.dgvItems.Size = new System.Drawing.Size(627, 114);
+            this.dgvItems.Size = new System.Drawing.Size(600, 113);
             this.dgvItems.TabIndex = 21;
             this.dgvItems.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvItems_CellClick);
             this.dgvItems.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dgvItems_CellPainting);
@@ -298,7 +307,7 @@
             this.grpOneTime.Controls.Add(this.dateTimePickerOneTimeOnlyDay);
             this.grpOneTime.Location = new System.Drawing.Point(13, 84);
             this.grpOneTime.Name = "grpOneTime";
-            this.grpOneTime.Size = new System.Drawing.Size(226, 187);
+            this.grpOneTime.Size = new System.Drawing.Size(213, 187);
             this.grpOneTime.TabIndex = 22;
             this.grpOneTime.TabStop = false;
             this.grpOneTime.Tag = "1";
@@ -336,9 +345,9 @@
             this.grpDaily.Controls.Add(this.numericUpDownDaily);
             this.grpDaily.Controls.Add(this.labelDailyEvery);
             this.grpDaily.Controls.Add(this.labelDailyDay);
-            this.grpDaily.Location = new System.Drawing.Point(245, 84);
+            this.grpDaily.Location = new System.Drawing.Point(232, 84);
             this.grpDaily.Name = "grpDaily";
-            this.grpDaily.Size = new System.Drawing.Size(147, 187);
+            this.grpDaily.Size = new System.Drawing.Size(115, 187);
             this.grpDaily.TabIndex = 22;
             this.grpDaily.TabStop = false;
             this.grpDaily.Tag = "2";
@@ -380,9 +389,9 @@
             // 
             this.grpWeekly.Controls.Add(this.labelWeeklyDays);
             this.grpWeekly.Controls.Add(this.checkedListBoxWeeklyDays);
-            this.grpWeekly.Location = new System.Drawing.Point(398, 84);
+            this.grpWeekly.Location = new System.Drawing.Point(353, 84);
             this.grpWeekly.Name = "grpWeekly";
-            this.grpWeekly.Size = new System.Drawing.Size(133, 187);
+            this.grpWeekly.Size = new System.Drawing.Size(123, 187);
             this.grpWeekly.TabIndex = 22;
             this.grpWeekly.TabStop = false;
             this.grpWeekly.Tag = "3";
@@ -399,6 +408,7 @@
             // 
             // checkedListBoxWeeklyDays
             // 
+            this.checkedListBoxWeeklyDays.CheckOnClick = true;
             this.checkedListBoxWeeklyDays.FormattingEnabled = true;
             this.checkedListBoxWeeklyDays.Items.AddRange(new object[] {
             "Sunday",
@@ -419,9 +429,9 @@
             this.grpMonthly.Controls.Add(this.tabControlMonthlyMode);
             this.grpMonthly.Controls.Add(this.labelMonthlyMonth);
             this.grpMonthly.Controls.Add(this.checkedListBoxMonthlyMonths);
-            this.grpMonthly.Location = new System.Drawing.Point(537, 84);
+            this.grpMonthly.Location = new System.Drawing.Point(482, 84);
             this.grpMonthly.Name = "grpMonthly";
-            this.grpMonthly.Size = new System.Drawing.Size(370, 187);
+            this.grpMonthly.Size = new System.Drawing.Size(360, 187);
             this.grpMonthly.TabIndex = 22;
             this.grpMonthly.TabStop = false;
             this.grpMonthly.Tag = "4";
@@ -450,6 +460,7 @@
             // 
             // checkedListBoxMonthlyDays
             // 
+            this.checkedListBoxMonthlyDays.CheckOnClick = true;
             this.checkedListBoxMonthlyDays.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkedListBoxMonthlyDays.FormattingEnabled = true;
             this.checkedListBoxMonthlyDays.Items.AddRange(new object[] {
@@ -504,6 +515,7 @@
             // 
             // checkedListBoxMonthlyWeekNumber
             // 
+            this.checkedListBoxMonthlyWeekNumber.CheckOnClick = true;
             this.checkedListBoxMonthlyWeekNumber.FormattingEnabled = true;
             this.checkedListBoxMonthlyWeekNumber.Items.AddRange(new object[] {
             "First",
@@ -518,6 +530,7 @@
             // 
             // checkedListBoxMonthlyWeekDay
             // 
+            this.checkedListBoxMonthlyWeekDay.CheckOnClick = true;
             this.checkedListBoxMonthlyWeekDay.FormattingEnabled = true;
             this.checkedListBoxMonthlyWeekDay.Items.AddRange(new object[] {
             "Sunday",
@@ -543,6 +556,7 @@
             // 
             // checkedListBoxMonthlyMonths
             // 
+            this.checkedListBoxMonthlyMonths.CheckOnClick = true;
             this.checkedListBoxMonthlyMonths.FormattingEnabled = true;
             this.checkedListBoxMonthlyMonths.Items.AddRange(new object[] {
             "January",
@@ -566,12 +580,14 @@
             // btnPreview
             // 
             this.btnPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPreview.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.btnPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.btnPreview.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.btnPreview.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.btnPreview.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPreview.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPreview.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnPreview.Location = new System.Drawing.Point(644, 323);
+            this.btnPreview.Location = new System.Drawing.Point(619, 333);
             this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(130, 32);
+            this.btnPreview.Size = new System.Drawing.Size(104, 26);
             this.btnPreview.TabIndex = 23;
             this.btnPreview.Text = "Preview";
             this.btnPreview.UseVisualStyleBackColor = false;
@@ -580,12 +596,14 @@
             // btnNew
             // 
             this.btnNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNew.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(141)))));
-            this.btnNew.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.btnNew.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.btnNew.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.btnNew.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNew.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNew.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnNew.Location = new System.Drawing.Point(780, 355);
+            this.btnNew.Location = new System.Drawing.Point(728, 359);
             this.btnNew.Name = "btnNew";
-            this.btnNew.Size = new System.Drawing.Size(130, 32);
+            this.btnNew.Size = new System.Drawing.Size(104, 26);
             this.btnNew.TabIndex = 24;
             this.btnNew.Text = "Cancel";
             this.btnNew.UseVisualStyleBackColor = false;
@@ -594,9 +612,10 @@
             // 
             // TaskSchedulerForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(919, 558);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(851, 530);
             this.Controls.Add(this.btnNew);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.grpMonthly);
@@ -625,6 +644,8 @@
             this.Name = "TaskSchedulerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TaskScheduler";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.TaskSchedulerForm_Load);
             this.Shown += new System.EventHandler(this.TaskSchedulerForm_Shown);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

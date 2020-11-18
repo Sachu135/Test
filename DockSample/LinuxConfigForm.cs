@@ -87,11 +87,7 @@ namespace DockSample
 
                                 if (filePaths != null && filePaths.Count() > 0)
                                 {
-                                    richTextBox1.PerformSafely(() => {
-                                        richTextBox1.AppendText(string.Format("Copying {0} files to server...", filePaths.Count()));
-                                        richTextBox1.AppendText(Environment.NewLine);
-                                        richTextBox1.AppendText(Environment.NewLine);
-                                    });
+                                    SetText(string.Format("Copying {0} files to server...", filePaths.Count()));
                                     List<Task> ts = new List<Task>();
                                     for (int i = 0; i < filePaths.Count(); i++)
                                     {
@@ -99,21 +95,16 @@ namespace DockSample
                                         var _flPath = filePaths[i];
                                         Action<int, string> action = (idx, flPath) =>
                                         {
-                                            richTextBox1.PerformSafely(() =>
-                                            {
-                                                richTextBox1.AppendText(string.Format("File:{0} [{1}] start copying...", idx, Path.GetFileName(flPath)));
-                                                richTextBox1.AppendText(Environment.NewLine);
-                                            });
+                                            SetText(string.Format("File:{0} [{1}] start copying...", idx, Path.GetFileName(flPath)));
                                             string contents = File.ReadAllText(flPath);
                                             var filePath = folderName + "/" + Path.GetFileName(flPath);
-                                            sshManager.WriteFileContent(_projectInfo.sSHClientInfo.IPAddress,
+                                            //sshManager.WriteFileContent(_projectInfo.sSHClientInfo.IPAddress,
+                                            //    _projectInfo.sSHClientInfo.UserName,
+                                            //    _projectInfo.sSHClientInfo.Password, filePath, contents);
+                                            sshManager.WriteFileContent1(_projectInfo.sSHClientInfo.IPAddress,
                                                 _projectInfo.sSHClientInfo.UserName,
-                                                _projectInfo.sSHClientInfo.Password, filePath, contents);
-                                            richTextBox1.PerformSafely(() =>
-                                            {
-                                                richTextBox1.AppendText(string.Format("File:{0} [{1}] copied successfully...", idx, Path.GetFileName(flPath)));
-                                                richTextBox1.AppendText(Environment.NewLine);
-                                            });
+                                                _projectInfo.sSHClientInfo.Password, filePath, flPath);
+                                            SetText(string.Format("File:{0} [{1}] copied successfully...", idx, Path.GetFileName(flPath)));
                                         };
 
                                         Task t = new Task(() => action(_idx, _flPath));
@@ -121,11 +112,7 @@ namespace DockSample
                                         ts.Add(t);
                                     }
                                     Task.WaitAll(ts.ToArray());
-                                    richTextBox1.PerformSafely(() =>
-                                    {
-                                        richTextBox1.AppendText(string.Format("All Files copied successfully..."));
-                                        richTextBox1.AppendText(Environment.NewLine);
-                                    });
+                                    SetText(string.Format("All Files copied successfully..."));
                                 }
                             }
                         }
@@ -146,13 +133,15 @@ namespace DockSample
             {
                 Task t = new Task(() => {
 
-                    Dictionary<string, string> diCmds = new Dictionary<string, string>();
-                    diCmds.Add(@"sudo apt update;sudo apt install snapd;sudo snap install dotnet-runtime-31;sudo snap install dotnet-sdk --classic;sudo snap alias dotnet-sdk.dotnet dotnet;", "####Kockpit Signal Abort####");
-                    diCmds.Add(@"sudo apt-get install supervisor -y;", "task2");
-                    diCmds.Add(@"sudo add-apt-repository main; sudo add-apt-repository universe; sudo add-apt-repository restricted; sudo add-apt-repository multiverse; mkdir /etc/ttyd; sudo apt-get install build-essential cmake git libjson-c-dev libwebsockets-dev -y; git clone https://github.com/tsl0922/ttyd.git; cd ttyd; mkdir build; cd build; cmake ..; sudo make; sudo make install;", "task3");
-                    diCmds.Add(@"sudo echo -e '[program:ttyd]\ncommand=ttyd -p 5001 bash\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/ttyd.conf;", "####Kockpit Signal Abort####");
-                    diCmds.Add(@"sudo echo -e '[program:KockpitLinuxInstallation]\ncommand=ttyd -p 5002 dotnet /etc/KockpitStudio/Packages/Installer/LinuxInstaller.dll\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/KockpitLinuxInstallation.conf;", "####Kockpit Signal Abort####");
-                    diCmds.Add(@"sudo service supervisor stop;sudo service supervisor start;", "####Kockpit Signal Abort####");
+                    //snap "dotnet-sdk" is already installed, see 'snap help refresh'
+                    Dictionary<string, List<string>> diCmds = new Dictionary<string, List<string>>();
+                    diCmds.Add(@"sudo apt update;sudo apt install snapd;sudo snap install dotnet-runtime-31;sudo snap install dotnet-sdk --classic;sudo snap alias dotnet-sdk.dotnet dotnet; dotnet --version;", new List<string> { "dotnet-sdk 3.1 from Microsoft .NET Core", "snap \"dotnet-sdk\" is already installed, see 'snap help refresh'", "3.1" });
+                    ///diCmds.Add(@"sudo apt-get update; sudo apt install snapd;sudo snap install dotnet-runtime-31; sudo apt-get install dotnet-sdk-3.1;sudo snap alias dotnet-sdk.dotnet dotnet; dotnet --version;", new List<string> { "dotnet-sdk 3.1.404 from Microsoft .NET Core", "snap \"dotnet-sdk\" is already installed, see 'snap help refresh'", "3.1.404" });
+                    diCmds.Add(@"bash /etc/KockpitStudio/Packages/Installer/updatePath.sh; sudo apt-get install supervisor -y; sudo supervisorctl;", new List<string> { "Processing triggers for systemd", "triggers for systemd", "supervisor is already the newest version", "supervisor>" });
+                    diCmds.Add(@"sudo add-apt-repository main; sudo add-apt-repository universe; sudo add-apt-repository restricted; sudo add-apt-repository multiverse; mkdir /etc/ttyd; sudo apt-get install build-essential cmake git libjson-c-dev libwebsockets-dev -y; git clone https://github.com/tsl0922/ttyd.git; cd ttyd; mkdir build; cd build; cmake ..; sudo make; sudo make install;", new List<string> { "-- Installing: /usr/local/share/man/man1/ttyd.1" });
+                    diCmds.Add(@"sudo echo -e '[program:ttyd]\ncommand=ttyd -p 5001 bash\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/ttyd.conf;", new List<string> { "####Kockpit Signal Abort####" });
+                    diCmds.Add(@"sudo echo -e '[program:KockpitLinuxInstallation]\ncommand=ttyd -p 5002 dotnet /etc/KockpitStudio/Packages/Installer/LinuxInstaller.dll\nautostart=true\nautorestart=true' > /etc/supervisor/conf.d/KockpitLinuxInstallation.conf;", new List<string> { "####Kockpit Signal Abort####" });
+                    diCmds.Add(@"sudo service supervisor stop;sudo service supervisor start;sudo ufw allow 5000/tcp;sudo ufw allow 5001/tcp;sudo ufw allow 5002/tcp;sudo ufw allow 5003/tcp;", new List<string> { "####Kockpit Signal Abort####" });
 
                     int nTaskIndex = 0;
 
@@ -182,11 +171,7 @@ namespace DockSample
                             if (token.IsCancellationRequested)
                             {
                                 //var d = 0;
-                                richTextBox1.PerformSafely(() => {
-                                    richTextBox1.AppendText(string.Format("Tasks completed: {0} (out of {1})", nTaskIndex, diCmds.Count()));
-                                    richTextBox1.AppendText(Environment.NewLine + "---------------------------------------------");
-                                    richTextBox1.AppendText(Environment.NewLine);
-                                });
+                                SetText(string.Format("Tasks completed: {0} (out of {1})", nTaskIndex, diCmds.Count()));
 
                                 lblTaskStatus.PerformSafely(() => {
                                     lblTaskStatus.Text = string.Format("Tasks completed: {0} (out of {1})", nTaskIndex, diCmds.Count());
@@ -258,6 +243,10 @@ namespace DockSample
             {
                 if (data.ToString().ToLower().Trim().Contains("websocket connection closed"))
                 {
+                    //[NEXT]sudo systemctl stop supervisor; sudo systemctl start supervisor;
+                    sshManager.RunCommand(_projectInfo.sSHClientInfo.IPAddress, _projectInfo.sSHClientInfo.UserName,
+                        _projectInfo.sSHClientInfo.Password, "sudo systemctl stop supervisor; sudo systemctl start supervisor;", out string result, out string error);
+
                     this.PerformSafely(() =>
                     {
                         this.DialogResult = DialogResult.OK;
@@ -319,6 +308,24 @@ namespace DockSample
                 }
             });
             t.Start();
+        }
+
+        private void SetText(string strMsg)
+        {
+            richTextBox1.PerformSafely(() =>
+            {
+                richTextBox1.AppendText(strMsg);
+                richTextBox1.AppendText(Environment.NewLine);
+                //ConfigLog.LinuxCreate(_projectInfo.ProjectName, strMsg);
+            });
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            int totalLines = richTextBox1.Lines.Length;
+            string lastLine = richTextBox1.Lines[totalLines - 1];
+            if(!string.IsNullOrEmpty(lastLine.Trim()))
+                ConfigLog.LinuxCreate(_projectInfo.ProjectName, lastLine);
         }
     }
 }

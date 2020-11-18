@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UIFunctionality;
 using UIFunctionality.Common;
 using unvell.ReoGrid.Editor;
 using WeifenLuo.WinFormsUI.Docking;
@@ -30,6 +31,9 @@ namespace DockSample
         private bool _showSplash;
         private SplashScreen _splashScreen;
         StudioConfig studioConfig;
+
+        public event EventHandler OnOpenMenuChanged;
+        public event EventHandler OnSaveMenuChanged;
         public ProjectInfo CurrentProj { get; set; }
 
         Action loadComplete;
@@ -47,10 +51,11 @@ namespace DockSample
             //SetSplashScreen();
             CreateStandardControls();
 
-            showRightToLeft.Checked = (RightToLeft == RightToLeft.Yes);
-            RightToLeftLayout = showRightToLeft.Checked;
+            //showRightToLeft.Checked = (RightToLeft == RightToLeft.Yes);
+            //RightToLeftLayout = showRightToLeft.Checked;
             //m_solutionExplorer.RightToLeftLayout = RightToLeftLayout;
             m_solutionExplorer.DockState = DockState.DockLeft;
+
             m_deserializeDockContent = new DeserializeDockContent(GetContentFromPersistString);
 
             vsToolStripExtender1.DefaultRenderer = _toolStripProfessionalRenderer;
@@ -59,6 +64,19 @@ namespace DockSample
 
             this.MdiChildActivate += MainForm_MdiChildActivate;
 
+            
+        }
+
+        public void Alert(string msg, Form_Alert.enmType type)
+        {
+            Task t = new Task(() => {
+                this.PerformSafely(() => {
+                    Form_Alert frm = new Form_Alert();
+                    frm.BringToFront();
+                    frm.showAlert(msg, type, this);
+                });
+            });
+            t.Start();
         }
 
         private void MainForm_MdiChildActivate(object sender, EventArgs e)
@@ -218,7 +236,8 @@ namespace DockSample
         public void CreateDocumentAndShow(string text, string flName, string filePath, eFileType fileType, bool isWindows)
         {
             dockPanel.PerformSafely(() =>
-            {               
+            {
+                ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
                 DummyDoc dummyDoc = CreateNewDocument(text, fileType);
                 //dummyDoc.Text = text;
                 dummyDoc.FileName = flName;
@@ -233,6 +252,9 @@ namespace DockSample
                     outputWindow.ParentDoc = dummyDoc;
                     outputWindow.mainFrm = this;
                     outputWindow.TabText = (flName + " " + "Output");
+                    outputWindow.CloseButton = true;
+                    outputWindow.CloseButtonVisible = true;
+                    outputWindow.ShowHint = DockState.DockBottomAutoHide;
                     dummyDoc.outputWindow = outputWindow;
                     ShowOutputWindow(outputWindow);
                 }
@@ -297,6 +319,10 @@ namespace DockSample
             }
         }
 
+        public SolutionExplorer GetSolutionExplorerDocument()
+        {
+            return m_solutionExplorer;
+        }
 
         public void CloseDocumentTab(string fullPath)
         {
@@ -498,35 +524,35 @@ namespace DockSample
             vsToolStripExtender1.SetStyle(statusBar, version, theme);
         }
 
-        private void SetDocumentStyle(object sender, System.EventArgs e)
-        {
-            DocumentStyle oldStyle = dockPanel.DocumentStyle;
-            DocumentStyle newStyle;
-            if (sender == menuItemDockingMdi)
-                newStyle = DocumentStyle.DockingMdi;
-            else if (sender == menuItemDockingWindow)
-                newStyle = DocumentStyle.DockingWindow;
-            else if (sender == menuItemDockingSdi)
-                newStyle = DocumentStyle.DockingSdi;
-            else
-                newStyle = DocumentStyle.SystemMdi;
+        //private void SetDocumentStyle(object sender, System.EventArgs e)
+        //{
+        //    DocumentStyle oldStyle = dockPanel.DocumentStyle;
+        //    DocumentStyle newStyle;
+        //    if (sender == menuItemDockingMdi)
+        //        newStyle = DocumentStyle.DockingMdi;
+        //    else if (sender == menuItemDockingWindow)
+        //        newStyle = DocumentStyle.DockingWindow;
+        //    else if (sender == menuItemDockingSdi)
+        //        newStyle = DocumentStyle.DockingSdi;
+        //    else
+        //        newStyle = DocumentStyle.SystemMdi;
 
-            if (oldStyle == newStyle)
-                return;
+        //    if (oldStyle == newStyle)
+        //        return;
 
-            if (oldStyle == DocumentStyle.SystemMdi || newStyle == DocumentStyle.SystemMdi)
-                CloseAllDocuments();
+        //    if (oldStyle == DocumentStyle.SystemMdi || newStyle == DocumentStyle.SystemMdi)
+        //        CloseAllDocuments();
 
-            dockPanel.DocumentStyle = newStyle;
-            menuItemDockingMdi.Checked = (newStyle == DocumentStyle.DockingMdi);
-            menuItemDockingWindow.Checked = (newStyle == DocumentStyle.DockingWindow);
-            menuItemDockingSdi.Checked = (newStyle == DocumentStyle.DockingSdi);
-            menuItemSystemMdi.Checked = (newStyle == DocumentStyle.SystemMdi);
-            //toolBarButtonLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            //toolBarButtonLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            toolBarButtonLinuxTerminal.Enabled = (newStyle != DocumentStyle.SystemMdi);
-            tsHealthCheck.Enabled = (newStyle != DocumentStyle.SystemMdi);
-        }
+        //    dockPanel.DocumentStyle = newStyle;
+        //    menuItemDockingMdi.Checked = (newStyle == DocumentStyle.DockingMdi);
+        //    menuItemDockingWindow.Checked = (newStyle == DocumentStyle.DockingWindow);
+        //    menuItemDockingSdi.Checked = (newStyle == DocumentStyle.DockingSdi);
+        //    menuItemSystemMdi.Checked = (newStyle == DocumentStyle.SystemMdi);
+        //    //toolBarButtonLayoutByCode.Enabled = (newStyle != DocumentStyle.SystemMdi);
+        //    //toolBarButtonLayoutByXml.Enabled = (newStyle != DocumentStyle.SystemMdi);
+        //    toolBarButtonLinuxTerminal.Enabled = (newStyle != DocumentStyle.SystemMdi);
+        //    tsHealthCheck.Enabled = (newStyle != DocumentStyle.SystemMdi);
+        //}
 
         #endregion
 
@@ -546,6 +572,8 @@ namespace DockSample
             }
             else
                 m_solutionExplorer.Show(dockPanel, DockState.DockLeftAutoHide);
+
+            menuItemSolutionExplorer.Checked = m_solutionExplorer.Visible;
         }
 
         private void menuItemPropertyWindow_Click(object sender, System.EventArgs e)
@@ -553,33 +581,6 @@ namespace DockSample
             m_propertyWindow.Show(dockPanel);
         }
 
-        private async void menuItemToolbox_Click(object sender, System.EventArgs e)
-        {
-            if (HasDocuments())
-            {
-                if (MessageBox.Show(this, "Operation will close all opened documents, Are you sure?",
-                                string.Empty, MessageBoxButtons.OKCancel)
-                                == System.Windows.Forms.DialogResult.OK)
-                {
-                    CloseAllDocumentsExceptSolutionExplorer();
-                    ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
-                    {
-                        this.Hide();
-                    });
-                    frm.ShowDialog(this);
-                }
-            }
-            else
-            {
-                ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
-                {
-                    this.Hide();
-                });
-                frm.ShowDialog(this);
-
-            }
-
-        }
 
         private async void menuItemOutputWindow_Click(object sender, System.EventArgs e)
         {
@@ -599,16 +600,22 @@ namespace DockSample
                         ((DummyDoc)document).outputWindow.Show(dockPanel, DockState.DockBottom);
                     else
                         ((DummyDoc)document).outputWindow.Show(dockPanel, DockState.DockBottomAutoHide);
+
+                    menuItemOutputWindow.Checked = ((DummyDoc)document).outputWindow.Visible;
                 }
             }
         }
 
         private async void menuItemTaskList_Click(object sender, System.EventArgs e)
         {
-            if (m_taskList.DockState == DockState.DockTopAutoHide)
-                m_taskList.Show(dockPanel, DockState.DockTop);
-            else
-                m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
+            ////if (m_taskList.DockState == DockState.DockTopAutoHide)
+            ////    m_taskList.Show(dockPanel, DockState.DockTop);
+            ////else
+            ////    m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
+
+            m_taskList.Show(dockPanel, DockState.DockTop);
+
+            menuItemTaskList.Checked = m_taskList.Visible;
         }
 
         private void menuItemAbout_Click(object sender, System.EventArgs e)
@@ -645,7 +652,8 @@ namespace DockSample
 
                 if (FindDocument(fileName) != null)
                 {
-                    MessageBox.Show("The document: " + fileName + " has already opened!");
+                    //MessageBox.Show("The document: " + fileName + " has already opened!");
+                    this.Alert("The document: " + fileName + " is already opened!", Form_Alert.enmType.Info);
                     return;
                 }
 
@@ -665,7 +673,8 @@ namespace DockSample
                 catch (Exception exception)
                 {
                     dummyDoc.Close();
-                    MessageBox.Show(exception.Message);
+                    //MessageBox.Show(exception.Message);
+                    this.Alert(exception.Message, Form_Alert.enmType.Error);
                 }
 
             }
@@ -677,13 +686,17 @@ namespace DockSample
             {
                 menuItemClose.Enabled = 
                     menuItemCloseAll.Enabled =
-                    menuItemCloseAllButThisOne.Enabled = (ActiveMdiChild != null);
+                    menuItemCloseAllButThisOne.Enabled = 
+                    menuItemSaveAll.Enabled = 
+                    menuItemSaveClose.Enabled = (ActiveMdiChild != null);
             }
             else
             {
                 menuItemClose.Enabled = (dockPanel.ActiveDocument != null);
                 menuItemCloseAll.Enabled =
-                    menuItemCloseAllButThisOne.Enabled = (dockPanel.DocumentsCount > 0);
+                    menuItemCloseAllButThisOne.Enabled =
+                    menuItemSaveAll.Enabled =
+                    menuItemSaveClose.Enabled = (dockPanel.DocumentsCount > 0);
             }
         }
 
@@ -704,6 +717,8 @@ namespace DockSample
         {
             SetSchema(this.menuItemSchemaVS2015Blue, null);
 
+            this.WindowState = FormWindowState.Maximized;
+
             string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 
             //if (File.Exists(configFile))
@@ -711,6 +726,18 @@ namespace DockSample
 
             //Mahesh  to show the default solution explorer on page load
             menuItemSolutionExplorer_Click(sender, e);
+
+            List<string> row = studioConfig.projectInfoList.Select(c => c.ProjectName).ToList();
+            foreach (string rw in row)
+            {
+                ToolStripMenuItem SSMenu = new ToolStripMenuItem(rw, null, ChildClick);
+                menuItemOpen.DropDownItems.Add(SSMenu);
+            }
+        }
+
+        public void ChildClick(object sender, System.EventArgs e)
+        {
+            OnOpenMenuChanged(sender.ToString(), null);
         }
 
         public void EnableDisableControls()
@@ -718,8 +745,9 @@ namespace DockSample
             this.PerformSafely(() =>
             {
                 tsSchedular.Enabled = false;
-                tsHealthCheck.Enabled = false;
-                toolBarButtonLinuxTerminal.Enabled = false;
+                //Mahesh:to show windows ntop////tsHealthCheck.Enabled = false;
+                tsClusterSetup.Enabled = false;
+                //Mahesh:to show windows terminal////toolBarButtonLinuxTerminal.Enabled = false;
                 
                 if (CurrentProj.otherServices != null)
                 {
@@ -730,6 +758,10 @@ namespace DockSample
                     if (!string.IsNullOrEmpty(CurrentProj.otherServices.HealthCheckService))
                     {
                         tsHealthCheck.Enabled = true;
+                    }
+                    if (!string.IsNullOrEmpty(CurrentProj.otherServices.ClusterSetupService))
+                    {
+                        tsClusterSetup.Enabled = true;
                     }
                 }
                 if (CurrentProj.terminalInfo != null)
@@ -799,6 +831,8 @@ namespace DockSample
                 tsSchedular_Click(null, null);
             else if (e.ClickedItem == tsHealthCheck)
                 tshealthCheck_Click(null, null);
+            else if (e.ClickedItem == tsClusterSetup)
+                tsClusterSetup_Click(null, null);
         }
 
         private void menuItemNewWindow_Click(object sender, System.EventArgs e)
@@ -927,6 +961,7 @@ namespace DockSample
                     {
                         dockPanel.PerformSafely(() =>
                         {
+                            ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
                             DbConnectorDoc dbDoc = new DbConnectorDoc(studioConfig, selectedVal,
                                 () =>
                                 {
@@ -937,6 +972,19 @@ namespace DockSample
                                 });
                             dbDoc.Show(dockPanel);
                         });
+
+                        //code to hide the all output windows
+                        dockPanel.PerformSafely(() => {
+                            ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
+                            foreach (IDockContent document in dockPanel.DocumentsToArray())
+                            {
+                                if (document is DummyDoc)
+                                {
+                                    ((DummyDoc)document).outputWindow.Show(dockPanel, DockState.DockBottomAutoHide);
+                                }
+                            }
+                        });
+
                     }).Start();
 
                 }
@@ -951,14 +999,16 @@ namespace DockSample
                 var tabText = "Terminal";
                 if (CheckTerminalOrConfiguratorOpen(tabText))
                 {
-                    MessageBox.Show("Terminal already opened!");
+                    //MessageBox.Show("Terminal already opened!");
+                    this.Alert("Terminal already opened!", Form_Alert.enmType.Info);
                     return;
                 }
                 dockPanel.PerformSafely(() =>
                 {
                     try
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.terminalInfo.Url, tabText);
+                        ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? string.Empty : CurrentProj.terminalInfo.Url, tabText, CurrentProj.IsWindows);
                         if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                         {
                             dummyDoc.MdiParent = this;
@@ -969,7 +1019,8 @@ namespace DockSample
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        //MessageBox.Show(ex.Message);
+                        this.Alert(ex.Message, Form_Alert.enmType.Error);
                     }
                 });
             }).Start();
@@ -983,11 +1034,13 @@ namespace DockSample
                 var tabText = "Configurator";
                 if (CheckTerminalOrConfiguratorOpen(tabText))
                 {
-                    MessageBox.Show("Configurator already opened!");
+                    //MessageBox.Show("Configurator already opened!");
+                    this.Alert("Configurator already opened!", Form_Alert.enmType.Info);
                     return;
                 }
                 dockPanel.PerformSafely(() =>
                 {
+                    ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
                     BrowserDoc dummyDoc = new BrowserDoc("http://localhost:9090", tabText);
                     if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                     {
@@ -1016,6 +1069,7 @@ namespace DockSample
                 Thread.Sleep(2000);
                 dockPanel.PerformSafely(() =>
                 {
+                    ///dockPanel.DocumentStyle = DocumentStyle.DockingSdi;
                     if (string.IsNullOrEmpty(content))
                     {
                         ReoGridEditor editor = new ReoGridEditor(filePath, string.Empty, this.CurrentProj,
@@ -1079,9 +1133,16 @@ namespace DockSample
             }
             else
             {
+                //foreach (IDockContent document in dockPanel.DocumentsToArray())
+                //{
+                //    if (!document.DockHandler.IsActivated)
+                //        document.DockHandler.Close();
+                //}
+
                 foreach (IDockContent document in dockPanel.DocumentsToArray())
                 {
-                    if (!document.DockHandler.IsActivated)
+                    IDockContent activeDocument = dockPanel.ActiveDocument;
+                    if(document != activeDocument)
                         document.DockHandler.Close();
                 }
             }
@@ -1092,22 +1153,22 @@ namespace DockSample
             dockPanel.ShowDocumentIcon = menuItemShowDocumentIcon.Checked = !menuItemShowDocumentIcon.Checked;
         }
 
-        private void showRightToLeft_Click(object sender, EventArgs e)
-        {
-            CloseAllContents();
-            if (showRightToLeft.Checked)
-            {
-                this.RightToLeft = RightToLeft.No;
-                this.RightToLeftLayout = false;
-            }
-            else
-            {
-                this.RightToLeft = RightToLeft.Yes;
-                this.RightToLeftLayout = true;
-            }
-            m_solutionExplorer.RightToLeftLayout = this.RightToLeftLayout;
-            showRightToLeft.Checked = !showRightToLeft.Checked;
-        }
+        //private void showRightToLeft_Click(object sender, EventArgs e)
+        //{
+        //    CloseAllContents();
+        //    if (showRightToLeft.Checked)
+        //    {
+        //        this.RightToLeft = RightToLeft.No;
+        //        this.RightToLeftLayout = false;
+        //    }
+        //    else
+        //    {
+        //        this.RightToLeft = RightToLeft.Yes;
+        //        this.RightToLeftLayout = true;
+        //    }
+        //    m_solutionExplorer.RightToLeftLayout = this.RightToLeftLayout;
+        //    showRightToLeft.Checked = !showRightToLeft.Checked;
+        //}
 
         private void exitWithoutSavingLayout_Click(object sender, EventArgs e)
         {
@@ -1132,7 +1193,8 @@ namespace DockSample
                 {
                     if (CheckTerminalOrConfiguratorOpen(tabText))
                     {
-                        MessageBox.Show("Scheduler already opened!");
+                        //MessageBox.Show("Scheduler already opened!");
+                        this.Alert("Scheduler already opened!", Form_Alert.enmType.Info);
                         return;
                     }
                 }
@@ -1143,7 +1205,8 @@ namespace DockSample
                     {
                         if(content is TaskSchedulerForm)
                         {
-                            MessageBox.Show("Task Scheduler already opened!");
+                            //MessageBox.Show("Task Scheduler already opened!");
+                            this.Alert("Task scheduler already opened!", Form_Alert.enmType.Info);
                             return;
                         }    
                     }
@@ -1151,6 +1214,7 @@ namespace DockSample
                 
                 dockPanel.PerformSafely(() =>
                 {
+                    ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
                     if (!CurrentProj.IsWindows)
                     {
                         if (CurrentProj.otherServices.AirflowService.Length > 0)
@@ -1191,14 +1255,65 @@ namespace DockSample
                 var tabText = "Health Check";
                 if (CheckTerminalOrConfiguratorOpen(tabText))
                 {
-                    MessageBox.Show("Health Check already opened!");
+                    //MessageBox.Show("Health Check already opened!");
+                    this.Alert("Health Check already opened!", Form_Alert.enmType.Info);
                     return;
                 }
                 dockPanel.PerformSafely(() =>
                 {
-                    if (CurrentProj.otherServices.HealthCheckService.Length > 0)
+                    ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
+                    ///
+                    if (!CurrentProj.IsWindows)
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.HealthCheckService, tabText);
+                        if (CurrentProj.otherServices.HealthCheckService.Length > 0)
+                        {
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.HealthCheckService, tabText);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
+                        }
+                    }
+                    else
+                    {
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.HealthCheckService, tabText, CurrentProj.IsWindows);
+                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        {
+                            dummyDoc.MdiParent = this;
+                            dummyDoc.Show();
+                        }
+                        else
+                            dummyDoc.Show(dockPanel);
+                    }
+
+                });
+            }).Start();
+        }
+
+        private async void tsClusterSetup_Click(object sender, EventArgs e)
+        {
+            new Task(() =>
+            {
+                var tabText = "Cluster Setup";
+                if (CheckTerminalOrConfiguratorOpen(tabText))
+                {
+                    //MessageBox.Show("Cluster Setup already opened!");
+                    this.Alert("Cluster Setup already opened!", Form_Alert.enmType.Info);
+                    return;
+                }
+                dockPanel.PerformSafely(() =>
+                {
+                    ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
+                    if (CurrentProj.otherServices.ClusterSetupService.Length > 0)
+                    {
+                        var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName,
+                                CurrentProj.sSHClientInfo.Password, ".ssh/id_rsa", false);
+
+                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.ClusterSetupService, tabText);
+                        dummyDoc.PublicKey = fileContent.ToString();
                         if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                         {
                             dummyDoc.MdiParent = this;
@@ -1211,6 +1326,84 @@ namespace DockSample
 
                 });
             }).Start();
+        }
+
+        private void menuItemConfiguration_Click(object sender, EventArgs e)
+        {
+            if (HasDocuments())
+            {
+                if (MessageBox.Show(this, "Operation will close all opened documents, Are you sure?",
+                                string.Empty, MessageBoxButtons.OKCancel)
+                                == System.Windows.Forms.DialogResult.OK)
+                {
+                    CloseAllDocumentsExceptSolutionExplorer();
+                    ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
+                    {
+                        this.Hide();
+                    });
+                    frm.ShowDialog(this);
+                }
+            }
+            else
+            {
+                ConfigurationForm frm = new ConfigurationForm(string.Empty, () =>
+                {
+                    this.Hide();
+                });
+                frm.ShowDialog(this);
+
+            }
+        }
+
+        private void menuItemSaveAll_Click(object sender, EventArgs e)
+        {
+            //code to save the files
+            try
+            {
+                OnSaveMenuChanged(sender.ToString(), e);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void menuItemSaveClose_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OnSaveMenuChanged(sender.ToString(), null);
+                //Thread.Sleep(3000);
+                CloseAllDocuments();
+                //dockPanel.PerformSafely(() =>
+                //{
+                //    if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                //    {
+                //        foreach (Form form in MdiChildren)
+                //            form.Close();
+                //    }
+                //    else
+                //    {
+                //        foreach (IDockContent document in dockPanel.DocumentsToArray())
+                //        {
+                //            // IMPORANT: dispose all panes.
+                //            document.DockHandler.DockPanel = null;
+                //            document.DockHandler.Close();
+                //        }
+                //    }
+                //});
+                //var task1 = Task.Factory.StartNew(() =>
+                //{
+                //    OnSaveMenuChanged(sender.ToString(), null);
+                //});
+                //task1.Wait();
+                //var task2 = Task.Factory.StartNew(() =>
+                //{
+                //    CloseAllDocuments();
+                //});
+            }
+            catch (Exception)
+            {
+            }
         }
 
     }

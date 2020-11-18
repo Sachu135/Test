@@ -213,6 +213,7 @@ namespace unvell.ReoGrid.Editor
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.zoomToolStripDropDownButton = new System.Windows.Forms.ToolStripComboBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuSeprator = new System.Windows.Forms.ToolStripSeparator();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1847,6 +1848,7 @@ namespace unvell.ReoGrid.Editor
             // 
 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                this.menuSeprator,
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
@@ -1878,6 +1880,11 @@ namespace unvell.ReoGrid.Editor
             this.printToolStripMenuItem,
             this.toolStripMenuItem5,
             this.exitToolStripMenuItem});
+
+            this.menuSeprator.Name = "menuSeprator";
+            //this.menuSeprator.Size = new System.Drawing.Size(43, 20);
+            //this.menuSeprator.Text = "";
+
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.fileToolStripMenuItem.Text = "&File1";
@@ -3293,6 +3300,7 @@ namespace unvell.ReoGrid.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripComboBox zoomToolStripDropDownButton;
         private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripSeparator menuSeprator;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;

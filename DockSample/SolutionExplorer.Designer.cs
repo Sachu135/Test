@@ -30,7 +30,7 @@ namespace DockSample
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.treeView2 = new NativeTreeView();
+            this.treeView2 = new System.Windows.Forms.TreeView();
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cmsRootPath = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -47,7 +47,11 @@ namespace DockSample
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.newDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.createRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pushToGitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commitPushToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.pullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsDirectory = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,10 +66,10 @@ namespace DockSample
             this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFile = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem19 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem23 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsRootPath.SuspendLayout();
             this.cmsDirectory.SuspendLayout();
@@ -78,13 +82,11 @@ namespace DockSample
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeView2.ImageIndex = 0;
-            //this.treeView2.ImageList = this.imageList2;
-            this.treeView2.Location = new System.Drawing.Point(0, 23);
+            this.treeView2.Location = new System.Drawing.Point(0, 22);
             this.treeView2.Name = "treeView2";
-            this.treeView2.SelectedImageIndex = 0;
-            this.treeView2.Size = new System.Drawing.Size(284, 382);
+            this.treeView2.Size = new System.Drawing.Size(270, 335);
             this.treeView2.TabIndex = 0;
+            this.treeView2.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView2_NodeMouseClick);
             this.treeView2.DoubleClick += new System.EventHandler(this.treeView2_Click);
             // 
             // imageList2
@@ -95,17 +97,17 @@ namespace DockSample
             // 
             // comboBox1
             // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(0, 1);
+            this.comboBox1.Location = new System.Drawing.Point(0, 0);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(284, 21);
+            this.comboBox1.Size = new System.Drawing.Size(270, 21);
             this.comboBox1.TabIndex = 0;
             // 
             // cmsRootPath
             // 
+            this.cmsRootPath.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.cmsRootPath.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripMenuItem,
             this.toolStripSeparator1,
@@ -114,21 +116,25 @@ namespace DockSample
             this.toolStripSeparator2,
             this.newDirectoryToolStripMenuItem,
             this.toolStripSeparator3,
-            this.pushToGitToolStripMenuItem});
+            this.createRepositoryToolStripMenuItem,
+            this.commitToolStripMenuItem1,
+            this.pushToGitToolStripMenuItem,
+            this.commitPushToolStripMenuItem1,
+            this.pullToolStripMenuItem});
             this.cmsRootPath.Name = "cmsRootPath";
-            this.cmsRootPath.Size = new System.Drawing.Size(150, 132);
+            this.cmsRootPath.Size = new System.Drawing.Size(168, 220);
             this.cmsRootPath.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsRootPath_ItemClicked);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(164, 6);
             // 
             // newFileToolStripMenuItem
             // 
@@ -140,7 +146,7 @@ namespace DockSample
             this.excelToolStripMenuItem,
             this.cSVToolStripMenuItem});
             this.newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
-            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.newFileToolStripMenuItem.Text = "New File";
             this.newFileToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newFileToolStripMenuItem_DropDownItemClicked);
             // 
@@ -183,33 +189,60 @@ namespace DockSample
             // uploadFileToolStripMenuItem
             // 
             this.uploadFileToolStripMenuItem.Name = "uploadFileToolStripMenuItem";
-            this.uploadFileToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.uploadFileToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.uploadFileToolStripMenuItem.Text = "Upload File";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(164, 6);
             // 
             // newDirectoryToolStripMenuItem
             // 
             this.newDirectoryToolStripMenuItem.Name = "newDirectoryToolStripMenuItem";
-            this.newDirectoryToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.newDirectoryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.newDirectoryToolStripMenuItem.Text = "New Directory";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(164, 6);
+            // 
+            // createRepositoryToolStripMenuItem
+            // 
+            this.createRepositoryToolStripMenuItem.Name = "createRepositoryToolStripMenuItem";
+            this.createRepositoryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.createRepositoryToolStripMenuItem.Text = "Create &Repository";
+            this.createRepositoryToolStripMenuItem.Visible = false;
+            // 
+            // commitToolStripMenuItem1
+            // 
+            this.commitToolStripMenuItem1.Name = "commitToolStripMenuItem1";
+            this.commitToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.commitToolStripMenuItem1.Text = "Commit";
             // 
             // pushToGitToolStripMenuItem
             // 
             this.pushToGitToolStripMenuItem.Name = "pushToGitToolStripMenuItem";
-            this.pushToGitToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.pushToGitToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.pushToGitToolStripMenuItem.Text = "Push to Git";
+            // 
+            // commitPushToolStripMenuItem1
+            // 
+            this.commitPushToolStripMenuItem1.Name = "commitPushToolStripMenuItem1";
+            this.commitPushToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.commitPushToolStripMenuItem1.Text = "Commit && Push";
+            this.commitPushToolStripMenuItem1.Visible = false;
+            // 
+            // pullToolStripMenuItem
+            // 
+            this.pullToolStripMenuItem.Name = "pullToolStripMenuItem";
+            this.pullToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.pullToolStripMenuItem.Text = "Pull from Git";
             // 
             // cmsDirectory
             // 
+            this.cmsDirectory.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.cmsDirectory.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem2,
             this.toolStripMenuItem9,
@@ -302,6 +335,7 @@ namespace DockSample
             // 
             // cmsFile
             // 
+            this.cmsFile.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.cmsFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem22,
             this.toolStripMenuItem19,
@@ -309,43 +343,44 @@ namespace DockSample
             this.toolStripMenuItem21,
             this.toolStripMenuItem23});
             this.cmsFile.Name = "cmsRootPath";
-            this.cmsFile.Size = new System.Drawing.Size(118, 48);
+            this.cmsFile.Size = new System.Drawing.Size(140, 114);
             this.cmsFile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsFile_ItemClicked);
+            // 
+            // toolStripMenuItem22
+            // 
+            this.toolStripMenuItem22.Name = "toolStripMenuItem22";
+            this.toolStripMenuItem22.Size = new System.Drawing.Size(139, 22);
+            this.toolStripMenuItem22.Text = "Create Copy";
             // 
             // toolStripMenuItem19
             // 
             this.toolStripMenuItem19.Name = "toolStripMenuItem19";
-            this.toolStripMenuItem19.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem19.Size = new System.Drawing.Size(139, 22);
             this.toolStripMenuItem19.Text = "Delete";
             // 
             // toolStripMenuItem20
             // 
             this.toolStripMenuItem20.Name = "toolStripMenuItem20";
-            this.toolStripMenuItem20.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem20.Size = new System.Drawing.Size(139, 22);
             this.toolStripMenuItem20.Text = "Rename";
-
+            // 
             // toolStripMenuItem21
             // 
             this.toolStripMenuItem21.Name = "toolStripMenuItem21";
-            this.toolStripMenuItem21.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem21.Size = new System.Drawing.Size(139, 22);
             this.toolStripMenuItem21.Text = "Move";
-
-            // toolStripMenuItem22
             // 
-            this.toolStripMenuItem22.Name = "toolStripMenuItem22";
-            this.toolStripMenuItem22.Size = new System.Drawing.Size(117, 22);
-            this.toolStripMenuItem22.Text = "Create Copy";
-
             // toolStripMenuItem23
             // 
             this.toolStripMenuItem23.Name = "toolStripMenuItem23";
-            this.toolStripMenuItem23.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem23.Size = new System.Drawing.Size(139, 22);
             this.toolStripMenuItem23.Text = "Download";
-
             // 
             // SolutionExplorer
             // 
-            this.ClientSize = new System.Drawing.Size(350, 404);//284
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(270, 360);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.treeView2);
             this.Name = "SolutionExplorer";
@@ -359,11 +394,14 @@ namespace DockSample
 
         }
 
+        
+
         #endregion
 
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ImageList imageList1;
-        private NativeTreeView treeView2;
+        //private NativeTreeView treeView2;
+        private System.Windows.Forms.TreeView treeView2;
         private System.Windows.Forms.ImageList imageList2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ContextMenuStrip cmsRootPath;
@@ -400,5 +438,9 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem22;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem23;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem commitToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem commitPushToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem createRepositoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pullToolStripMenuItem;
     }
 }

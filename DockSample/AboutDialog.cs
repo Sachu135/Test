@@ -1,3 +1,4 @@
+using DockSample.lib;
 using System;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;

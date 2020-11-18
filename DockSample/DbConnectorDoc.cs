@@ -375,14 +375,18 @@ namespace DockSample
 			{
 				clientFactory = new SqlFactory();
 				//connectString = "Data Source=" + dbConn.ServerName + ";app=Query Express" + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
-				connectString = "Data Source=" + dbConn.ServerName + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
+				if(!string.IsNullOrEmpty(dbConn.UserName) && !string.IsNullOrEmpty(dbConn.Password))
+					connectString = "Data Source=" + dbConn.ServerName + ";Initial Catalog=" + dbConn.DbName + "; User ID=" + dbConn.UserName + ";Password=" + dbConn.Password;
+				else
+					connectString = "Data Source=" + dbConn.ServerName + ";Initial Catalog=" + dbConn.DbName + "; Integrated Security=True";
+
 				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
 				this.Text = connectDescription;
 			}//server=localhost;port=3306;database=solarariseactivity;uid=root;password=root
 			else if (dbConn.DbType.Equals("Postgres"))
 			{
 				clientFactory = new PostgresFactory();
-				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False";
+				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False;SSL Mode=Require;TrustServerCertificate=true;";
 				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
 				this.Text = connectDescription;
 			}
@@ -878,27 +882,45 @@ namespace DockSample
 		{
 			HideResults = !HideResults;
 			//SwitchPane(true);
+			toolStripButton7.Text = HideResults ? "Show Result" : "Hide Result";
 		}
 
 		private void toolStripButton8_Click(object sender, EventArgs e)
 		{
 			HideBrowser = !HideBrowser;
 			//SwitchPane(false);
+			toolStripButton8.Text = HideBrowser ? "Show Browser" : "Hide Browser";
+		}
+
+		void ResultButtonFocusChange()
+        {
+			if (!ResultsInText)
+            {
+				toolStripButton6.BackColor = Color.Gray;
+				toolStripButton5.BackColor = Color.Transparent;
+			}
+            else
+            {
+				toolStripButton6.BackColor = Color.Transparent;
+				toolStripButton5.BackColor = Color.Gray;
+			}
 		}
 
 		private void toolStripButton5_Click(object sender, EventArgs e)
 		{
 			ResultsInText = true;
+			ResultButtonFocusChange();
 		}
 
 		private void toolStripButton6_Click(object sender, EventArgs e)
 		{
 			ResultsInText = false;
+			ResultButtonFocusChange();
 		}
 
 		private void DbConnectorDoc_Load(object sender, EventArgs e)
 		{
-			
+			ResultButtonFocusChange();
 		}
 
 		private void toolStripButton2_Click(object sender, EventArgs e)

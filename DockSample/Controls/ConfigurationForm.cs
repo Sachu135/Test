@@ -21,6 +21,7 @@ namespace DockSample.Controls
         UCLoaderForm loader;
         Action loadCompleted;
         int editIndex = -1;
+        int editDbIndex = -1;
         //bool closingByProgram = false;
         public ConfigurationForm()
         {
@@ -54,7 +55,7 @@ namespace DockSample.Controls
             dataGridView1.CellContentClick += DataGridView1_CellClick;
             dataGridView2.CellContentClick += DataGridView2_CellClick;
             config = new StudioConfig(AppDomain.CurrentDomain.BaseDirectory);
-            groupBox7.Enabled = groupBox8.Enabled = false;
+            groupBox7.Enabled = groupBox8.Enabled = groupBox1.Enabled = false;
             if (config.IsConfigExist())
             {
                 config = config.GetStudioConfigFromFile();
@@ -65,38 +66,180 @@ namespace DockSample.Controls
 
         private async void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            Task t = new Task(() =>
+            ////Task t = new Task(() =>
+            ////{
+            ////    if (dataGridView1.CurrentCell is DataGridViewLinkCell)
+            ////    {
+            ////        DataGridViewLinkCell cell = (DataGridViewLinkCell)dataGridView1.CurrentCell;
+            ////        dataGridView1.PerformSafely(() => {
+            ////            var gridRow = (DatabaseConnectionInfoGridInfo)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+            ////            DatabaseConnectionInfo selectedConn = config.databaseConnections.First(c => c.ConnName.ToLower().ToString() == gridRow.ConnName.ToLower().ToString());
+
+            ////            var confirmResult = MessageBox.Show("Are you sure to delete connection ??",
+            ////                        "Confirm Delete!!",
+            ////                        MessageBoxButtons.YesNo);
+            ////            if (confirmResult == DialogResult.Yes)
+            ////            {
+            ////                config.databaseConnections.Remove(selectedConn);
+            ////                ShowConnections();
+            ////            }
+            ////            else
+            ////            {
+            ////                // If 'No', do something here.
+            ////            }
+            ////        });
+            ////    }
+
+            ////    loader.PerformSafely(() =>
+            ////    {
+            ////        loader.Hide();
+            ////        //loader.Close();
+            ////    });
+            ////});
+            ////t.Start();
+            ////loader.ShowDialog(this);
+
+
+            if (dataGridView1.CurrentCell is DataGridViewLinkCell)
             {
-                if (dataGridView1.CurrentCell is DataGridViewLinkCell)
+                Task t = new Task(() =>
                 {
                     DataGridViewLinkCell cell = (DataGridViewLinkCell)dataGridView1.CurrentCell;
-                    dataGridView1.PerformSafely(() => {
-                        var gridRow = (DatabaseConnectionInfoGridInfo)dataGridView1.Rows[e.RowIndex].DataBoundItem;
-                        DatabaseConnectionInfo selectedConn = config.databaseConnections.First(c => c.ConnName.ToLower().ToString() == gridRow.ConnName.ToLower().ToString());
-                        
-                        var confirmResult = MessageBox.Show("Are you sure to delete connection ??",
-                                    "Confirm Delete!!",
-                                    MessageBoxButtons.YesNo);
-                        if (confirmResult == DialogResult.Yes)
+                    if (cell.Value == "Edit")
+                    {
+                        dataGridView1.PerformSafely(() =>
                         {
-                            config.databaseConnections.Remove(selectedConn);
-                            ShowConnections();
-                        }
-                        else
+                            var gridRow = (DatabaseConnectionInfoGridInfo)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+                            DatabaseConnectionInfo selectedConn = config.databaseConnections.First(c => c.ConnName.ToLower().ToString() == gridRow.ConnName.ToLower().ToString());
+
+                            txtConnKey.PerformSafely(() => {
+                                txtConnKey.Text = selectedConn.ConnName;
+                            });
+
+                            cbConnDbType.PerformSafely(() =>
+                            {
+                                cbConnDbType.SelectedItem = selectedConn.DbType;
+                            });
+
+                            txtConnServerName.PerformSafely(() =>
+                            {
+                                txtConnServerName.Text = selectedConn.ServerName;
+                            });
+
+                            txtDbName.PerformSafely(() => {
+                                txtDbName.Text = selectedConn.DbName;
+
+                                if (selectedConn.DbType.ToString() == "Json"
+                                || selectedConn.DbType.ToString() == "Xml"
+                                || selectedConn.DbType.ToString() == "Streaming Data"
+                                || selectedConn.DbType.ToString() == "Cloud Storage")
+                                {
+                                    txtDbName.Enabled = false;
+                                }
+                            });
+
+                            txtConnUserName.PerformSafely(() => {
+                                txtConnUserName.Text = selectedConn.UserName;
+                                if (selectedConn.DbType == "Sql Server")
+                                {
+                                    if (string.IsNullOrEmpty(selectedConn.UserName) && string.IsNullOrEmpty(selectedConn.Password))
+                                        txtConnUserName.Enabled = false;
+                                    else
+                                        txtConnUserName.Enabled = true;
+                                }
+                                else if (selectedConn.DbType.ToString() == "Json"
+                                || selectedConn.DbType.ToString() == "Xml"
+                                || selectedConn.DbType.ToString() == "Streaming Data"
+                                || selectedConn.DbType.ToString() == "Cloud Storage")
+                                {
+                                    txtConnUserName.Enabled = false;
+                                }
+                                else
+                                {
+                                    txtConnUserName.Enabled = true;
+                                }
+                            });
+
+                            txtConnPassword.PerformSafely(() => {
+                                txtConnPassword.Text = selectedConn.Password;
+                                if (selectedConn.DbType == "Sql Server")
+                                {
+                                    if (string.IsNullOrEmpty(selectedConn.UserName) && string.IsNullOrEmpty(selectedConn.Password))
+                                        txtConnPassword.Enabled = false;
+                                    else
+                                        txtConnPassword.Enabled = true;
+                                }
+                                else if (selectedConn.DbType.ToString() == "Json" 
+                                || selectedConn.DbType.ToString() == "Xml" 
+                                || selectedConn.DbType.ToString() == "Streaming Data" 
+                                || selectedConn.DbType.ToString() == "Cloud Storage")
+                                {
+                                    txtConnPassword.Enabled = false;
+                                }
+                                else
+                                {
+                                    txtConnPassword.Enabled = true;
+                                }
+                            });
+
+                            cmbServerMode.PerformSafely(() =>
+                            {
+                                cmbServerMode.Visible = (selectedConn.DbType == "Sql Server");
+                                if (string.IsNullOrEmpty(selectedConn.UserName) && string.IsNullOrEmpty(selectedConn.Password))
+                                    cmbServerMode.SelectedIndex = 0;
+                                else
+                                    cmbServerMode.SelectedIndex = 1;
+                            });
+
+                            editDbIndex = config.databaseConnections.FindIndex(c => c.ConnName.ToLower() == selectedConn.ConnName.ToLower());
+
+                        });
+
+                        btnSaveConnection.PerformSafely(() =>
                         {
-                            // If 'No', do something here.
-                        }
+                            btnSaveConnection.Visible = false;
+                        });
+                        button7.PerformSafely(() =>
+                        {
+                            button7.Visible = true;
+                        });
+                        button8.PerformSafely(() =>
+                        {
+                            button8.Visible = true;
+                        });
+                    }
+                    else if (cell.Value == "Delete")
+                    {
+                        dataGridView1.PerformSafely(() =>
+                        {
+                            var gridRow = (DatabaseConnectionInfoGridInfo)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+                            DatabaseConnectionInfo selectedConn = config.databaseConnections.First(c => c.ConnName.ToLower().ToString() == gridRow.ConnName.ToLower().ToString());
+
+                            var confirmResult = MessageBox.Show("Are you sure to delete connection ??",
+                                        "Confirm Delete!!",
+                                        MessageBoxButtons.YesNo);
+                            if (confirmResult == DialogResult.Yes)
+                            {
+                                config.databaseConnections.Remove(selectedConn);
+                                ShowConnections();
+                            }
+                            else
+                            {
+                                // If 'No', do something here.
+                            }
+                        });
+                    }
+                    
+
+                    loader.PerformSafely(() =>
+                    {
+                        loader.Hide();
+                        //loader.Close();
                     });
-                }
-                
-                loader.PerformSafely(() =>
-                {
-                    loader.Hide();
-                    loader.Close();
                 });
-            });
-            t.Start();
-            loader.ShowDialog(this);
+                t.Start();
+                loader.ShowDialog(this);
+            }
         }
 
         private async void DataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -127,6 +270,19 @@ namespace DockSample.Controls
                             {
                                 txtProLocation.Text = selectedConn.ProjectPath;
                             });
+                            txtGitUrl.PerformSafely(() => {
+                                txtGitUrl.Text = selectedConn.GitRepoURL;
+                            });
+                            txtGitUsername.PerformSafely(() => {
+                                txtGitUsername.Text = selectedConn.GitUsername;
+                            });
+                            txtGitUrl.PerformSafely(() => {
+                                txtGitPassword.Text = selectedConn.GitPassword;
+                            });
+                            txtGitEmail.PerformSafely(() => {
+                                txtGitEmail.Text = selectedConn.GitEmail;
+                            });
+
                             if (!selectedConn.IsWindows)
                             {
                                 txtSshIP.PerformSafely(() =>
@@ -214,11 +370,11 @@ namespace DockSample.Controls
             ShowConnections();
 
 
-            txtProName.Text = "Linux Project";
-            txtProLocation.Text = "/home/";
-            txtSshIP.Text = "192.168.0.104";
-            txtSshUser.Text = "root";
-            txtSshPass.Text = "root";
+            //txtProName.Text = "Linux Project";
+            //txtProLocation.Text = "/home/";
+            //txtSshIP.Text = "192.168.0.104";
+            //txtSshUser.Text = "root";
+            //txtSshPass.Text = "root";
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -341,27 +497,8 @@ namespace DockSample.Controls
                                 Password = txtConnPassword.Text.Trim()
                             });
                         });
-                        
-                        txtConnKey.PerformSafely(() =>
-                        {
-                            txtConnKey.Text = string.Empty;
-                        });
-                        txtConnServerName.PerformSafely(() =>
-                        {
-                            txtConnServerName.Text = string.Empty;
-                        });
-                        txtDbName.PerformSafely(() =>
-                        {
-                            txtDbName.Text = string.Empty;
-                        });
-                        txtConnUserName.PerformSafely(() =>
-                        {
-                            txtConnUserName.Text = string.Empty;
-                        });
-                        txtConnPassword.PerformSafely(() =>
-                        {
-                            txtConnPassword.Text = string.Empty;
-                        });
+
+                        ClearDatabaseControls();
 
                         //config.SaveConfigWithoutValidate();
                         ShowConnections();
@@ -400,6 +537,15 @@ namespace DockSample.Controls
                         var dataSource = config.databaseConnections.Select(c => new DatabaseConnectionInfoGridInfo { ConnName = c.ConnName, DbType = c.DbType, Server = c.ServerName, DbName = c.DbName }).ToList();
                         dataGridView1.DataSource = dataSource;
 
+                        DataGridViewLinkColumn Editlink = new DataGridViewLinkColumn();
+                        Editlink.UseColumnTextForLinkValue = true;
+                        Editlink.HeaderText = "Edit Action";
+                        Editlink.DataPropertyName = "lnkColumn";
+                        Editlink.LinkBehavior = LinkBehavior.SystemDefault;
+                        Editlink.Text = "Edit";
+                        Editlink.Tag = "Edit";
+                        dataGridView1.Columns.Add(Editlink);
+
                         DataGridViewLinkColumn Deletelink = new DataGridViewLinkColumn();
                         Deletelink.UseColumnTextForLinkValue = true;
                         Deletelink.HeaderText = "Delete Action";
@@ -411,6 +557,7 @@ namespace DockSample.Controls
                     }
                 }
             });
+
         }
 
         void ShowProjects()
@@ -457,6 +604,11 @@ namespace DockSample.Controls
 
         private async void cbConnDbType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if(cbConnDbType.SelectedIndex == -1)
+            {
+                return;
+            }
+
             if (cbConnDbType.SelectedItem.ToString() == "Json" || cbConnDbType.SelectedItem.ToString() == "Xml" || cbConnDbType.SelectedItem.ToString() == "Streaming Data" || cbConnDbType.SelectedItem.ToString() == "Cloud Storage")
             {
                 txtDbName.Text = txtConnUserName.Text = txtConnPassword.Text = string.Empty;
@@ -466,6 +618,8 @@ namespace DockSample.Controls
             {
                 txtDbName.Enabled = txtConnUserName.Enabled = txtConnPassword.Enabled = true;
             }
+
+            lblAuthentication.Visible = cmbServerMode.Visible = (cbConnDbType.SelectedItem.ToString() == "Sql Server");
 
             if (cbConnDbType.SelectedItem.ToString() == "Cloud Storage")
             {
@@ -498,6 +652,7 @@ namespace DockSample.Controls
                     });
 
                     var findIndex = config.projectInfoList.FindIndex(c => c.ProjectName.ToLower().Equals(txtProName.Text.Trim().ToLower()));
+                    var LocfindIndex = config.projectInfoList.FindIndex(c => c.DirectoryInfo.FullPath.ToLower().Equals(txtProLocation.Text.Trim().ToLower()));
 
                     if (string.IsNullOrEmpty(txtProName.Text.Trim()))
                     {
@@ -510,6 +665,10 @@ namespace DockSample.Controls
                     else if (findIndex > -1 && findIndex != editIndex)
                     {
                         MessageBox.Show("Project already exists!");
+                    }
+                    else if (LocfindIndex > -1 && LocfindIndex != editIndex)
+                    {
+                        MessageBox.Show("Project location already exists!");
                     }
                     else
                     {
@@ -534,6 +693,11 @@ namespace DockSample.Controls
                         ProjectInfo proInfo = new ProjectInfo();
                         proInfo.sSHClientInfo = new SSHClientInfo();
                         proInfo.ProjectName = txtProName.Text.Trim();
+                        proInfo.GitRepoURL = txtGitUrl.Text.Trim();
+                        proInfo.GitUsername = txtGitUsername.Text.Trim();
+                        proInfo.GitPassword = txtGitPassword.Text.Trim();
+                        proInfo.GitEmail = txtGitEmail.Text.Trim();
+
                         if (serverType.Equals("Linux"))
                         {
                             if (txtSshIP.Text.Trim().Length == 0)
@@ -572,19 +736,27 @@ namespace DockSample.Controls
                             config.projectInfoList.RemoveAt(editIndex);
                         }
 
-                        if (proInfo.IsWindows && editIndex == -1)
+                        if (proInfo.IsWindows)
                         {
-                            using (HardwareConfigForm form = new HardwareConfigForm(proInfo.ProjectName))
+                            if(editIndex == -1)
                             {
-                                this.PerformSafely(() =>
+                                using (HardwareConfigForm form = new HardwareConfigForm(proInfo.ProjectName))
                                 {
-                                    DialogResult dresult = form.ShowDialog(this);
-                                    if(dresult == DialogResult.OK)
+                                    this.PerformSafely(() =>
                                     {
-                                        editIndex = -1;
-                                        config.projectInfoList.Add(proInfo);
-                                    }
-                                });
+                                        DialogResult dresult = form.ShowDialog(this);
+                                        if (dresult == DialogResult.OK)
+                                        {
+                                            editIndex = -1;
+                                            config.projectInfoList.Add(proInfo);
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                editIndex = -1;
+                                config.projectInfoList.Add(proInfo);
                             }
                         }
                         if(!proInfo.IsWindows)
@@ -593,6 +765,7 @@ namespace DockSample.Controls
                             string strTerminalUrl = string.Format("http://{0}:5001/", proInfo.sSHClientInfo.IPAddress);
                             string strAirflowUrl = string.Format("http://{0}:5002/", proInfo.sSHClientInfo.IPAddress);
                             string strHealthCheckUrl = string.Format("http://{0}:5003/", proInfo.sSHClientInfo.IPAddress);
+                            string strClusterSetupUrl = string.Format("http://{0}:8080/", proInfo.sSHClientInfo.IPAddress);
                             if (editIndex == -1)
                             {
                                 using (LinuxConfigForm form = new LinuxConfigForm(proInfo))
@@ -607,6 +780,7 @@ namespace DockSample.Controls
                                             proInfo.terminalInfo = new TerminalInfo() { Url = strTerminalUrl };
                                             proInfo.otherServices.AirflowService = strAirflowUrl;
                                             proInfo.otherServices.HealthCheckService = strHealthCheckUrl;
+                                            proInfo.otherServices.ClusterSetupService = strClusterSetupUrl;
                                             config.projectInfoList.Add(proInfo);
                                         }
                                     });
@@ -618,13 +792,9 @@ namespace DockSample.Controls
                                 proInfo.terminalInfo = new TerminalInfo() { Url = strTerminalUrl };
                                 proInfo.otherServices.AirflowService = strAirflowUrl;
                                 proInfo.otherServices.HealthCheckService = strHealthCheckUrl;
+                                proInfo.otherServices.ClusterSetupService = strClusterSetupUrl;
                                 config.projectInfoList.Add(proInfo);
                             }
-                        }
-                        else
-                        {
-                            editIndex = -1;
-                            config.projectInfoList.Add(proInfo);
                         }
 
                         ShowProjects();
@@ -661,6 +831,71 @@ namespace DockSample.Controls
             {
                 txtSshPass.Text = string.Empty;
             });
+
+            txtGitUrl.PerformSafely(() => {
+                txtGitUrl.Text = string.Empty;
+            });
+            txtGitUsername.PerformSafely(() => {
+                txtGitUsername.Text = string.Empty;
+            });
+            txtGitPassword.PerformSafely(() => {
+                txtGitPassword.Text = string.Empty;
+            });
+            txtGitEmail.PerformSafely(() => {
+                txtGitEmail.Text = string.Empty;
+            });
+
+
+        }
+
+        void ClearDatabaseControls()
+        {
+            editDbIndex = -1;
+            cbConnDbType.PerformSafely(() => {
+                cbConnDbType.SelectedIndex = -1;
+            });
+            txtConnKey.PerformSafely(() =>
+            {
+                txtConnKey.Text = string.Empty;
+            });
+            txtConnServerName.PerformSafely(() =>
+            {
+                txtConnServerName.Text = string.Empty;
+            });
+            txtDbName.PerformSafely(() =>
+            {
+                txtDbName.Text = string.Empty;
+            });
+            txtConnUserName.PerformSafely(() =>
+            {
+                txtConnUserName.Text = string.Empty;
+                txtConnUserName.Enabled = true;
+            });
+            txtConnPassword.PerformSafely(() =>
+            {
+                txtConnPassword.Text = string.Empty;
+                txtConnPassword.Enabled = true;
+            });
+            cmbServerMode.PerformSafely(() => {
+                cmbServerMode.Visible = false;
+            });
+            lblAuthentication.PerformSafely(() => {
+                lblAuthentication.Visible = false;
+            });
+
+            btnSaveConnection.PerformSafely(() =>
+            {
+                btnSaveConnection.Visible = true;
+            });
+            button7.PerformSafely(() =>
+            {
+                button7.Visible = false;
+            });
+            button8.PerformSafely(() =>
+            {
+                button8.Visible = false;
+            });
+
         }
         private async void button4_Click(object sender, EventArgs e)
         {
@@ -668,17 +903,57 @@ namespace DockSample.Controls
             {
                 try
                 {
-                    Thread.Sleep(2000);
+                    //Thread.Sleep(2000);
+                    cbConnDbType.PerformSafely(() =>
+                    {
+                        IClientFactory clientFactory;
+                        string connectString, connectDescription;
+
+                        if (cbConnDbType.SelectedItem.ToString().Trim().Equals("Sql Server")) //SqlServer
+                        {
+                            clientFactory = new SqlFactory();
+                            if (!string.IsNullOrEmpty(txtConnUserName.Text.Trim()) && !string.IsNullOrEmpty(txtConnPassword.Text.Trim()))
+                                connectString = "Data Source=" + txtConnServerName.Text.Trim() + ";Initial Catalog=" + txtDbName.Text.Trim() + "; User ID=" + txtConnUserName.Text.Trim() + ";Password=" + txtConnPassword.Text.Trim();
+                            else
+                                connectString = "Data Source=" + txtConnServerName.Text.Trim() + ";Initial Catalog=" + txtDbName.Text.Trim() + "; Integrated Security=True";
+
+                            connectDescription = txtConnServerName.Text.Trim() + " (" + txtConnUserName.Text.Trim() + ")";
+                        }
+                        else if (cbConnDbType.SelectedItem.ToString().Trim().Equals("Postgres")) //Postgres
+                        {
+                            clientFactory = new PostgresFactory();
+                            connectString = "Host=" + txtConnServerName.Text.Trim() + ";Port=5432;Database=" + txtDbName.Text.Trim() + ";Username=" + txtConnUserName.Text.Trim() + ";Password=" + txtConnPassword.Text.Trim() + ";Integrated Security=False;;SSL Mode=Require;TrustServerCertificate=true;";
+                            connectDescription = txtConnServerName.Text.Trim() + " (" + txtConnUserName.Text.Trim() + ")";
+                        }
+                        else  //MySql
+                        {
+                            clientFactory = new MySqlFactory();
+                            connectString = "server=" + txtConnServerName.Text.Trim() + ";port=3306;database=" + txtDbName.Text.Trim() + ";uid=" + txtConnUserName.Text.Trim() + ";password=" + txtConnPassword.Text.Trim();
+                            connectDescription = txtConnServerName.Text.Trim() + " (" + txtConnUserName.Text.Trim() + ")";
+                        }
+
+                        DbClient dbClient = new DbClient(clientFactory, connectString, connectDescription);
+                        bool success = dbClient.Connect();
+                        if (success)
+                            MessageBox.Show("Connection tested Successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        else
+                            MessageBox.Show("Connection failed", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        loader.PerformSafely(() =>
+                        {
+                            loader.Hide();
+                            loader.Close();
+                        });
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                     loader.PerformSafely(() =>
                     {
                         loader.Hide();
                         loader.Close();
                     });
-                    MessageBox.Show("Connection tested Successfully!");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
                 }
 
             });
@@ -689,6 +964,9 @@ namespace DockSample.Controls
 
         private async void txtConnServerName_TextChanged(object sender, EventArgs e)
         {
+            if (cbConnDbType.SelectedIndex == -1)
+                return;
+
             if (cbConnDbType.SelectedItem.ToString() == "Cloud Storage")
             {
                 if (txtConnServerName.Text.Contains("googleapis"))
@@ -725,23 +1003,28 @@ namespace DockSample.Controls
         {
             if (cmbServerType.SelectedIndex == -1)
             {
-                groupBox7.Enabled = groupBox8.Enabled = false;
+                groupBox7.Enabled = groupBox8.Enabled = groupBox1.Enabled = false;
                 btnDefault.Enabled = false;
                 btnBrowse.Enabled = false;
+                txtGitUrl.Enabled = false;
             }
             else if (cmbServerType.SelectedIndex == 0)
             {
                 groupBox7.Enabled = true;
+                groupBox1.Enabled = true;
                 groupBox8.Enabled = false;
                 btnDefault.Enabled = true;
                 btnBrowse.Enabled = true;
+                txtGitUrl.Enabled = true;
             }
             else if (cmbServerType.SelectedIndex == 1)
             {
                 groupBox7.Enabled = true;
+                groupBox1.Enabled = false;
                 groupBox8.Enabled = true;
                 btnDefault.Enabled = false;
                 btnBrowse.Enabled = false;
+                txtGitUrl.Enabled = false;
             }
         }
         private async void cmbServerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -760,7 +1043,7 @@ namespace DockSample.Controls
             editIndex = -1;
             cmbServerType.PerformSafely(() => {
                 cmbServerType.SelectedIndex = -1;
-                groupBox7.Enabled = groupBox8.Enabled = false;
+                groupBox7.Enabled = groupBox8.Enabled = groupBox1.Enabled = false;
             });
             button3.PerformSafely(() =>
             {
@@ -888,6 +1171,84 @@ namespace DockSample.Controls
 
                 txtProLocation.Text = folderPath;
             }
+        }
+
+        private void cmbServerMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(cmbServerMode.SelectedIndex == 0)
+            {
+                txtConnUserName.Enabled = txtConnPassword.Enabled = false;
+                txtConnUserName.Text = txtConnPassword.Text = string.Empty;
+            }
+            else
+            {
+                txtConnUserName.Enabled = txtConnPassword.Enabled = true;
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            Task t = new Task(() =>
+            {
+                try
+                {
+                    if (config.databaseConnections == null)
+                    {
+                        config.databaseConnections = new List<DatabaseConnectionInfo>();
+                    }
+
+                    var findIndex = config.databaseConnections.FindIndex(c => c.ConnName.ToLower().Equals(txtConnKey.Text.Trim().ToLower()));
+                    if (findIndex > -1 && findIndex != editDbIndex)
+                    {
+                        MessageBox.Show("Connection already exists!");
+                    }
+                    else
+                    {
+                        if (editDbIndex > -1)
+                        {
+                            config.databaseConnections.RemoveAt(editDbIndex);
+                        }
+
+                        cbConnDbType.PerformSafely(() =>
+                        {
+                            config.databaseConnections.Add(new DatabaseConnectionInfo()
+                            {
+                                ConnName = txtConnKey.Text.Trim(),
+                                DbType = cbConnDbType.SelectedItem.ToString().Trim(),
+                                ServerName = txtConnServerName.Text.Trim(),
+                                DbName = txtDbName.Text.Trim(),
+                                UserName = txtConnUserName.Text.Trim(),
+                                Password = txtConnPassword.Text.Trim()
+                            });
+                        });
+
+                        ClearDatabaseControls();
+
+                        //config.SaveConfigWithoutValidate();
+                        ShowConnections();
+                    }
+
+                    loader.PerformSafely(() =>
+                    {
+                        loader.Hide();
+                        loader.Close();
+                    });
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            });
+            t.Start();
+
+            loader.ShowDialog(this);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            ClearDatabaseControls();
         }
     }
 }

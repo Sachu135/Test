@@ -62,5 +62,7 @@ namespace DockSample
                 contextMenuStrip1.Enabled = false;
             }
         }
+
+        
     }
 }

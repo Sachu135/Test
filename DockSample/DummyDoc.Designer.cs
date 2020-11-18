@@ -34,9 +34,8 @@ namespace DockSample
             this.menuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemCheckTest = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuTabPage = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuClose = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.txtCodeEditor = new EasyScintilla.SimpleEditor();
             this.contextMenuForEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -72,6 +71,7 @@ namespace DockSample
             // mainMenu
             // 
             this.mainMenu.BackColor = System.Drawing.Color.White;
+            this.mainMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItem1});
             this.mainMenu.Location = new System.Drawing.Point(0, 4);
@@ -90,47 +90,43 @@ namespace DockSample
             this.menuItem1.Name = "menuItem1";
             this.menuItem1.Size = new System.Drawing.Size(100, 20);
             this.menuItem1.Text = "&MDI Document";
+            this.menuItem1.Visible = false;
             // 
             // menuItem2
             // 
             this.menuItem2.Name = "menuItem2";
-            this.menuItem2.Size = new System.Drawing.Size(130, 22);
+            this.menuItem2.Size = new System.Drawing.Size(180, 22);
             this.menuItem2.Text = "Test";
             this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
             // 
             // menuItemCheckTest
             // 
             this.menuItemCheckTest.Name = "menuItemCheckTest";
-            this.menuItemCheckTest.Size = new System.Drawing.Size(130, 22);
+            this.menuItemCheckTest.Size = new System.Drawing.Size(180, 22);
             this.menuItemCheckTest.Text = "Check Test";
             this.menuItemCheckTest.Click += new System.EventHandler(this.menuItemCheckTest_Click);
             // 
             // contextMenuTabPage
             // 
+            this.contextMenuTabPage.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuTabPage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem3,
-            this.menuItem4,
-            this.menuItem5});
+            this.contextMenuSave,
+            this.contextMenuClose});
             this.contextMenuTabPage.Name = "contextMenuTabPage";
-            this.contextMenuTabPage.Size = new System.Drawing.Size(121, 70);
+            this.contextMenuTabPage.Size = new System.Drawing.Size(104, 48);
+            this.contextMenuTabPage.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuTabPage_ItemClicked);
             // 
-            // menuItem3
+            // contextMenuSave
             // 
-            this.menuItem3.Name = "menuItem3";
-            this.menuItem3.Size = new System.Drawing.Size(120, 22);
-            this.menuItem3.Text = "Option &1";
+            this.contextMenuSave.Name = "contextMenuSave";
+            this.contextMenuSave.Size = new System.Drawing.Size(103, 22);
+            this.contextMenuSave.Text = "&Save";
             // 
-            // menuItem4
+            // contextMenuClose
             // 
-            this.menuItem4.Name = "menuItem4";
-            this.menuItem4.Size = new System.Drawing.Size(120, 22);
-            this.menuItem4.Text = "Option &2";
-            // 
-            // menuItem5
-            // 
-            this.menuItem5.Name = "menuItem5";
-            this.menuItem5.Size = new System.Drawing.Size(120, 22);
-            this.menuItem5.Text = "Option &3";
+            this.contextMenuClose.Name = "contextMenuClose";
+            this.contextMenuClose.Size = new System.Drawing.Size(103, 22);
+            this.contextMenuClose.Text = "&Close";
             // 
             // txtCodeEditor
             // 
@@ -144,11 +140,13 @@ namespace DockSample
             this.txtCodeEditor.Styler = null;
             this.txtCodeEditor.TabIndex = 2;
             this.txtCodeEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.txtCodeEditor_CharAdded);
+            this.txtCodeEditor.TextChanged += new System.EventHandler(this.txtCodeEditor_TextChanged);
             this.txtCodeEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeEditor_KeyDown);
             this.txtCodeEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCodeEditor_KeyPress);
             // 
             // contextMenuForEditor
             // 
+            this.contextMenuForEditor.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuForEditor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem4,
             this.toolStripMenuItem5,
@@ -245,6 +243,7 @@ namespace DockSample
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripSeparator1,
             this.toolStripButton1,
@@ -254,14 +253,14 @@ namespace DockSample
             this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 4);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(448, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(448, 27);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButton1
             // 
@@ -269,14 +268,14 @@ namespace DockSample
             this.toolStripButton1.Image = global::DockSample.Properties.Resources.saveHS;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton1.Text = "Save";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(75, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(75, 24);
             this.toolStripLabel1.Text = "Environment";
             // 
             // toolStripComboBox1
@@ -287,14 +286,14 @@ namespace DockSample
             "python3",
             "spark-submit"});
             this.toolStripComboBox1.Name = "toolStripComboBox1";
-            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 27);
             // 
             // toolStripButton2
             // 
             this.toolStripButton2.Image = global::DockSample.Properties.Resources.sqlexecute;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(68, 22);
+            this.toolStripButton2.Size = new System.Drawing.Size(72, 24);
             this.toolStripButton2.Text = "Execute";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
@@ -304,7 +303,7 @@ namespace DockSample
             this.toolStripButton3.Image = global::DockSample.Properties.Resources.cancel;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(51, 22);
+            this.toolStripButton3.Size = new System.Drawing.Size(55, 24);
             this.toolStripButton3.Text = "Stop";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -313,7 +312,7 @@ namespace DockSample
             this.pnlMsg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(237)))), ((int)(((byte)(200)))));
             this.pnlMsg.Controls.Add(this.lblMsg);
             this.pnlMsg.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlMsg.Location = new System.Drawing.Point(0, 29);
+            this.pnlMsg.Location = new System.Drawing.Point(0, 31);
             this.pnlMsg.Name = "pnlMsg";
             this.pnlMsg.Size = new System.Drawing.Size(448, 20);
             this.pnlMsg.TabIndex = 4;
@@ -330,6 +329,8 @@ namespace DockSample
             // 
             // DummyDoc
             // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(448, 393);
             this.Controls.Add(this.pnlMsg);
@@ -343,6 +344,7 @@ namespace DockSample
             this.TabPageContextMenuStrip = this.contextMenuTabPage;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DummyDoc_FormClosing);
             this.Load += new System.EventHandler(this.DummyDoc_Load);
+            this.Shown += new System.EventHandler(this.DummyDoc_Shown);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.contextMenuTabPage.ResumeLayout(false);
@@ -361,9 +363,7 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem menuItem1;
         private System.Windows.Forms.ToolStripMenuItem menuItem2;
         private System.Windows.Forms.ContextMenuStrip contextMenuTabPage;
-        private System.Windows.Forms.ToolStripMenuItem menuItem3;
-        private System.Windows.Forms.ToolStripMenuItem menuItem4;
-        private System.Windows.Forms.ToolStripMenuItem menuItem5;
+        private System.Windows.Forms.ToolStripMenuItem contextMenuClose;
         private System.Windows.Forms.ToolStripMenuItem menuItemCheckTest;
         private System.Windows.Forms.ToolTip toolTip;
         private EasyScintilla.SimpleEditor txtCodeEditor;
@@ -390,5 +390,6 @@ namespace DockSample
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
         private System.Windows.Forms.Panel pnlMsg;
         private System.Windows.Forms.Label lblMsg;
+        private System.Windows.Forms.ToolStripMenuItem contextMenuSave;
     }
 }

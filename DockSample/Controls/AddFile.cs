@@ -18,7 +18,7 @@ namespace DockSample.Controls
             InitializeComponent();
         }
 
-        public Action<string> SaveCliked;
+        public Action<string, string> SaveCliked;
 
         public string Header 
         {
@@ -61,6 +61,23 @@ namespace DockSample.Controls
             }
         }
 
+        public TreeView TreeViewControl
+        {
+            get { return this.treeView1; }
+        }
+
+        public SplitContainer SplitContainerControl
+        {
+            get { return this.splitContainer1; }
+        }
+
+        public string _Mode { get; set; }
+        public string Mode
+        {
+            get { return _Mode; }
+            set { _Mode = value; }
+        }
+
         public void TextControlSelectAll()
         {
             textBox1.SelectAll();
@@ -70,6 +87,10 @@ namespace DockSample.Controls
             textBox1.Text = string.Empty;
             panel1.Visible = false;
             label2.Text = string.Empty;
+            treeView1.PerformSafely(() =>
+            {
+                treeView1.Nodes.Clear();
+            });
         }
         private async void button2_Click(object sender, EventArgs e)
         {
@@ -78,6 +99,7 @@ namespace DockSample.Controls
                 this.PerformSafely(() =>
                 {
                     textBox1.Text = string.Empty;
+                    treeView1.Nodes.Clear();
                     this.Hide();
                 });
             });
@@ -94,9 +116,14 @@ namespace DockSample.Controls
                 panel1.Visible = true;
                 label2.Text = "Invalid file name (or invalid character (.) found).";
             }
+            else if (treeView1.SelectedNode == null && _Mode == "Create Copy")
+            {
+                panel1.Visible = true;
+                label2.Text = "Please select a directory to move in.";
+            }
             else
             {
-                SaveCliked(textBox1.Text.Trim());
+                SaveCliked(textBox1.Text.Trim(), (_Mode == "Create Copy") ? treeView1.SelectedNode.ToolTipText : string.Empty);
             }
         }
 
@@ -104,6 +131,17 @@ namespace DockSample.Controls
         {
             panel1.Visible = false;
             label2.Text = string.Empty;
+        }
+
+        public void ResetNode(TreeView rootTreeNode)
+        {
+            treeView1.PerformSafely(() =>
+            {
+                foreach (TreeNode node in rootTreeNode.Nodes)
+                {
+                    treeView1.Nodes.Add((TreeNode)node.Clone());
+                }
+            });
         }
     }
 }

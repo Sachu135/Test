@@ -26,12 +26,23 @@ namespace DockSample.Controls
         }
 
 
-        public void ResetNode(TreeNode rootTreeNode)
+        ////public void ResetNode(TreeNode rootTreeNode)
+        ////{
+        ////    treeView1.PerformSafely(() =>
+        ////    {
+        ////        //treeView1.Nodes.Clear();
+        ////        treeView1.Nodes.Add(rootTreeNode);
+        ////    });
+        ////}
+
+        public void ResetNode(TreeView rootTreeNode)
         {
             treeView1.PerformSafely(() =>
             {
-                //treeView1.Nodes.Clear();
-                treeView1.Nodes.Add(rootTreeNode);
+                foreach (TreeNode node in rootTreeNode.Nodes)
+                {
+                    treeView1.Nodes.Add((TreeNode)node.Clone());
+                }
             });
         }
 
