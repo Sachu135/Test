@@ -613,7 +613,15 @@ namespace DockSample
             ////else
             ////    m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
 
-            m_taskList.Show(dockPanel, DockState.DockTop);
+            //m_taskList.Show(dockPanel, DockState.DockTop);
+
+            if (m_taskList.DockState == DockState.DockTopAutoHide || m_taskList.DockState == DockState.Unknown)
+            {
+                m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
+                m_taskList.Show(dockPanel, DockState.DockTop);
+            }
+            else
+                m_taskList.Show(dockPanel, DockState.DockTopAutoHide);
 
             menuItemTaskList.Checked = m_taskList.Visible;
         }

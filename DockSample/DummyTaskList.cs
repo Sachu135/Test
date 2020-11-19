@@ -816,24 +816,29 @@ namespace DockSample
 
         private void dgvList_SelectionChanged(object sender, EventArgs e)
         {
-            var rowsCount = dgvList.SelectedRows.Count;
-            if (rowsCount == 0 || rowsCount > 1) return;
-
-            var row = dgvList.SelectedRows[0];
-            if (row == null) return;
-
-            if (!string.IsNullOrEmpty(row.Cells[4].Value.ToString()))
+            try
             {
-                if (Convert.ToBoolean(row.Cells[4].Value))
-                    dgvList.DefaultCellStyle.SelectionBackColor = Color.FromArgb(204, 255, 204);
+                var rowsCount = dgvList.SelectedRows.Count;
+                if (rowsCount == 0 || rowsCount > 1) return;
+
+                var row = dgvList.SelectedRows[0];
+                if (row == null) return;
+
+                if (!string.IsNullOrEmpty(row.Cells[4].Value.ToString()))
+                {
+                    if (Convert.ToBoolean(row.Cells[4].Value))
+                        dgvList.DefaultCellStyle.SelectionBackColor = Color.FromArgb(204, 255, 204);
+                    else
+                        dgvList.DefaultCellStyle.SelectionBackColor = Color.Transparent;
+                }
                 else
+                {
                     dgvList.DefaultCellStyle.SelectionBackColor = Color.Transparent;
+                }
             }
-            else
+            catch (Exception)
             {
-                dgvList.DefaultCellStyle.SelectionBackColor = Color.Transparent;
             }
-
         }
 
     }
