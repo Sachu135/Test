@@ -215,6 +215,12 @@
     <Compile Include="AppStarterForm.Designer.cs">
       <DependentUpon>AppStarterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TerminalDoc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TerminalDoc.Designer.cs">
+      <DependentUpon>TerminalDoc.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\AddFile.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -377,6 +383,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AppStarterForm.resx">
       <DependentUpon>AppStarterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TerminalDoc.resx">
+      <DependentUpon>TerminalDoc.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\AddFile.resx">
       <DependentUpon>AddFile.cs</DependentUpon>
@@ -561,6 +571,10 @@
     <Content Include="Images\SplashScreen.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\folder16.png" />
+    <None Include="Resources\folder1.png" />
+    <None Include="Resources\folder_24px.png" />
+    <None Include="Resources\folder.png" />
     <None Include="Resources\git_commited.png" />
     <None Include="Resources\git_pendingcommit.png" />
     <None Include="Resources\git_new.png" />

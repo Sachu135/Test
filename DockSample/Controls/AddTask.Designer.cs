@@ -55,7 +55,7 @@
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnClose.Location = new System.Drawing.Point(376, 257);
+            this.btnClose.Location = new System.Drawing.Point(376, 234);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(62, 33);
             this.btnClose.TabIndex = 13;
@@ -71,7 +71,7 @@
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSave.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnSave.Location = new System.Drawing.Point(293, 257);
+            this.btnSave.Location = new System.Drawing.Point(293, 234);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(73, 33);
             this.btnSave.TabIndex = 12;
@@ -98,7 +98,7 @@
             this.panel1.Controls.Add(this.lblCreateList);
             this.panel1.Location = new System.Drawing.Point(1, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(449, 251);
+            this.panel1.Size = new System.Drawing.Size(449, 228);
             this.panel1.TabIndex = 14;
             // 
             // dtStartDate

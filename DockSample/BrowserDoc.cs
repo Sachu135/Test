@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace DockSample
 {
@@ -22,9 +23,13 @@ namespace DockSample
     {
         private string Url;
         private ChromiumWebBrowser browser;
+        private ChromiumWebBrowser popup_browser;
         private UCLoaderForm loader;
+        private BrowserDoc self;
         private string strPublicKey = string.Empty;
-        private bool _isWindow = false;
+        public List<IWindowInfo> listWindowInfo = new List<IWindowInfo>();
+
+        MainForm mainFrm;
 
         public string PublicKey { get {return strPublicKey; } set { strPublicKey = value; } }
 
@@ -114,19 +119,31 @@ namespace DockSample
         public BrowserDoc()
         { 
         }
-        public BrowserDoc(string url, string tabText, bool isWindow = false)
+        public BrowserDoc(string url, string tabText, MainForm frm = null)
         {
             InitializeComponent();
+            self = this;
             AutoScaleMode = AutoScaleMode.Dpi;
             DockAreas = DockAreas.Document | DockAreas.Float;
             Url = url;
             this.TabText = tabText;
-            this._isWindow = isWindow;
+
+            mainFrm = frm;
+
             loader = new UCLoaderForm();
-            if (!isWindow)
+            browser = new ChromiumWebBrowser(Url);
+            popup_browser = new ChromiumWebBrowser("");
+            browser.DownloadHandler = new DownloadHandler(this, loader);
+
+            this.FormClosing += BrowserDoc_FormClosing;
+        }
+
+        private void BrowserDoc_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(this.listWindowInfo.Count > 0)
             {
-                browser = new ChromiumWebBrowser(Url);
-                browser.DownloadHandler = new DownloadHandler(this, loader);
+                foreach (var item in listWindowInfo)
+                    item.Dispose();
             }
         }
 
@@ -172,64 +189,59 @@ namespace DockSample
 
                 panel1.PerformSafely(() =>
                 {
-                    if (_isWindow && this.TabText == "Terminal")
+                    //browser.LoadingStateChanged += Browser_LoadingStateChanged;
+                    browser.FrameLoadStart += Browser_FrameLoadStart;
+                    browser.FrameLoadEnd += Browser_FrameLoadEnd;
+                    browser.LoadingStateChanged += Browser_LoadingStateChanged;
+
+                    LifespanHandler life = new LifespanHandler();
+                    browser.LifeSpanHandler = life;
+                    life.popup_request += life_popup_request;
+
+                    panel1.Controls.Add(browser);
+
+                    loader.PerformSafely(() =>
                     {
-                        Process p = Process.Start(
-                                   new ProcessStartInfo()
-                                   {
-                                       FileName = "cmd.exe",
-                                       WindowStyle = ProcessWindowStyle.Maximized
-                                   });
-                        Thread.Sleep(500);
-                        IntPtr value = SetParent(p.MainWindowHandle, panel1.Handle);
-                        SendMessage(p.MainWindowHandle, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-                        SetWindowLong(p.MainWindowHandle, GWL_STYLE, GetWindowLong(p.MainWindowHandle, GWL_STYLE) & ~(WS_CAPTION | SC_MINIMIZE | SC_MAXIMIZE | WS_SYSMENU));
-
-
-                        //LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
-                        //lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-                        //SetWindowLong(hwnd, GWL_STYLE, lStyle);
-
-                        loader.PerformSafely(() =>
-                        {
-                            loader.Hide();
-                        });
-                    }
-                    else if(_isWindow && this.TabText == "Health Check")
-                    {
-                        //code to open ntop
-                        Process p = Process.Start(
-                                   new ProcessStartInfo("cmd.exe", @"/c ntop")
-                                   {
-                                       WindowStyle = ProcessWindowStyle.Maximized
-                                   });
-                        Thread.Sleep(500);
-                        IntPtr value = SetParent(p.MainWindowHandle, panel1.Handle);
-                        SendMessage(p.MainWindowHandle, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-                        //SetWindowLong(p.MainWindowHandle, GWL_STYLE, GetWindowLong(p.MainWindowHandle, GWL_STYLE) & ~WS_SYSMENU);
-                        SetWindowLong(p.MainWindowHandle, GWL_STYLE, GetWindowLong(p.MainWindowHandle, GWL_STYLE) & ~(WS_CAPTION | SC_MINIMIZE | SC_MAXIMIZE | WS_SYSMENU));
-
-                        loader.PerformSafely(() =>
-                        {
-                            loader.Hide();
-                        });
-                    }
-                    else
-                    {
-                        //browser.LoadingStateChanged += Browser_LoadingStateChanged;
-                        browser.FrameLoadStart += Browser_FrameLoadStart;
-                        browser.FrameLoadEnd += Browser_FrameLoadEnd;
-                        panel1.Controls.Add(browser);
-                        loader.PerformSafely(() =>
-                        {
-                            loader.Hide();
-                        });
-                    }
+                        loader.Hide();
+                    });
                 });
 
             }).Start();
             //loader.ShowDialog(this);
+        }
 
+        private void life_popup_request(string popup_request)
+        {
+            //this.Invoke((MethodInvoker)delegate ()
+            //{
+            //    string title = "TabPage " + (tabControl1.TabCount + 1).ToString();
+            //    TabPage myTabPage = new TabPage(title);
+            //    tabControl1.TabPages.Add(myTabPage);
+            //    tabControl1.SelectTab(tabControl1.TabCount - 1);
+            //    ChromiumWebBrowser chromeBrowser = new ChromiumWebBrowser(popup_request);
+            //    chromeBrowser.Parent = myTabPage;
+            //    chromeBrowser.Dock = DockStyle.Fill;
+            //});
+
+            //popup_browser.Load(popup_request);
+            //popup_browser.LoadingStateChanged += Popup_browser_LoadingStateChanged;
+            //popup_browser.FrameLoadEnd += Popup_browser_FrameLoadEnd;
+
+            if (mainFrm != null)
+            {
+                mainFrm.dockPanel.PerformSafely(() =>
+                {
+                    //BrowserDoc dummyDoc = new BrowserDoc(@"http://localhost:8888/notebooks/Untitled10.ipynb?kernel_name=python3", this.TabText + "1");
+                    BrowserDoc dummyDoc = new BrowserDoc(popup_request, this.TabText + "1");
+                    if (mainFrm.dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                    {
+                        dummyDoc.MdiParent = this;
+                        dummyDoc.Show();
+                    }
+                    else
+                        dummyDoc.Show(mainFrm.dockPanel);
+                });
+            }
         }
 
         private async void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
@@ -265,11 +277,17 @@ namespace DockSample
 
         private void Browser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
         {
-            var dd = 1;
-            if (!e.IsLoading)
+            //var dd = 1;
+            //if (!e.IsLoading)
+            //{
+            //    //MessageBox.Show("done");
+            //    this.Alert("done", Form_Alert.enmType.Success);
+            //}
+            if (e.IsLoading == false)
             {
-                //MessageBox.Show("done");
-                this.Alert("done", Form_Alert.enmType.Success);
+                //var myURL = this.Url;
+                //string strNewInnerHTML = string.Format(@"<a href='/tree?token={0}' title='dashboard'>Kockpit Notebook</a>", "852254a0c4273cc510a30104b785b5a6f5f9ca5798a9c433");
+                browser.ExecuteScriptAsync("document.getElementById('ipython_notebook').innerHTML = 'Kockpit Notebook'");
             }
         }
 
@@ -288,4 +306,77 @@ namespace DockSample
             ToolTip1.SetToolTip(this.btnAmbariInfo, strPublicKey);
         }
     }
+
+    public class LifespanHandler : ILifeSpanHandler
+    {
+        //event that receive url popup
+        public event Action<string> popup_request;
+
+        public bool OnBeforePopup(IWebBrowser browserControl, CefSharp.IBrowser browser, IFrame frame, 
+            string targetUrl, string targetFrameName, WindowOpenDisposition targetDisposition, bool userGesture, 
+            IPopupFeatures popupFeatures, IWindowInfo windowInfo, IBrowserSettings browserSettings, ref bool noJavascriptAccess, out IWebBrowser newBrowser)
+        {
+            //get url popup
+            if (this.popup_request != null)
+                this.popup_request(targetUrl);
+
+            //stop open popup window
+            newBrowser = null;
+            return true;
+        }
+        public bool DoClose(IWebBrowser browserControl, CefSharp.IBrowser browser)
+        { return false; }
+
+        public void OnBeforeClose(IWebBrowser browserControl, CefSharp.IBrowser browser) { }
+
+        public void OnAfterCreated(IWebBrowser browserControl, CefSharp.IBrowser browser) { }
+    }
+
+    //public class LifespanHandler : ILifeSpanHandler
+    //{
+    //    //event that receive url popup
+    //    public event Action<string> popup_request;
+    //    BrowserDoc document;
+
+    //    public LifespanHandler(BrowserDoc doc)
+    //    {
+    //        document = doc;
+    //    }
+    //    public bool OnBeforePopup(IWebBrowser browserControl, CefSharp.IBrowser browser, IFrame frame, 
+    //        string targetUrl, string targetFrameName, WindowOpenDisposition targetDisposition, bool userGesture, 
+    //        IPopupFeatures popupFeatures, IWindowInfo windowInfo, IBrowserSettings browserSettings, 
+    //        ref bool noJavascriptAccess, out IWebBrowser newBrowser)
+    //    {
+    //        //get url popup
+    ////        if (this.popup_request != null)
+    ////            this.popup_request(targetUrl);
+
+    //        //document.listWindowInfo.Add(windowInfo);
+
+    //        //stop open popup
+    //        newBrowser = null;
+    //        //newBrowser = new ChromiumWebBrowser(targetUrl);
+
+    //document.PerformSafely(() =>
+    //{
+    //    //windowInfo.SetAsChild(document.Handle);
+    //    windowInfo.ParentWindowHandle = document.Handle;
+    //});
+    //        return false;
+    //    }
+
+
+    //    public bool DoClose(IWebBrowser browserControl, CefSharp.IBrowser browser)
+    //    { return false; }
+
+
+    //    public void OnBeforeClose(IWebBrowser browserControl, CefSharp.IBrowser browser) { }
+
+
+    //    public void OnAfterCreated(IWebBrowser browserControl, CefSharp.IBrowser browser) 
+    //    {
+    //    }
+
+    //}
+
 }

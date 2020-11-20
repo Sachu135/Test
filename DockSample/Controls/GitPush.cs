@@ -32,11 +32,18 @@ namespace DockSample.Controls
                 if (_pushOrPull.ToLower() == "push")
                 {
                     btnPush.Text = "Push";
+                    lblLocalBranch.Visible = true;
+                    cmbLocalBranches.Visible = true;
                 }
                 else
+                {
+                    lblLocalBranch.Visible = false;
+                    cmbLocalBranches.Visible = false;
                     btnPush.Text = "Pull";
+                }
             });
 
+            gitRepositoryManager = new GitRepositoryManager();
         }
 
         public void Alert(string msg, Form_Alert.enmType type)
@@ -53,7 +60,7 @@ namespace DockSample.Controls
 
         private void btnPush_Click(object sender, EventArgs e)
         {
-            if (cmbBranches.SelectedValue.ToString().Trim().Length == 0)
+            if (cmbLocalBranches.SelectedValue.ToString().Trim().Length == 0)
             {
                 this.Alert("Please select branch..", Form_Alert.enmType.Info);
             }
@@ -68,6 +75,13 @@ namespace DockSample.Controls
                         cmbBranches.PerformSafely(() => {
                             strSelectedBranch = cmbBranches.SelectedValue.ToString().Trim();
                         });
+
+                        if (string.IsNullOrEmpty(strSelectedBranch))
+                        {
+                            cmbLocalBranches.PerformSafely(() => {
+                                strSelectedBranch = cmbLocalBranches.SelectedValue.ToString().Trim();
+                            });
+                        }
 
                         //code to get the commit message
                         gitRepositoryManager = new GitRepositoryManager(_CurrentProj.GitUsername,
@@ -123,7 +137,9 @@ namespace DockSample.Controls
         {
             Task t = new Task(() =>
             {
+                BindLocalBranches();
                 BindBranches();
+                cmbLocalBranches_SelectedIndexChanged(null, null);
             });
             t.Start();
         }
@@ -132,20 +148,43 @@ namespace DockSample.Controls
         {
             //code to get the commit message
             gitRepositoryManager = new GitRepositoryManager(_CurrentProj.GitUsername,
-                _CurrentProj.GitPassword,
-                _CurrentProj.GitRepoURL,
-                _strSelectedNodePath);
+                        _CurrentProj.GitPassword,
+                        _CurrentProj.GitRepoURL,
+                        _strSelectedNodePath);
             var listBranches = gitRepositoryManager.GetBranches();
-
             return listBranches.ToList();
+        }
+
+        List<string> GetLocalBranchesList()
+        {
+            //code to get the commit message
+            var listBranches = gitRepositoryManager.GetLocalBranches(_strSelectedNodePath);
+            return listBranches.ToList();
+        }
+
+        void BindLocalBranches()
+        {
+            var data = GetLocalBranchesList();
+            var headBranch = gitRepositoryManager.GetAssociateBranch(_strSelectedNodePath);
+            if (data != null && data.Count > 0)
+            {
+                cmbLocalBranches.PerformSafely(() => {
+                    cmbLocalBranches.DataSource = data;
+                    cmbLocalBranches.SelectedText = headBranch;
+                });
+            }
         }
 
         void BindBranches()
         {
-            if (GetBranchesList() != null && GetBranchesList().Count > 0)
+            var data = GetBranchesList();
+            if (data != null && data.Count > 0)
             {
                 cmbBranches.PerformSafely(() => {
-                    cmbBranches.DataSource = GetBranchesList();
+                    if(_pushOrPull.ToLower() == "push")
+                        data.Insert(0, "");
+
+                    cmbBranches.DataSource = data;
                 });
             }
         }
@@ -225,6 +264,24 @@ namespace DockSample.Controls
         private void btnCancelAddNewBranch_Click(object sender, EventArgs e)
         {
             ResetAddNewBranch();
+        }
+
+        private void cmbLocalBranches_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                cmbLocalBranches.PerformSafely(() =>
+                {
+                    string strSelectedLocalBranch = cmbLocalBranches.SelectedValue.ToString();
+                    if (cmbBranches.Items.Contains(strSelectedLocalBranch))
+                        cmbBranches.SelectedItem = strSelectedLocalBranch;
+                    else
+                        cmbBranches.SelectedItem = "";
+                });
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

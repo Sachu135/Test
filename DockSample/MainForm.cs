@@ -4,6 +4,7 @@ using DockSample.lib;
 using SFTPEntities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -1016,14 +1017,29 @@ namespace DockSample
                     try
                     {
                         ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? string.Empty : CurrentProj.terminalInfo.Url, tabText, CurrentProj.IsWindows);
-                        if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                        if (CurrentProj.IsWindows)
                         {
-                            dummyDoc.MdiParent = this;
-                            dummyDoc.Show();
+                            TerminalDoc dummyDoc = new TerminalDoc(tabText, CurrentProj.IsWindows);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
                         }
                         else
-                            dummyDoc.Show(dockPanel);
+                        {
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? string.Empty : CurrentProj.terminalInfo.Url, tabText);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
+                        }
+                        
                     }
                     catch (Exception ex)
                     {
@@ -1287,7 +1303,7 @@ namespace DockSample
                     }
                     else
                     {
-                        BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.HealthCheckService, tabText, CurrentProj.IsWindows);
+                        TerminalDoc dummyDoc = new TerminalDoc(tabText, CurrentProj.IsWindows);
                         if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                         {
                             dummyDoc.MdiParent = this;
@@ -1414,5 +1430,150 @@ namespace DockSample
             }
         }
 
+        private void advanceanalyticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Task(() =>
+            {
+                new Task(() =>
+                {
+                    this.PerformSafely(() =>
+                    {
+                        WaitLoader.ShowDialog(this);
+                    });
+                }).Start();
+
+                var tabText = "Advance Analytics";
+                if (CheckTerminalOrConfiguratorOpen(tabText))
+                {
+                    //MessageBox.Show("Terminal already opened!");
+                    this.Alert("Advance Analytics already opened!", Form_Alert.enmType.Info);
+                    return;
+                }
+                dockPanel.PerformSafely(() =>
+                {
+                    try
+                    {
+                        var notebookUrl = getNotebookUrl();
+                        if (string.IsNullOrEmpty(notebookUrl))
+                        {
+                            LaunchNotebook();
+                            notebookUrl = getNotebookUrl();
+                        }
+                        if (string.IsNullOrEmpty(notebookUrl))
+                        {
+
+                        }
+                        else
+                        {
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? notebookUrl : CurrentProj.terminalInfo.Url, tabText, this);
+                            if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
+                            {
+                                dummyDoc.MdiParent = this;
+                                dummyDoc.Show();
+                            }
+                            else
+                                dummyDoc.Show(dockPanel);
+                        }
+
+                        this.PerformSafely(() => {
+                            WaitLoader.Hide();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        //MessageBox.Show(ex.Message);
+                        this.Alert(ex.Message, Form_Alert.enmType.Error);
+                        this.PerformSafely(() => {
+                            WaitLoader.Hide();
+                        });
+                    }
+                });
+            }).Start();
+
+            
+
+            //WaitLoader.ShowDialog(this);
+        }
+
+        private void LaunchNotebook()
+        {
+            int vExitCode = 0;
+
+            //D: & cd D:\Kockpit Studio\ru-RU & jupyter notebook --no-browser
+
+            string cmd = string.Format("/c {0} & cd {1} & {2}", this.CurrentProj.ProjectPath.Substring(0,2), this.CurrentProj.ProjectPath, "jupyter notebook --no-browser");
+            var processInfoValidate = new ProcessStartInfo("cmd.exe", cmd);
+            processInfoValidate.CreateNoWindow = true;
+            processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfoValidate.UseShellExecute = false;
+            processInfoValidate.RedirectStandardError = true;
+            processInfoValidate.RedirectStandardOutput = true;
+            processInfoValidate.Verb = "runas";
+            var processValidate = Process.Start(processInfoValidate);
+            processValidate.OutputDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+            {
+                if (e1.Data != null)
+                {
+                }
+            };
+            processValidate.BeginOutputReadLine();
+            processValidate.ErrorDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+            {
+                if (e1.Data != null)
+                {
+                    vExitCode = 1;
+                }
+            };
+            processValidate.BeginErrorReadLine();
+            processValidate.WaitForExit();
+            processValidate.Close();
+        }
+
+        private string getNotebookUrl()
+        {
+            #region [Check for All Packages]
+            int vExitCode = 0;
+            string cmd = string.Format("/c {0}", "jupyter notebook list");
+            var processInfoValidate = new ProcessStartInfo("cmd.exe", cmd);
+            processInfoValidate.CreateNoWindow = true;
+            processInfoValidate.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfoValidate.UseShellExecute = false;
+            processInfoValidate.RedirectStandardError = true;
+            processInfoValidate.RedirectStandardOutput = true;
+            processInfoValidate.Verb = "runas";
+            var processValidate = Process.Start(processInfoValidate);
+            List<string> notebookUrls = new List<string>();
+            processValidate.OutputDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+            {
+                if (e1.Data != null)
+                {
+                    if (e1.Data.Trim().StartsWith("http://"))
+                    {
+                        notebookUrls.Add(e1.Data.Trim().Split(' ')[0]);
+                    }
+                }
+            };
+            processValidate.BeginOutputReadLine();
+            processValidate.ErrorDataReceived += (object sender1, DataReceivedEventArgs e1) =>
+            {
+                if (e1.Data != null)
+                {
+                    vExitCode = 1;
+                }
+            };
+            processValidate.BeginErrorReadLine();
+            processValidate.WaitForExit();
+            processValidate.Close();
+            #endregion
+
+            if (notebookUrls.Count() > 0)
+            {
+                return notebookUrls.Last();
+            }
+            else 
+            {
+                return string.Empty;
+            }
+        }
     }
 }

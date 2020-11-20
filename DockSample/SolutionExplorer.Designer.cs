@@ -71,6 +71,7 @@ namespace DockSample
             this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem23 = new System.Windows.Forms.ToolStripMenuItem();
+            this.switchCheckoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsRootPath.SuspendLayout();
             this.cmsDirectory.SuspendLayout();
             this.cmsFile.SuspendLayout();
@@ -120,21 +121,22 @@ namespace DockSample
             this.commitToolStripMenuItem1,
             this.pushToGitToolStripMenuItem,
             this.commitPushToolStripMenuItem1,
-            this.pullToolStripMenuItem});
+            this.pullToolStripMenuItem,
+            this.switchCheckoutToolStripMenuItem});
             this.cmsRootPath.Name = "cmsRootPath";
-            this.cmsRootPath.Size = new System.Drawing.Size(168, 220);
+            this.cmsRootPath.Size = new System.Drawing.Size(181, 264);
             this.cmsRootPath.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsRootPath_ItemClicked);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(164, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // newFileToolStripMenuItem
             // 
@@ -146,7 +148,7 @@ namespace DockSample
             this.excelToolStripMenuItem,
             this.cSVToolStripMenuItem});
             this.newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
-            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newFileToolStripMenuItem.Text = "New File";
             this.newFileToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newFileToolStripMenuItem_DropDownItemClicked);
             // 
@@ -189,55 +191,55 @@ namespace DockSample
             // uploadFileToolStripMenuItem
             // 
             this.uploadFileToolStripMenuItem.Name = "uploadFileToolStripMenuItem";
-            this.uploadFileToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.uploadFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadFileToolStripMenuItem.Text = "Upload File";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(164, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // newDirectoryToolStripMenuItem
             // 
             this.newDirectoryToolStripMenuItem.Name = "newDirectoryToolStripMenuItem";
-            this.newDirectoryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.newDirectoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newDirectoryToolStripMenuItem.Text = "New Directory";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(164, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // createRepositoryToolStripMenuItem
             // 
             this.createRepositoryToolStripMenuItem.Name = "createRepositoryToolStripMenuItem";
-            this.createRepositoryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.createRepositoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.createRepositoryToolStripMenuItem.Text = "Create &Repository";
             this.createRepositoryToolStripMenuItem.Visible = false;
             // 
             // commitToolStripMenuItem1
             // 
             this.commitToolStripMenuItem1.Name = "commitToolStripMenuItem1";
-            this.commitToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.commitToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.commitToolStripMenuItem1.Text = "Commit";
             // 
             // pushToGitToolStripMenuItem
             // 
             this.pushToGitToolStripMenuItem.Name = "pushToGitToolStripMenuItem";
-            this.pushToGitToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.pushToGitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pushToGitToolStripMenuItem.Text = "Push to Git";
             // 
             // commitPushToolStripMenuItem1
             // 
             this.commitPushToolStripMenuItem1.Name = "commitPushToolStripMenuItem1";
-            this.commitPushToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.commitPushToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.commitPushToolStripMenuItem1.Text = "Commit && Push";
             this.commitPushToolStripMenuItem1.Visible = false;
             // 
             // pullToolStripMenuItem
             // 
             this.pullToolStripMenuItem.Name = "pullToolStripMenuItem";
-            this.pullToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.pullToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pullToolStripMenuItem.Text = "Pull from Git";
             // 
             // cmsDirectory
@@ -376,6 +378,12 @@ namespace DockSample
             this.toolStripMenuItem23.Size = new System.Drawing.Size(139, 22);
             this.toolStripMenuItem23.Text = "Download";
             // 
+            // switchCheckoutToolStripMenuItem
+            // 
+            this.switchCheckoutToolStripMenuItem.Name = "switchCheckoutToolStripMenuItem";
+            this.switchCheckoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.switchCheckoutToolStripMenuItem.Text = "Switch/Checkout";
+            // 
             // SolutionExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -442,5 +450,6 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem commitPushToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem createRepositoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pullToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem switchCheckoutToolStripMenuItem;
     }
 }

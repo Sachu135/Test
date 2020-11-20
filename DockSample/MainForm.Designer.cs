@@ -43,6 +43,7 @@ namespace DockSample
             this.menuItemSolutionExplorer = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOutputWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemTaskList = new System.Windows.Forms.ToolStripMenuItem();
+            this.advanceanalyticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemToolBar = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemStatusBar = new System.Windows.Forms.ToolStripMenuItem();
@@ -177,6 +178,7 @@ namespace DockSample
             this.menuItemSolutionExplorer,
             this.menuItemOutputWindow,
             this.menuItemTaskList,
+            this.advanceanalyticsToolStripMenuItem,
             this.menuItem1,
             this.menuItemToolBar,
             this.menuItemStatusBar,
@@ -189,35 +191,42 @@ namespace DockSample
             // menuItemSolutionExplorer
             // 
             this.menuItemSolutionExplorer.Name = "menuItemSolutionExplorer";
-            this.menuItemSolutionExplorer.Size = new System.Drawing.Size(164, 22);
+            this.menuItemSolutionExplorer.Size = new System.Drawing.Size(171, 22);
             this.menuItemSolutionExplorer.Text = "&Solution Explorer";
             this.menuItemSolutionExplorer.Click += new System.EventHandler(this.menuItemSolutionExplorer_Click);
             // 
             // menuItemOutputWindow
             // 
             this.menuItemOutputWindow.Name = "menuItemOutputWindow";
-            this.menuItemOutputWindow.Size = new System.Drawing.Size(164, 22);
+            this.menuItemOutputWindow.Size = new System.Drawing.Size(171, 22);
             this.menuItemOutputWindow.Text = "&Output Window";
             this.menuItemOutputWindow.Click += new System.EventHandler(this.menuItemOutputWindow_Click);
             // 
             // menuItemTaskList
             // 
             this.menuItemTaskList.Name = "menuItemTaskList";
-            this.menuItemTaskList.Size = new System.Drawing.Size(164, 22);
+            this.menuItemTaskList.Size = new System.Drawing.Size(171, 22);
             this.menuItemTaskList.Text = "Task &List";
             this.menuItemTaskList.Click += new System.EventHandler(this.menuItemTaskList_Click);
+            // 
+            // advanceanalyticsToolStripMenuItem
+            // 
+            this.advanceanalyticsToolStripMenuItem.Name = "advanceanalyticsToolStripMenuItem";
+            this.advanceanalyticsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.advanceanalyticsToolStripMenuItem.Text = "Advance Analytics";
+            this.advanceanalyticsToolStripMenuItem.Click += new System.EventHandler(this.advanceanalyticsToolStripMenuItem_Click);
             // 
             // menuItem1
             // 
             this.menuItem1.Name = "menuItem1";
-            this.menuItem1.Size = new System.Drawing.Size(161, 6);
+            this.menuItem1.Size = new System.Drawing.Size(168, 6);
             // 
             // menuItemToolBar
             // 
             this.menuItemToolBar.Checked = true;
             this.menuItemToolBar.CheckState = System.Windows.Forms.CheckState.Checked;
             this.menuItemToolBar.Name = "menuItemToolBar";
-            this.menuItemToolBar.Size = new System.Drawing.Size(164, 22);
+            this.menuItemToolBar.Size = new System.Drawing.Size(171, 22);
             this.menuItemToolBar.Text = "Tool &Bar";
             this.menuItemToolBar.Click += new System.EventHandler(this.menuItemToolBar_Click);
             // 
@@ -226,14 +235,14 @@ namespace DockSample
             this.menuItemStatusBar.Checked = true;
             this.menuItemStatusBar.CheckState = System.Windows.Forms.CheckState.Checked;
             this.menuItemStatusBar.Name = "menuItemStatusBar";
-            this.menuItemStatusBar.Size = new System.Drawing.Size(164, 22);
+            this.menuItemStatusBar.Size = new System.Drawing.Size(171, 22);
             this.menuItemStatusBar.Text = "Status B&ar";
             this.menuItemStatusBar.Click += new System.EventHandler(this.menuItemStatusBar_Click);
             // 
             // menuItem2
             // 
             this.menuItem2.Name = "menuItem2";
-            this.menuItem2.Size = new System.Drawing.Size(161, 6);
+            this.menuItem2.Size = new System.Drawing.Size(168, 6);
             // 
             // menuItemTools
             // 
@@ -523,7 +532,6 @@ namespace DockSample
             // toolBarcbDatabase
             // 
             this.toolBarcbDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolBarcbDatabase.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolBarcbDatabase.Name = "toolBarcbDatabase";
             this.toolBarcbDatabase.Size = new System.Drawing.Size(100, 27);
             this.toolBarcbDatabase.SelectedIndexChanged += new System.EventHandler(this.toolBarcbDatabase_SelectedIndexChanged);
@@ -577,8 +585,6 @@ namespace DockSample
         }
 
         #endregion
-
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.ToolStrip toolBar;
         private System.Windows.Forms.ToolStripButton toolBarButtonSolutionExplorer;
@@ -642,5 +648,7 @@ namespace DockSample
         private System.Windows.Forms.ToolStripMenuItem menuItemOpen;
         private FontAwesome.Sharp.IconToolStripButton tsClusterSetup;
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveAll;
+        private System.Windows.Forms.ToolStripMenuItem advanceanalyticsToolStripMenuItem;
+        public WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
     }
 }

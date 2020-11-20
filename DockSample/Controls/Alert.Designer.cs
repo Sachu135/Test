@@ -44,8 +44,8 @@
             this.pictureBox1.Image = global::DockSample.Properties.Resources.alert_success;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(41, 39);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.Size = new System.Drawing.Size(25, 25);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
@@ -56,9 +56,10 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = global::DockSample.Properties.Resources.alert_cancel;
-            this.pictureBox2.Location = new System.Drawing.Point(318, 4);
+            this.pictureBox2.Location = new System.Drawing.Point(324, 1);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(27, 27);
+            this.pictureBox2.Size = new System.Drawing.Size(20, 20);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 3;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
@@ -69,7 +70,7 @@
             this.lblMsg.ForeColor = System.Drawing.Color.White;
             this.lblMsg.Location = new System.Drawing.Point(3, 6);
             this.lblMsg.Name = "lblMsg";
-            this.lblMsg.Size = new System.Drawing.Size(57, 21);
+            this.lblMsg.Size = new System.Drawing.Size(49, 19);
             this.lblMsg.TabIndex = 4;
             this.lblMsg.Text = "label1";
             this.lblMsg.Resize += new System.EventHandler(this.lblMsg_Resize);
@@ -78,6 +79,7 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.Controls.Add(this.lblMsg);
+            this.panel1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel1.Location = new System.Drawing.Point(47, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(265, 57);
@@ -95,6 +97,7 @@
             this.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form_Alert";
+            this.Opacity = 0.7D;
             this.Text = "Form_Alert";
             this.Load += new System.EventHandler(this.Form_Alert_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

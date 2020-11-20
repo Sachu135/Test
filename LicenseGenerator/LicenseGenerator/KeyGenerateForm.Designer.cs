@@ -43,6 +43,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnGenerateKey = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnReset = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -176,7 +177,7 @@
             this.btnGenerateKey.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGenerateKey.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGenerateKey.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnGenerateKey.Location = new System.Drawing.Point(508, 431);
+            this.btnGenerateKey.Location = new System.Drawing.Point(356, 431);
             this.btnGenerateKey.Name = "btnGenerateKey";
             this.btnGenerateKey.Size = new System.Drawing.Size(149, 28);
             this.btnGenerateKey.TabIndex = 2;
@@ -194,12 +195,30 @@
             this.pictureBox1.TabIndex = 17;
             this.pictureBox1.TabStop = false;
             // 
+            // btnReset
+            // 
+            this.btnReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(115)))), ((int)(((byte)(172)))));
+            this.btnReset.FlatAppearance.BorderSize = 0;
+            this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(141)))), ((int)(((byte)(248)))));
+            this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReset.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReset.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.btnReset.Location = new System.Drawing.Point(511, 431);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(149, 28);
+            this.btnReset.TabIndex = 18;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = false;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
             // KeyGenerateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(90)))), ((int)(((byte)(158)))));
             this.ClientSize = new System.Drawing.Size(669, 471);
+            this.Controls.Add(this.btnReset);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnGenerateKey);
             this.Controls.Add(this.panel1);
@@ -231,6 +250,7 @@
         private System.Windows.Forms.TextBox txtMachineName;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnReset;
     }
 }
 

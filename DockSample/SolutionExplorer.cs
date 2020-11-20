@@ -79,6 +79,7 @@ namespace DockSample
             imageList2.Images.Add(Properties.Resources.git_commited1);
             imageList2.Images.Add(Properties.Resources.git_pendingcommit1);
             imageList2.Images.Add(Properties.Resources.git_new1);
+            imageList2.Images.Add(Properties.Resources.folder16);
 
             //treeView2.ImageIndex = 0;
 
@@ -639,7 +640,7 @@ namespace DockSample
                     }
                     else
                     {
-                        TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = true };
+                        TreeNode tr = new TreeNode() { Text = fl.Name, ToolTipText = fl.FullPath, Tag = true, ImageIndex = 3, SelectedImageIndex = 3 };
                         if(showFiles)
                         {
                             tr.ContextMenuStrip = cmsDirectory;
@@ -733,7 +734,7 @@ namespace DockSample
             {
                 if (fileOrDir.IsDirectory)
                 {
-                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
+                    var treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false, ImageIndex = 3, SelectedImageIndex = 3 };
                     treeNode.ContextMenuStrip = cmsDirectory;
                     //treeNode.NodeFont = new Font(treeView2.Font.FontFamily, 9, FontStyle.Regular);
                     treeNodes.Add(treeNode);
@@ -792,7 +793,7 @@ namespace DockSample
             treeView2.PerformSafely(() =>
             {
                 //this.Controls.Remove(loader);
-                System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = CurrentProj.DirectoryInfo.FullPath, ToolTipText = CurrentProj.DirectoryInfo.FullPath };
+                System.Windows.Forms.TreeNode rootTreeNode = new System.Windows.Forms.TreeNode() { Text = CurrentProj.DirectoryInfo.FullPath, ToolTipText = CurrentProj.DirectoryInfo.FullPath, ImageIndex = 3, SelectedImageIndex = 3 };
                 treeView2.Nodes.Clear();
                 rootTreeNode.Nodes.AddRange(treeNodes.ToArray());
                 rootTreeNode.ExpandAll();
@@ -1135,6 +1136,12 @@ namespace DockSample
                                     this.Alert("Workspace pulled from Git Successfully!", Form_Alert.enmType.Success);
                                     RefreshContent();
                                 }
+                            });
+                            break;
+                        case "Switch/Checkout":
+                            this.PerformSafely(() =>
+                            {
+                                //code to switch the branch
                             });
                             break;
                     }

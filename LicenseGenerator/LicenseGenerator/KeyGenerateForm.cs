@@ -112,14 +112,28 @@ namespace LicenseGenerator
 			}
 		}
 
+        private void ResetControl()
+        {
+            txtMachineName.Text = string.Empty;
+            txtDays.Text = "0";
+            dtStartDate.Text = DateTime.Now.ToString();
+            dtEndDate.Text = DateTime.Now.ToString();
+            txtKey.Text = string.Empty;
+        }
+
         private void dtStartDate_ValueChanged(object sender, EventArgs e)
         {
-			CalcDate();
+            CalcDate();
 		}
 
         private void txtDays_Validated(object sender, EventArgs e)
         {
-			CalcDate();
-		}
+            CalcDate();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            ResetControl();
+        }
     }
 }

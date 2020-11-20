@@ -670,6 +670,11 @@ namespace DockSample.Controls
                     {
                         MessageBox.Show("Project location already exists!");
                     }
+                    //else if (!string.IsNullOrEmpty(txtGitUrl.Text) || !string.IsNullOrEmpty(txtGitUsername.Text) || !string.IsNullOrEmpty(txtGitPassword.Text))
+                    //{
+                    //    //GitRepositoryManager gitRepositoryManager = new GitRepositoryManager();
+                    //    //bool lretval = gitRepositoryManager.IsValidRepoURL(txtGitUrl.Text.Trim());
+                    //}
                     else
                     {
                         if (txtProLocation.Text.Trim().Length == 0)

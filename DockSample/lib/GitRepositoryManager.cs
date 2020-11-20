@@ -115,6 +115,40 @@ namespace DockSample.lib
             }
         }
 
+        public void CommitToBranch(string message, string localFolder, string branchName, string email = "")
+        {
+            try
+            {
+                InitRepository(localFolder);
+                using (var repo = new Repository(_localFolder.FullName))
+                {
+                    //Signature author = repo.Config.BuildSignature(DateTimeOffset.Now);
+                    var files = _localFolder.GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName);
+                    //repo.Stage(files);
+                    Commands.Stage(repo, files);
+
+                    //repo.Commit(message);
+
+                    // Create the committer's signature and commit
+                    var author = new Signature(_credentials.Username, email, DateTime.Now);
+                    var committer = author;
+
+                    //repo.Commit(message, author);
+
+                    // Commit to the repository
+                    //var commit = repo.Commit(message, author, committer);
+
+                    Commands.Checkout(repo, repo.Branches[branchName]);
+                }
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show(ex.Message);
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// Pushes all commits.
         /// </summary>
@@ -321,6 +355,86 @@ namespace DockSample.lib
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        //public bool IsValidRepoURL(string strGitURL)
+        //{
+        //    return Repository.IsValid(strGitURL);
+        //}
+
+        public string GetAssociateBranch(string LocalFolder)
+        {
+            InitRepository(LocalFolder);
+            string currentBranchName = string.Empty;
+            using (var repo = new Repository(LocalFolder))
+            {
+                currentBranchName = repo.Head.FriendlyName;
+            }
+            return currentBranchName;
+        }
+
+        public List<string> GetLocalBranches(string LocalFolder)
+        {
+            List<string> listLocalBranches = new List<string>();
+            using (var repo = new Repository(LocalFolder))
+            {
+                var currentBranchName = repo.Branches;
+                foreach(var item in currentBranchName)
+                {
+                    listLocalBranches.Add(item.FriendlyName);
+                }
+            }
+            return listLocalBranches;
+        }
+        public bool CreateNewLocalBranch(string strBranchName)
+        {
+            try
+            {
+                using (var repo = new Repository(_localFolder.FullName))
+                {
+                    string remoteName = string.Empty;
+                    string[] splitUrl = _repoSource.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (splitUrl.Count() > 0)
+                    {
+                        remoteName = splitUrl[splitUrl.Length - 1].Contains(".git") ? splitUrl[splitUrl.Length - 1].Replace(".git", string.Empty) : splitUrl[splitUrl.Length - 1];
+                    }
+
+                    var newBranch = repo.CreateBranch(strBranchName);
+                    var remote = repo.Network.Remotes.FirstOrDefault(r => r.Name == remoteName);
+                    if (remote == null)
+                    {
+                        repo.Network.Remotes.Add(remoteName, _repoSource);
+                        remote = repo.Network.Remotes.FirstOrDefault(r => r.Name == remoteName);
+                    }
+
+                    repo.Branches.Update(newBranch,
+                            b => b.Remote = remote.Name,
+                            b => b.UpstreamBranch = newBranch.CanonicalName);
+
+                    LibGit2Sharp.Commands.Checkout(repo, strBranchName);
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool SwitchBranch(string strBranchName)
+        {
+            try
+            {
+                using (var repo = new Repository(_localFolder.FullName))
+                {
+                    LibGit2Sharp.Commands.Checkout(repo, strBranchName);
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

@@ -106,9 +106,9 @@ namespace DockSample
                 {
                     this.Name = fname;
                     ///bottom right
-                    this.x = Screen.PrimaryScreen.WorkingArea.Width - this.Width + 15;
+                    this.x = Screen.PrimaryScreen.WorkingArea.Width - this.Width + 25;
                     //this.y = Screen.PrimaryScreen.WorkingArea.Height - this.Height * i - 5 * i;
-                    this.y = Screen.PrimaryScreen.WorkingArea.Height - this.Height;
+                    this.y = Screen.PrimaryScreen.WorkingArea.Height - this.Height - 15;
 
                     ///top center
                     //this.x = Screen.PrimaryScreen.WorkingArea.Width / 2 - 20;
@@ -133,7 +133,8 @@ namespace DockSample
                     break;
                 case enmType.Info:
                     this.pictureBox1.Image = Resources.alert_info;
-                    this.BackColor = Color.RoyalBlue;
+                    //this.BackColor = Color.RoyalBlue;
+                    this.BackColor = Color.FromArgb(51, 181, 229);
                     break;
                 case enmType.Warning:
                     this.pictureBox1.Image = Resources.alert_warning;
@@ -148,7 +149,7 @@ namespace DockSample
 
             int lw = lblMsg.Width;
             int lh = lblMsg.Height;
-            Size sizeofForm = new Size(this.Width, this.Height);
+            Size sizeofForm = new Size(this.Width, this.Height + 5);
             if (this.Width < lw || this.Height < lh)
             {
                 sizeofForm.Width = this.Width;
@@ -186,7 +187,7 @@ namespace DockSample
             ////////StringBuilder sb = null;
 
             lblMsg.PerformSafely(() => {
-                lblMsg.MaximumSize = new Size(cw, 0);
+                lblMsg.MaximumSize = new Size(cw + 5, 0);
                 lblMsg.AutoSize = true;
             });
 

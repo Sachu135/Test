@@ -39,6 +39,8 @@
             this.pnlNewBranch = new System.Windows.Forms.Panel();
             this.btnCancelAddNewBranch = new System.Windows.Forms.Button();
             this.btnSaveNewBranch = new System.Windows.Forms.Button();
+            this.lblLocalBranch = new System.Windows.Forms.Label();
+            this.cmbLocalBranches = new System.Windows.Forms.ComboBox();
             this.toolStrip1.SuspendLayout();
             this.pnlNewBranch.SuspendLayout();
             this.SuspendLayout();
@@ -50,9 +52,9 @@
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnClose.Location = new System.Drawing.Point(195, 114);
+            this.btnClose.Location = new System.Drawing.Point(200, 117);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(100, 33);
+            this.btnClose.Size = new System.Drawing.Size(100, 30);
             this.btnClose.TabIndex = 5;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = false;
@@ -65,9 +67,9 @@
             this.btnPush.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPush.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPush.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnPush.Location = new System.Drawing.Point(89, 114);
+            this.btnPush.Location = new System.Drawing.Point(99, 116);
             this.btnPush.Name = "btnPush";
-            this.btnPush.Size = new System.Drawing.Size(100, 33);
+            this.btnPush.Size = new System.Drawing.Size(100, 32);
             this.btnPush.TabIndex = 4;
             this.btnPush.Text = "Push";
             this.btnPush.UseVisualStyleBackColor = false;
@@ -94,7 +96,7 @@
             // 
             this.cmbBranches.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbBranches.FormattingEnabled = true;
-            this.cmbBranches.Location = new System.Drawing.Point(89, 70);
+            this.cmbBranches.Location = new System.Drawing.Point(99, 75);
             this.cmbBranches.Name = "cmbBranches";
             this.cmbBranches.Size = new System.Drawing.Size(271, 21);
             this.cmbBranches.TabIndex = 6;
@@ -102,11 +104,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 73);
+            this.label1.Location = new System.Drawing.Point(12, 78);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 7;
-            this.label1.Text = "Branch";
+            this.label1.Text = "Remote Branch";
             // 
             // toolStrip1
             // 
@@ -117,6 +119,7 @@
             this.toolStrip1.Size = new System.Drawing.Size(428, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
+            this.toolStrip1.Visible = false;
             // 
             // tsBtnAddNewBranch
             // 
@@ -135,7 +138,7 @@
             this.pnlNewBranch.Controls.Add(this.txtBranch);
             this.pnlNewBranch.Controls.Add(this.label7);
             this.pnlNewBranch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlNewBranch.Location = new System.Drawing.Point(0, 25);
+            this.pnlNewBranch.Location = new System.Drawing.Point(0, 0);
             this.pnlNewBranch.Name = "pnlNewBranch";
             this.pnlNewBranch.Size = new System.Drawing.Size(428, 27);
             this.pnlNewBranch.TabIndex = 9;
@@ -171,6 +174,25 @@
             this.btnSaveNewBranch.UseVisualStyleBackColor = false;
             this.btnSaveNewBranch.Click += new System.EventHandler(this.btnSaveNewBranch_Click);
             // 
+            // lblLocalBranch
+            // 
+            this.lblLocalBranch.AutoSize = true;
+            this.lblLocalBranch.Location = new System.Drawing.Point(12, 47);
+            this.lblLocalBranch.Name = "lblLocalBranch";
+            this.lblLocalBranch.Size = new System.Drawing.Size(70, 13);
+            this.lblLocalBranch.TabIndex = 10;
+            this.lblLocalBranch.Text = "Local Branch";
+            // 
+            // cmbLocalBranches
+            // 
+            this.cmbLocalBranches.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLocalBranches.FormattingEnabled = true;
+            this.cmbLocalBranches.Location = new System.Drawing.Point(99, 44);
+            this.cmbLocalBranches.Name = "cmbLocalBranches";
+            this.cmbLocalBranches.Size = new System.Drawing.Size(271, 21);
+            this.cmbLocalBranches.TabIndex = 11;
+            this.cmbLocalBranches.SelectedIndexChanged += new System.EventHandler(this.cmbLocalBranches_SelectedIndexChanged);
+            // 
             // GitPush
             // 
             this.AcceptButton = this.btnPush;
@@ -178,6 +200,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(428, 210);
             this.ControlBox = false;
+            this.Controls.Add(this.cmbLocalBranches);
+            this.Controls.Add(this.lblLocalBranch);
             this.Controls.Add(this.pnlNewBranch);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.label1);
@@ -210,5 +234,7 @@
         private System.Windows.Forms.Panel pnlNewBranch;
         private System.Windows.Forms.Button btnSaveNewBranch;
         private System.Windows.Forms.Button btnCancelAddNewBranch;
+        private System.Windows.Forms.Label lblLocalBranch;
+        private System.Windows.Forms.ComboBox cmbLocalBranches;
     }
 }
