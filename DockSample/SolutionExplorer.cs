@@ -30,6 +30,7 @@ namespace DockSample
         ProjectInfo CurrentProj;
         GitCommit gitCommitForm;
         GitPush gitPushForm;
+        GitSwitch gitSwitchForm;
 
         public SolutionExplorer()
         {
@@ -464,7 +465,6 @@ namespace DockSample
                     }
                 }).Start();
             };
-
         }
 
         public void Alert(string msg, Form_Alert.enmType type)
@@ -547,6 +547,7 @@ namespace DockSample
             //await t;
 
 
+           
         }
 
         void AddNodes(TreeNode treeNode, List<SFTPEntities.DirectoryOrFile> files, bool showFiles = true, 
@@ -722,11 +723,15 @@ namespace DockSample
         {
             CurrentProj = studioConfig.projectInfoList.First(c => c.ProjectName == proName);
 
-            GitRepositoryManager gitRepositoryManager = new GitRepositoryManager(CurrentProj.GitUsername,
+            Tuple<bool, bool, Dictionary<string, string>> hasUnCommit = new Tuple<bool, bool, Dictionary<string, string>>(false, false, null);
+            if (CurrentProj.IsWindows)
+            {
+                GitRepositoryManager gitRepositoryManager = new GitRepositoryManager(CurrentProj.GitUsername,
                             CurrentProj.GitPassword,
                             CurrentProj.GitRepoURL,
                             CurrentProj.ProjectPath);
-            var hasUnCommit = gitRepositoryManager.HasUncommittedChanges();
+                hasUnCommit = gitRepositoryManager.HasUncommittedChanges();
+            }
 
             var filesList = CurrentProj.DirectoryInfo.files;
             var treeNodes = new List<TreeNode>();
@@ -746,20 +751,22 @@ namespace DockSample
                     TreeNode treeNode = new TreeNode();
                     if (hasUnCommit.Item1 == false)
                     {
-                        treeView2.PerformSafely(() => {
+                        treeView2.PerformSafely(() =>
+                        {
                             treeView2.ImageList = null;
                         });
                         treeNode = new TreeNode() { Text = fileOrDir.Name, ToolTipText = fileOrDir.FullPath, Tag = false };
                     }
                     else
                     {
-                        treeView2.PerformSafely(() => {
+                        treeView2.PerformSafely(() =>
+                        {
                             treeView2.ImageList = imageList2;
                         });
                         if (hasUnCommit.Item2 == true)
                         {
                             //code to check the file
-                            if(hasUnCommit.Item3.Keys.Contains(fileOrDir.Name))
+                            if (hasUnCommit.Item3.Keys.Contains(fileOrDir.Name))
                             {
                                 string strValue = hasUnCommit.Item3[fileOrDir.Name];
                                 switch (strValue)
@@ -806,6 +813,13 @@ namespace DockSample
 
             mainFrm.CurrentProj = CurrentProj;
             mainFrm.EnableDisableControls();
+
+            commitToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false;
+            commitPushToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false;
+            pushToGitToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
+            pullToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
+            commitPushToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false;
+            switchCheckoutToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
         }
 
         void FillTreeViewForMoveFile(string proName)
@@ -1141,7 +1155,12 @@ namespace DockSample
                         case "Switch/Checkout":
                             this.PerformSafely(() =>
                             {
-                                //code to switch the branch
+                                gitSwitchForm = new GitSwitch(this.CurrentProj, topNodePath);
+                                if (gitSwitchForm.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    this.Alert("Branch switched Successfully!", Form_Alert.enmType.Success);
+                                    RefreshContent();
+                                }
                             });
                             break;
                     }

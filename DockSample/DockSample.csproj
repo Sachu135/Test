@@ -215,6 +215,17 @@
     <Compile Include="AppStarterForm.Designer.cs">
       <DependentUpon>AppStarterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GitSwitch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\GitSwitch.Designer.cs">
+      <DependentUpon>GitSwitch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="TerminalDoc.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -384,6 +395,9 @@
     <EmbeddedResource Include="AppStarterForm.resx">
       <DependentUpon>AppStarterForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GitSwitch.resx">
+      <DependentUpon>GitSwitch.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TerminalDoc.resx">
       <DependentUpon>TerminalDoc.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -465,16 +479,17 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="AppData\spark.tgz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="AppData\winutils.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -497,8 +512,6 @@
     <Compile Include="ToolWindow.Designer.cs">
       <DependentUpon>ToolWindow.cs</DependentUpon>
     </Compile>
-    <None Include="Resources\spark.tgz" />
-    <None Include="Resources\winutils.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CustomControls\CustomControls.csproj">

@@ -1333,8 +1333,15 @@ namespace DockSample
                     ///dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
                     if (CurrentProj.otherServices.ClusterSetupService.Length > 0)
                     {
-                        var fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName,
-                                CurrentProj.sSHClientInfo.Password, ".ssh/id_rsa", false);
+                        string fileContent = string.Empty;
+                        try
+                        {
+                            fileContent = SSHManager.ReadFileContent(CurrentProj.sSHClientInfo.IPAddress, CurrentProj.sSHClientInfo.UserName,
+                                                 CurrentProj.sSHClientInfo.Password, ".ssh/id_rsa", false);
+                        }
+                        catch (Exception)
+                        {
+                        }
 
                         BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.otherServices.ClusterSetupService, tabText);
                         dummyDoc.PublicKey = fileContent.ToString();
@@ -1434,14 +1441,14 @@ namespace DockSample
         {
             new Task(() =>
             {
-                new Task(() =>
+                this.PerformSafely(() =>
                 {
-                    this.PerformSafely(() =>
-                    {
-                        WaitLoader.ShowDialog(this);
-                    });
-                }).Start();
+                    WaitLoader.ShowDialog(this);
+                });
+            }).Start();
 
+            new Task(() =>
+            {
                 var tabText = "Advance Analytics";
                 if (CheckTerminalOrConfiguratorOpen(tabText))
                 {
@@ -1465,7 +1472,8 @@ namespace DockSample
                         }
                         else
                         {
-                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? notebookUrl : CurrentProj.terminalInfo.Url, tabText, this);
+                            BrowserDoc dummyDoc = new BrowserDoc(CurrentProj.IsWindows ? notebookUrl : CurrentProj.terminalInfo.Url, tabText, this, true);
+                            dummyDoc.CurrentProjPath = CurrentProj.ProjectPath;
                             if (dockPanel.DocumentStyle == DocumentStyle.SystemMdi)
                             {
                                 dummyDoc.MdiParent = this;

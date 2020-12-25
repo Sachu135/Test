@@ -32,6 +32,7 @@
 			<ComponentGroupRef Id="ja_JP_files" />
 			<ComponentGroupRef Id="ru_RU_files" />
 			<ComponentGroupRef Id="swiftshader_files" />
+			<ComponentGroupRef Id="AppData_files" />
 			<!--<ComponentGroupRef Id="amd64_files" />
 			<ComponentGroupRef Id="x86_files" />-->
 			<ComponentGroupRef Id="WebResourceComponents" />
@@ -104,6 +105,7 @@
 				  <Directory Id="ja_JP" Name="ja-JP" />
 				  <Directory Id="ru_RU" Name="ru-RU" />
 				  <Directory Id="zh_CN" Name="zh-CN" />
+				  <Directory Id="AppData" Name="AppData" />
 				  <Directory Id="swiftshader" Name="swiftshader" />
 				  <Directory Id="NativeBinaries" Name="NativeBinaries">
 					  <Directory Id="amd64" Name="amd64" />
@@ -374,6 +376,17 @@
       </Component>
     </ComponentGroup>
   </Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="AppData_files" Directory="AppData">
+			<Component Id="AppData_spark.tgz" Guid="ddf1cc40-773b-420f-8780-3e8068b14619">
+				<File Id="AppData_spark.tgz" Name="spark.tgz" Source="$(var.DockSample_TargetDir)AppData\spark.tgz" />
+			</Component>
+			<Component Id="AppData_winutils.zip" Guid="89a28530-3046-4b2a-b4a5-064b8cc7781b">
+				<File Id="AppData_winutils.zip" Name="winutils.zip" Source="$(var.DockSample_TargetDir)AppData\winutils.zip" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
 
 	<Fragment>
     <ComponentGroup Id="ja_JP_files" Directory="ja_JP">

@@ -547,38 +547,46 @@ namespace DockSample
                                 {
                                     SetText("Extracting spark");
                                     //code to pull the zip from resources and unzip it.
-                                    using (Stream stream = new MemoryStream(Resources.spark))
+                                    var sparkFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AppData", "spark.tgz");
+                                    if (File.Exists(sparkFile))
                                     {
-                                        var reader = ReaderFactory.Open(stream);
-                                        while (reader.MoveToNextEntry())
+                                        using (Stream stream = new MemoryStream(File.ReadAllBytes(sparkFile)))
                                         {
-                                            if (!reader.Entry.IsDirectory)
+                                            var reader = ReaderFactory.Open(stream);
+                                            while (reader.MoveToNextEntry())
                                             {
-                                                ExtractionOptions opt = new ExtractionOptions
+                                                if (!reader.Entry.IsDirectory)
                                                 {
-                                                    ExtractFullPath = true,
-                                                    Overwrite = true
-                                                };
-                                                reader.WriteEntryToDirectory(_SparkDir, opt);
+                                                    ExtractionOptions opt = new ExtractionOptions
+                                                    {
+                                                        ExtractFullPath = true,
+                                                        Overwrite = true
+                                                    };
+                                                    reader.WriteEntryToDirectory(_SparkDir, opt);
+                                                }
                                             }
                                         }
-                                    }
-                                    SetText("Extraction Completed");
-                                    //Environment Set For Spark
-                                    SetEnv(strSparkEnvVarName, _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
-                                    SetText("Environment Variable Path is set for " + strSparkEnvVarName + "");
+                                        SetText("Extraction Completed");
+                                        //Environment Set For Spark
+                                        SetEnv(strSparkEnvVarName, _SparkDir + "\\spark-2.4.6-bin-hadoop2.7");
+                                        SetText("Environment Variable Path is set for " + strSparkEnvVarName + "");
 
-                                    bool lSparkPathExists = false;
-                                    foreach (var path in liPaths)
-                                    {
-                                        if (path.Contains(@"\spark-2.4.6-bin-hadoop2.7\bin"))
+                                        bool lSparkPathExists = false;
+                                        foreach (var path in liPaths)
                                         {
-                                            lSparkPathExists = true;
-                                            break;
+                                            if (path.Contains(@"\spark-2.4.6-bin-hadoop2.7\bin"))
+                                            {
+                                                lSparkPathExists = true;
+                                                break;
+                                            }
                                         }
+                                        if (!lSparkPathExists)
+                                            newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
                                     }
-                                    if (!lSparkPathExists)
-                                        newValue = oldValue + ";" + _SparkDir + "\\spark-2.4.6-bin-hadoop2.7\\bin;";
+                                    else
+                                    {
+                                        SetText("Error: Spark.tgz does not exists.");
+                                    }
                                 }
 
                                 //set Combine Path
@@ -612,33 +620,41 @@ namespace DockSample
                                 {
                                     SetText("Extracting winutils.exe");
                                     //code to pull the zip from resources and unzip it.
-                                    using (Stream stream = new MemoryStream(Resources.winutils))
+                                    var winutilsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AppData", "winutils.zip");
+                                    if (File.Exists(winutilsFile))
                                     {
-                                        var reader = ReaderFactory.Open(stream);
-                                        while (reader.MoveToNextEntry())
+                                        using (Stream stream = new MemoryStream(File.ReadAllBytes(winutilsFile)))
                                         {
-                                            if (!reader.Entry.IsDirectory)
+                                            var reader = ReaderFactory.Open(stream);
+                                            while (reader.MoveToNextEntry())
                                             {
-                                                ExtractionOptions opt = new ExtractionOptions
+                                                if (!reader.Entry.IsDirectory)
                                                 {
-                                                    ExtractFullPath = true,
-                                                    Overwrite = true
-                                                };
-                                                reader.WriteEntryToDirectory(_WinUtilDir, opt);
+                                                    ExtractionOptions opt = new ExtractionOptions
+                                                    {
+                                                        ExtractFullPath = true,
+                                                        Overwrite = true
+                                                    };
+                                                    reader.WriteEntryToDirectory(_WinUtilDir, opt);
+                                                }
                                             }
                                         }
+                                        SetText("Extraction Completed");
+                                        //Environment Set For Hadoop
+                                        SetEnv(strHadoopEnvVarName, _WinUtilDir + "\\hadoop-3.0.0");
+                                        SetText("Environment Variable Path is set for " + strHadoopEnvVarName + "");
                                     }
-                                    SetText("Extraction Completed");
-                                    //Environment Set For Hadoop
-                                    SetEnv(strHadoopEnvVarName, _WinUtilDir + "\\hadoop-3.0.0");
-                                    SetText("Environment Variable Path is set for " + strHadoopEnvVarName + "");
+                                    else
+                                    {
+                                        SetText("Error: winutils.zip does not exists");
+                                    }
                                 }
                             }
                         }
 
                         if (ljupyterExists)
                         {
-                            string cmd = string.Format(@"/c {0} & {1}", "python3 -m pip install -upgrade pip -y", "pip install jupyterlab -y");
+                            string cmd = string.Format(@"/c {0} & {1}", "python3 -m pip install -upgrade pip -y", "python3 -m pip install jupyter -y");
                             var processInfoNtop = new ProcessStartInfo("cmd.exe", cmd);
                             processInfoNtop.CreateNoWindow = true;
                             processInfoNtop.WindowStyle = ProcessWindowStyle.Hidden;
