@@ -927,7 +927,7 @@ namespace DockSample.Controls
                         else if (cbConnDbType.SelectedItem.ToString().Trim().Equals("Postgres")) //Postgres
                         {
                             clientFactory = new PostgresFactory();
-                            connectString = "Host=" + txtConnServerName.Text.Trim() + ";Port=5432;Database=" + txtDbName.Text.Trim() + ";Username=" + txtConnUserName.Text.Trim() + ";Password=" + txtConnPassword.Text.Trim() + ";Integrated Security=False;;SSL Mode=Require;TrustServerCertificate=true;";
+                            connectString = "Host=" + txtConnServerName.Text.Trim() + ";Port=5432;Database=" + txtDbName.Text.Trim() + ";Username=" + txtConnUserName.Text.Trim() + ";Password=" + txtConnPassword.Text.Trim() + ";Integrated Security=False;"; /// ;SSL Mode=Require;TrustServerCertificate=true;";
                             connectDescription = txtConnServerName.Text.Trim() + " (" + txtConnUserName.Text.Trim() + ")";
                         }
                         else  //MySql

@@ -386,7 +386,7 @@ namespace DockSample
 			else if (dbConn.DbType.Equals("Postgres"))
 			{
 				clientFactory = new PostgresFactory();
-				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False;SSL Mode=Require;TrustServerCertificate=true;";
+				connectString = "Host=" + dbConn.ServerName + ";Port=5432;Database=" + dbConn.DbName + ";Username=" + dbConn.UserName + ";Password=" + dbConn.Password + ";Integrated Security=False;"; // SSL Mode=Require;TrustServerCertificate=true;";
 				connectDescription = dbConn.ServerName + " (" + dbConn.UserName + ")";
 				this.Text = connectDescription;
 			}
